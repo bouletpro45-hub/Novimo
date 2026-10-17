@@ -96,7 +96,7 @@ function mettreAJour() {
     fond: palette.fond, fond2: palette.fond2, accent: palette.accent,
     texte: palette.texte, texteDoux: palette.texteDoux
   });
-  apercu.src = '../logo-reveal.html?' + params.toString();
+  apercu.src = 'logo-reveal.html?' + params.toString();
   // un reflet passe sur l'aperçu pendant qu'il se refait
   const ecran = apercu.parentElement;
   ecran.classList.remove('recharge');
@@ -277,21 +277,21 @@ setTimeout(() => titre.classList.add('visible'), 80);
       bulle: 'Spot 30 secondes · 16:9',
       titre: 'Pour YouTube, <span class="accent">la TV</span> et votre vitrine',
       texte: 'Une vraie pub en six scènes : votre nom, l\u2019accroche, vos offres, votre argument, comment commander et l\u2019appel à l\u2019action. Ici, le spot de Novimo.',
-      src: '../spot-30s.html?integre=1&format=paysage',
+      src: 'spot-30s.html?integre=1&format=paysage',
       nom: 'Spot de 30 secondes de Novimo'
     },
     {
       bulle: 'Écran de vitrine · 16:9',
       titre: 'Votre carte, <span class="accent">sur grand écran</span>',
       texte: 'Vos produits et vos prix qui s’affichent un par un, avec un bandeau qui défile : pour la TV de votre boutique ou votre vitrine.',
-      src: '../menu-vitrine.html?integre=1&format=paysage',
+      src: 'menu-vitrine.html?integre=1&format=paysage',
       nom: 'Animation menu de vitrine en 16:9'
     },
     {
       bulle: 'Tous formats · 16:9',
       titre: 'Un seul studio, <span class="accent">tous vos écrans</span>',
       texte: 'La même animation livrée en carré pour Instagram, en vertical pour TikTok et les Reels, et en 16:9 pour YouTube et la TV.',
-      src: '../formats-ecrans.html?integre=1&format=paysage',
+      src: 'formats-ecrans.html?integre=1&format=paysage',
       nom: 'Animation des formats carré, vertical et 16:9'
     }
   ];

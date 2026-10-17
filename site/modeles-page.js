@@ -22,12 +22,12 @@ function adresseModele(m, format, reglages) {
   if (pal) ['fond', 'fond2', 'accent', 'texte', 'texteDoux'].forEach((k) => p.set(k, pal[k]));
   if (reglages.police) p.set('police', reglages.police);
   if (reglages.symbole) p.set('symbole', reglages.symbole);
-  return '../' + m.fichier + '?' + p.toString();
+  return m.fichier + '?' + p.toString();
 }
 const reglagesDepart = (m) => ({ textes: Object.assign({}, m.textes), palette: m.palette, police: '', symbole: (m.textes || {}).symbole || '' });
 
 /* ---------- 1. Les filtres ---------- */
-const filtre = { format: '', categorie: '', duree: '', prix: '', tri: 'populaires' };
+const filtre = { format: '', categorie: '', style: '', duree: '', prix: '', tri: 'populaires' };
 
 $m('filtre-categorie').innerHTML = ['Tous'].concat(CATEGORIES_MODELES).map((c, i) =>
   '<button type="button" data-categorie="' + (i ? esc(c) : '') + '" aria-pressed="' + (i ? 'false' : 'true') + '">' + esc(c) + '</button>').join('');
@@ -39,13 +39,20 @@ $m('filtre-format').addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return;
   choisirBouton($m('filtre-format'), b); filtre.format = b.dataset.format; afficherGrille();
 });
+$m('filtre-style').innerHTML = ['Tous les styles'].concat(STYLES_MODELES).map((c, i) =>
+  '<button type="button" data-style="' + (i ? esc(c) : '') + '" aria-pressed="' + (i ? 'false' : 'true') + '">' + esc(c) + '</button>').join('');
+$m('filtre-style').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  choisirBouton($m('filtre-style'), b); filtre.style = b.dataset.style; afficherGrille();
+});
 $m('filtre-categorie').addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return;
   choisirBouton($m('filtre-categorie'), b); filtre.categorie = b.dataset.categorie; afficherGrille();
 });
 ['duree', 'prix', 'tri'].forEach((k) => $m('filtre-' + k).addEventListener('change', (e) => { filtre[k] = e.target.value; afficherGrille(); }));
 $m('tout-afficher').addEventListener('click', () => {
-  Object.assign(filtre, { format: '', categorie: '', duree: '', prix: '' });
+  Object.assign(filtre, { format: '', categorie: '', style: '', duree: '', prix: '' });
+  choisirBouton($m('filtre-style'), $m('filtre-style').querySelector('button'));
   choisirBouton($m('filtre-format'), $m('filtre-format').querySelector('button'));
   choisirBouton($m('filtre-categorie'), $m('filtre-categorie').querySelector('button'));
   $m('filtre-duree').value = ''; $m('filtre-prix').value = '';
@@ -61,6 +68,7 @@ function modelesFiltres() {
   const liste = MODELES.filter((m) =>
     (!filtre.format || m.formats.includes(filtre.format)) &&
     (!filtre.categorie || m.categorie === filtre.categorie) &&
+    (!filtre.style || m.style === filtre.style) &&
     dansIntervalle(m.duree, filtre.duree) &&
     dansIntervalle(prixDe(m), filtre.prix));
   const tris = {
@@ -105,7 +113,7 @@ function afficherGrille() {
         '<span class="carte-modele-survol">Personnaliser</span>' +
       '</button>' +
       '<div class="carte-modele-texte">' +
-        '<div><h3>' + esc(m.nom) + '</h3><p>' + esc(m.categorie) + ' · ' + m.duree + ' s</p></div>' +
+        '<div><h3>' + esc(m.nom) + '</h3><p>' + esc(m.style) + ' · ' + esc(m.categorie) + ' · ' + m.duree + ' s</p></div>' +
         '<span class="carte-modele-prix">' + euros(prixDe(m)) + '</span>' +
       '</div>' +
       '<div class="carte-modele-formats">' + m.formats.map((f) => '<span>' + RATIOS[f] + '</span>').join('') + '</div>' +
@@ -130,7 +138,7 @@ function ouvrirEditeur(id) {
   reglages = reglagesDepart(modele);
   formatEd = (filtre.format && modele.formats.includes(filtre.format)) ? filtre.format : modele.formats[0];
 
-  $m('ed-cat').textContent = modele.categorie;
+  $m('ed-cat').textContent = modele.style + ' · ' + modele.categorie;
   $m('ed-nom').textContent = modele.nom;
   $m('ed-infos').textContent = modele.duree + ' secondes · ' + modele.formats.map((f) => RATIOS[f]).join(', ') + ' · ' + euros(prixDe(modele));
 
@@ -150,7 +158,7 @@ function ouvrirEditeur(id) {
     '<span class="ambiance-vue" style="background:' + p.fond + '"><i style="background:' + p.accent + '"></i><b style="color:' + p.texte + '">Aa</b></span>' + p.nom + '</button>').join('');
 
   // police (seulement pour les modèles de pret.html)
-  $m('ed-bloc-police').hidden = modele.fichier !== 'pret.html';
+  $m('ed-bloc-police').hidden = !['pret.html', 'directions.html'].includes(modele.fichier);
   $m('ed-polices').innerHTML = POLICES_MODELES.map((p, i) =>
     '<button type="button" data-police="' + (i ? p : '') + '" aria-pressed="' + (i === 0) + '" style="font-family:\'' + p + '\', system-ui">' + p + '</button>').join('');
   chargerPolicesApercu();
@@ -228,7 +236,7 @@ function lienDevis() {
   const t = reglages.textes;
   const pal = PALETTES_MODELES[reglages.palette];
   const lignes = [
-    'Modèle choisi : ' + modele.nom + ' (réf. ' + modele.id + ')',
+    'Modèle choisi : ' + modele.nom + ' (réf. ' + modele.id + ', style ' + modele.style + ')',
     'Formats : ' + modele.formats.map((f) => RATIOS[f]).join(', ') + ' (aperçu regardé en ' + RATIOS[formatEd] + ')',
     pal ? 'Couleurs : ' + pal.nom : '',
     reglages.police ? 'Police des titres : ' + reglages.police : '',

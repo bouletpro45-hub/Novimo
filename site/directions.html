@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Directions artistiques</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎨  8 DIRECTIONS ARTISTIQUES dans un seul fichier
+     Choisis la DA avec "da" (ou ?da=minimal dans l'adresse) :
+       minimal · moderne · editorial · brutal
+       retro · neon · pastel · suisse
+     Les mêmes textes servent à toutes les DA :
+       ligne1 = petit titre, ligne2 = grand titre ( | = à la ligne ),
+       ligne3 = détail, ligne4 = info en plus, appel = bouton.
+     Chaque DA marche en carré, en vertical ET en 16:9.
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Direction artistique — Novimo',
+  formats: ['vertical', 'carre', 'paysage'],
+  da: 'minimal',
+
+  marque: 'Votre marque',
+  ligne1: 'Édition limitée',
+  ligne2: 'Moins 20 %|sur la collection',
+  ligne3: 'Des pièces choisies, à prix doux.',
+  ligne4: 'Jusqu’au 15 mars',
+  appel: 'Découvrir',
+
+  couleurs: { fond: '#f4f2ec', fond2: '#e8e5dc', accent: '#161616', texte: '#161616', texteDoux: '#6f6c64' },
+  polices: { titre: 'Inter', texte: 'Inter' },
+  vitesse: 1
+};
+// La police des titres : celle choisie dans l'éditeur (?police=), sinon celle de la DA
+(function () {
+  const p = new URLSearchParams(location.search);
+  const POLICE_DA = { minimal: 'Inter', moderne: 'Space Grotesk', editorial: 'Playfair Display', brutal: 'Anton',
+    retro: 'Fraunces', neon: 'Unbounded', pastel: 'Fredoka', suisse: 'Inter' };
+  REGLAGES.polices.titre = p.get('police') || POLICE_DA[p.get('da') || REGLAGES.da] || 'Inter';
+})();
+</script>
+
+<style>
+  #scene { font-family: var(--police-texte), system-ui, sans-serif; color: var(--texte); }
+  .titre { font-family: var(--police-titre), system-ui, sans-serif; }
+  .masque { display: block; overflow: hidden; padding: 0.08em 0.04em 0.04em; margin: -0.08em -0.04em -0.04em; }
+  .masque > span { display: inline-block; white-space: nowrap; }
+  .fleche { width: 1em; height: 1em; flex: none; }
+
+  /* ================= 1. MINIMALISTE ================= */
+  .mini { position: absolute; inset: 0; padding: 0 130px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+  #scene.vertical .mini { padding: 0 100px; }
+  #scene.paysage .mini { padding: 0 200px; }
+  .mini-haut { position: absolute; left: 130px; right: 130px; top: 100px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--texte-doux); }
+  #scene.vertical .mini-haut { left: 100px; right: 100px; top: 150px; }
+  #scene.paysage .mini-haut { left: 200px; right: 200px; }
+  .mini-sur { display: flex; align-items: center; gap: 26px; font-size: 28px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--texte-doux); }
+  .mini-sur i { width: 80px; height: 2px; background: var(--accent); transform-origin: left; }
+  .mini-titre { margin-top: 46px; font-size: 140px; font-weight: 400; letter-spacing: -0.045em; line-height: 1.02; }
+  #scene.paysage .mini-titre { font-size: 160px; }
+  .mini-detail { margin-top: 44px; font-size: 38px; line-height: 1.35; color: var(--texte-doux); max-width: 820px; }
+  .mini-appel { position: relative; margin-top: 70px; display: inline-flex; align-items: center; gap: 18px; padding-bottom: 12px; font-size: 34px; font-weight: 600; }
+  .mini-appel i { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--accent); transform-origin: left; }
+  .mini-bas { position: absolute; left: 130px; right: 130px; bottom: 100px; height: 1px; background: color-mix(in srgb, var(--texte) 25%, transparent); transform-origin: left; }
+  #scene.vertical .mini-bas { left: 100px; right: 100px; bottom: 150px; }
+  #scene.paysage .mini-bas { left: 200px; right: 200px; }
+  .mini-point { position: absolute; right: -6px; top: -6px; width: 13px; height: 13px; border-radius: 50%; background: var(--accent); }
+
+  /* ================= 2. MODERNE ================= */
+  .blob { position: absolute; width: 900px; height: 900px; border-radius: 50%; filter: blur(120px); opacity: 0.6; }
+  .mod { position: absolute; inset: 0; display: grid; place-items: center; }
+  .mod-carte { position: relative; width: 880px; padding: 70px 70px 64px; border-radius: 60px; text-align: left;
+    background: color-mix(in srgb, var(--fond2) 72%, transparent); border: 1.5px solid color-mix(in srgb, var(--texte) 14%, transparent);
+    backdrop-filter: blur(30px); box-shadow: 0 40px 120px rgba(0, 0, 0, 0.3); }
+  #scene.vertical .mod-carte { width: 920px; padding: 80px 70px; }
+  #scene.paysage .mod-carte { width: 1340px; padding: 80px 90px; }
+  .mod-tag { display: inline-flex; align-items: center; gap: 14px; padding: 14px 26px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); font-size: 28px; font-weight: 800; }
+  .mod-tag i { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
+  .mod-titre { margin-top: 40px; font-size: 118px; font-weight: 700; letter-spacing: -0.05em; line-height: 0.98; }
+  .mod-detail { margin-top: 30px; font-size: 36px; line-height: 1.35; color: var(--texte-doux); }
+  .mod-pied { margin-top: 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .mod-info { font-size: 30px; font-weight: 700; color: var(--texte-doux); }
+  .mod-bouton { display: inline-flex; align-items: center; gap: 14px; padding: 24px 40px; border-radius: 999px; background: var(--accent); color: var(--sur-accent); font-size: 32px; font-weight: 800; white-space: nowrap; }
+  .mod-marque { position: absolute; left: 0; right: 0; bottom: 70px; text-align: center; font-size: 28px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--texte-doux); }
+  #scene.vertical .mod-marque { bottom: 130px; }
+
+  /* ================= 3. ÉDITORIAL ================= */
+  .edi { position: absolute; inset: 0; padding: 90px 110px; display: flex; flex-direction: column; }
+  #scene.vertical .edi { padding: 140px 90px; }
+  #scene.paysage .edi { padding: 80px 150px; }
+  .edi-tete, .edi-pied { position: relative; display: flex; justify-content: space-between; align-items: center; font-size: 24px; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; }
+  .edi-tete { padding-bottom: 24px; }
+  .edi-pied { padding-top: 24px; }
+  .regle { position: absolute; left: 0; right: 0; height: 2px; background: var(--texte); transform-origin: left; }
+  .edi-tete .regle { bottom: 0; }
+  .edi-pied .regle { top: 0; }
+  .edi-centre { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  .edi-sur { font-family: var(--police-titre), serif; font-style: italic; font-size: 38px; color: var(--accent); }
+  .edi-titre { margin-top: 30px; font-size: 168px; font-weight: 400; line-height: 0.98; letter-spacing: -0.02em; }
+  #scene.paysage .edi-titre { font-size: 180px; }
+  .edi-titre .ital { font-style: italic; color: var(--accent); }
+  .edi-detail { margin-top: 44px; font-size: 34px; line-height: 1.45; color: var(--texte-doux); max-width: 780px; }
+  .edi-appel { display: inline-flex; align-items: center; gap: 14px; color: var(--accent); }
+
+  /* ================= 4. BRUTALISTE ================= */
+  .bru-bande { position: absolute; left: -10px; right: -10px; height: 110px; display: flex; align-items: center; overflow: hidden; background: var(--accent); color: var(--sur-accent); border-top: 6px solid var(--texte); border-bottom: 6px solid var(--texte); }
+  .bru-bande.haut { top: 70px; }
+  .bru-bande.bas { bottom: 70px; }
+  #scene.vertical .bru-bande.haut { top: 150px; }
+  #scene.vertical .bru-bande.bas { bottom: 150px; }
+  .bru-defile { display: flex; flex: none; white-space: nowrap; font-family: var(--police-titre), sans-serif; font-size: 58px; text-transform: uppercase; }
+  .bru-defile span { padding: 0 30px; }
+  .bru { position: absolute; inset: 0; padding: 0 100px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+  #scene.paysage .bru { padding: 0 160px; }
+  .bru-boite { border: 8px solid var(--texte); background: var(--fond2); box-shadow: 22px 22px 0 var(--texte); padding: 26px 46px 34px; }
+  .bru-titre { font-size: 132px; text-transform: uppercase; line-height: 0.92; letter-spacing: -0.005em; }
+  #scene.vertical .bru-titre { font-size: 200px; }
+  #scene.paysage .bru-titre { font-size: 116px; }
+  #scene.paysage .bru-detail { margin-top: 40px; }
+  #scene.paysage .bru-bouton { margin-top: 24px; }
+  .bru-detail { margin-top: 56px; display: inline-block; padding: 10px 22px; background: var(--texte); color: var(--fond); font-size: 38px; font-weight: 800; text-transform: uppercase; }
+  .bru-bouton { margin-top: 34px; display: inline-flex; align-items: center; gap: 16px; padding: 20px 38px; border: 6px solid var(--texte); background: var(--accent); color: var(--sur-accent); font-size: 38px; font-weight: 900; text-transform: uppercase; box-shadow: 12px 12px 0 var(--texte); }
+  .bru-sticker { position: absolute; right: 90px; bottom: 230px; padding: 18px 30px; border: 6px solid var(--texte); background: var(--accent); color: var(--sur-accent); font-size: 38px; font-weight: 900; text-transform: uppercase; white-space: nowrap; }
+  #scene.vertical .bru-sticker { bottom: auto; top: 380px; }
+  #scene.paysage .bru-sticker { right: 160px; bottom: auto; top: 260px; }
+
+  /* ================= 5. RÉTRO ================= */
+  .ret-soleil { position: absolute; left: 50%; top: 50%; width: 3200px; height: 3200px; margin: -1600px;
+    background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--accent) 14%, transparent) 0deg 7deg, transparent 7deg 14deg); }
+  .ret-arcs { position: absolute; width: 0; height: 0; }
+  .ret-arcs.a1 { left: 0; top: 0; }
+  .ret-arcs.a2 { right: 0; bottom: 0; }
+  .ret-arcs i { position: absolute; border-radius: 50%; border-style: solid; }
+  .ret { position: absolute; inset: 0; padding: 0 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  .ret-badge { display: inline-block; padding: 16px 34px; border-radius: 999px; background: var(--texte); color: var(--fond); font-size: 32px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
+  .ret-titre { margin-top: 44px; font-size: 158px; font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; color: var(--texte);
+    text-shadow: 5px 5px 0 var(--accent), 10px 10px 0 var(--texte-doux); }
+  .ret-titre .ligne { display: block; white-space: nowrap; }
+  .ret-titre .lettre { display: inline-block; }
+  .ret-detail { margin-top: 44px; font-size: 38px; font-weight: 600; line-height: 1.35; max-width: 820px; }
+  .ret-bouton { margin-top: 46px; display: inline-flex; align-items: center; gap: 16px; padding: 22px 44px; border-radius: 999px; background: var(--accent); color: var(--sur-accent); border: 5px solid var(--texte); font-size: 36px; font-weight: 800; box-shadow: 0 8px 0 var(--texte); }
+  .ret-marque { position: absolute; left: 0; right: 0; bottom: 60px; text-align: center; font-family: var(--police-titre), serif; font-size: 34px; font-weight: 700; font-style: italic; }
+  #scene.vertical .ret-marque { bottom: 130px; }
+
+  /* ================= 6. NÉON ================= */
+  .neo-sol { position: absolute; left: -50%; right: -50%; bottom: -10%; height: 60%; transform-origin: 50% 100%; transform: perspective(520px) rotateX(72deg);
+    background-image: linear-gradient(var(--accent) 3px, transparent 3px), linear-gradient(90deg, var(--accent) 3px, transparent 3px); background-size: 130px 130px;
+    -webkit-mask: linear-gradient(to top, #000 30%, transparent 95%); mask: linear-gradient(to top, #000 30%, transparent 95%); opacity: 0.55; }
+  .neo-horizon { position: absolute; left: 0; right: 0; top: 58%; height: 4px; background: var(--accent); box-shadow: 0 0 30px 8px var(--accent); opacity: 0.8; }
+  .neo-lueur { position: absolute; left: 50%; top: 58%; width: 1400px; height: 700px; margin: -350px 0 0 -700px; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 35%, transparent), transparent); }
+  .neo { position: absolute; inset: 0; padding: 0 90px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  #scene.carre .neo, #scene.paysage .neo { justify-content: flex-start; padding-top: 150px; }
+  #scene.vertical .neo { justify-content: flex-start; padding-top: 420px; }
+  .neo-sur { font-family: var(--police-titre), sans-serif; font-size: 54px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: transparent; -webkit-text-stroke: 2px var(--accent); }
+  .neo-titre { margin-top: 30px; font-size: 128px; font-weight: 700; text-transform: uppercase; line-height: 1.02; letter-spacing: -0.02em; color: var(--texte);
+    text-shadow: 0 0 8px var(--accent), 0 0 26px var(--accent), 0 0 60px var(--accent); }
+  .neo-detail { margin-top: 34px; font-size: 36px; color: var(--texte-doux); }
+  .neo-bouton { margin-top: 44px; display: inline-flex; align-items: center; gap: 16px; padding: 20px 40px; border-radius: 16px; border: 3px solid var(--accent); color: var(--texte); font-size: 32px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+    box-shadow: 0 0 22px var(--accent), inset 0 0 22px color-mix(in srgb, var(--accent) 60%, transparent); }
+  .neo-info { position: absolute; left: 0; right: 0; bottom: 60px; text-align: center; font-size: 28px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--texte-doux); }
+  #scene.vertical .neo-info { bottom: 130px; }
+  .neo-trames { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(0, 0, 0, 0.22) 3px 5px); }
+
+  /* ================= 7. PASTEL ================= */
+  .pas-forme { position: absolute; }
+  .pas-forme.rond { border-radius: 50%; }
+  .pas-forme.carre { border-radius: 28%; }
+  .pas-forme.anneau { border-radius: 50%; background: transparent !important; border: 18px solid; }
+  .pas-forme.etoile { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+  .pas { position: absolute; inset: 0; padding: 0 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  .pas-sticker { display: inline-block; padding: 16px 34px; border-radius: 999px; background: var(--fond2); font-size: 34px; font-weight: 700; box-shadow: 0 8px 0 color-mix(in srgb, var(--texte) 16%, transparent); }
+  .pas-titre { margin-top: 46px; font-size: 150px; font-weight: 700; line-height: 0.98; letter-spacing: -0.02em; }
+  .pas-titre .ligne { display: block; white-space: nowrap; }
+  .pas-titre .lettre { display: inline-block; }
+  .pas-titre .ligne:nth-child(even) { color: var(--accent); }
+  .pas-detail { margin-top: 40px; font-size: 38px; font-weight: 500; line-height: 1.35; color: var(--texte-doux); max-width: 800px; }
+  .pas-bouton { margin-top: 50px; display: inline-flex; align-items: center; gap: 16px; padding: 24px 50px; border-radius: 999px; background: var(--accent); color: var(--sur-accent); font-size: 38px; font-weight: 700;
+    box-shadow: 0 10px 0 color-mix(in srgb, var(--accent) 55%, #000); }
+  .pas-marque { position: absolute; left: 0; right: 0; bottom: 64px; text-align: center; font-size: 30px; font-weight: 700; color: var(--texte-doux); }
+  #scene.vertical .pas-marque { bottom: 130px; }
+
+  /* ================= 8. SUISSE ================= */
+  .sui-ligne { position: absolute; top: 0; bottom: 0; width: 1px; background: color-mix(in srgb, var(--texte) 12%, transparent); transform-origin: top; }
+  .sui-bloc { position: absolute; left: 0; top: 0; right: 0; height: 38%; background: var(--accent); color: var(--sur-accent); transform-origin: top; }
+  #scene.vertical .sui-bloc { height: 34%; }
+  #scene.paysage .sui-bloc { right: auto; width: 38%; height: 100%; transform-origin: left; }
+  .sui-label { position: absolute; left: 80px; top: 70px; font-size: 30px; font-weight: 700; letter-spacing: -0.01em; }
+  #scene.vertical .sui-label { top: 140px; }
+  .sui-fleche { position: absolute; right: 70px; bottom: 40px; width: 200px; height: 200px; }
+  #scene.paysage .sui-fleche { right: 80px; bottom: 80px; width: 260px; height: 260px; }
+  .sui { position: absolute; left: 80px; right: 80px; top: 38%; bottom: 70px; padding-top: 60px; display: flex; flex-direction: column; }
+  #scene.vertical .sui { top: 34%; bottom: 140px; padding-top: 80px; }
+  #scene.paysage .sui { left: calc(38% + 110px); right: 110px; top: 0; bottom: 0; padding: 120px 0 90px; }
+  .sui-titre { font-size: 132px; font-weight: 700; line-height: 0.92; letter-spacing: -0.055em; }
+  .sui-detail { margin-top: 36px; font-size: 34px; line-height: 1.35; color: var(--texte-doux); max-width: 760px; }
+  .sui-info { margin-top: 16px; font-size: 34px; font-weight: 700; }
+  .sui-pied { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; }
+  .sui-marque { font-size: 26px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  .sui-bouton { display: inline-flex; align-items: center; gap: 16px; padding: 22px 34px; background: var(--texte); color: var(--fond); font-size: 32px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+const FLECHE = '<svg class="fleche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+/* =======================================================
+   🎬  LES 8 DIRECTIONS ARTISTIQUES (8 secondes chacune)
+   ======================================================= */
+function construire(scene, R, S) {
+  const format = scene.className;                       // 'carre', 'vertical' ou 'paysage'
+  const W = format === 'paysage' ? 1920 : 1080;
+  const H = format === 'vertical' ? 1920 : 1080;
+  const a = S.anim;
+  const lignes = String(R.ligne2 || '').split('|').map((l) => l.trim()).filter(Boolean);
+
+  // Couleur du texte posé sur l'accent : noir ou blanc, celui qui se lit le mieux
+  scene.style.setProperty('--sur-accent', surAccent(R.couleurs.accent));
+
+  /* ---------- Outils communs ---------- */
+  const entrer = (el, t, dy, d) => a(el, [{ opacity: 0, transform: 'translateY(' + (dy === undefined ? 40 : dy) + 'px)' }, { opacity: 1, transform: 'none' }], t, d || 0.8, 'douce');
+  // Le grand titre : chaque ligne monte depuis un cache
+  const titreMasque = (parent, classe, largeur, t, ecart, duree) => {
+    const bloc = S.creer('div', 'titre ' + classe, parent);
+    const spans = lignes.map((l, i) => {
+      const m = S.creer('span', 'masque', bloc);
+      const s = S.creer('span', i % 2 ? 'ital' : '', m, l);
+      return s;
+    });
+    S.ajuster(bloc, largeur, spans);
+    spans.forEach((s, i) => a(s, [{ transform: 'translateY(115%)' }, { transform: 'none' }], t + i * (ecart || 0.12), duree || 0.9, 'douce'));
+    return bloc;
+  };
+  // Le grand titre en lettres séparées (chaque ligne garde sa place)
+  const titreLettres = (parent, classe, largeur) => {
+    const bloc = S.creer('div', 'titre ' + classe, parent);
+    const parLigne = lignes.map((l) => S.lettres(S.creer('span', 'ligne', bloc), l));
+    S.ajuster(bloc, largeur, Array.from(bloc.children));
+    return parLigne;
+  };
+  const bouton = (parent, classe, avecFleche) => {
+    if (!R.appel) return null;
+    const b = S.creer('div', classe, parent);
+    b.innerHTML = '<span>' + esc(R.appel) + '</span>' + (avecFleche === false ? '' : FLECHE);
+    return b;
+  };
+  const largeurTexte = format === 'paysage' ? 1450 : 880;
+
+  const DA = { minimal, moderne, editorial, brutal, retro, neon, pastel, suisse };
+  (DA[R.da] || minimal)();
+  S.tenir(8);
+
+  /* ---------- 1. MINIMALISTE : beaucoup d'air, des traits fins, tout en douceur ---------- */
+  function minimal() {
+    const haut = S.creer('div', 'mini-haut', scene);
+    haut.innerHTML = '<span>' + esc(R.marque) + '</span><span>' + esc(R.ligne4 || '') + '</span>';
+    a(haut, [{ opacity: 0 }, { opacity: 1 }], 0.2, 1.2, 'douce');
+    const bas = S.creer('div', 'mini-bas', scene);
+    S.creer('i', 'mini-point', bas);
+    a(bas, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], 0.1, 2.4, 'fluide');
+
+    const plan = S.creer('div', 'mini', scene);
+    const sur = S.creer('div', 'mini-sur', plan);
+    sur.innerHTML = '<i></i><span>' + esc(R.ligne1) + '</span>';
+    a(sur.querySelector('i'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], 0.5, 1.0, 'fluide');
+    a(sur.querySelector('span'), [{ opacity: 0, transform: 'translateX(-20px)' }, { opacity: 1, transform: 'none' }], 0.9, 1.0, 'douce');
+    titreMasque(plan, 'mini-titre', largeurTexte - 40, 1.1, 0.18, 1.3);
+    if (R.ligne3) entrer(S.creer('div', 'mini-detail', plan, R.ligne3), 2.0, 24, 1.2);
+    const b = bouton(plan, 'mini-appel');
+    if (b) {
+      const trait = S.creer('i', '', b);
+      a(b, [{ opacity: 0 }, { opacity: 1 }], 2.6, 0.8, 'douce');
+      a(trait, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], 2.8, 0.9, 'fluide');
+      a(b.querySelector('svg'), [{ transform: 'none' }, { transform: 'translateX(10px)' }, { transform: 'none' }], 3.8, 1.2, 'fluide', { iterations: 3 });
+    }
+  }
+
+  /* ---------- 2. MODERNE : formes floues qui bougent, carte en verre, pilules ---------- */
+  function moderne() {
+    const blobs = [
+      { x: 0.15, y: 0.2, c: 'var(--accent)' }, { x: 0.85, y: 0.75, c: 'var(--accent)' }, { x: 0.8, y: 0.15, c: 'var(--texte-doux)' }
+    ];
+    blobs.forEach((bl, i) => {
+      const el = S.creer('div', 'blob', scene);
+      el.style.left = (bl.x * W - 450) + 'px'; el.style.top = (bl.y * H - 450) + 'px';
+      el.style.background = bl.c;
+      el.style.opacity = i === 2 ? 0.3 : 0.45;
+      a(el, [{ transform: 'scale(0.4)' }, { transform: 'scale(1)' }], 0, 1.4, 'douce');
+      a(el, [{ transform: 'translate(0,0) scale(1)' }, { transform: 'translate(' + (i % 2 ? -120 : 140) + 'px,' + (i ? 100 : -80) + 'px) scale(1.15)' }], 1.4, 3.2, 'fluide', { iterations: Infinity, direction: 'alternate' });
+    });
+    const plan = S.creer('div', 'mod', scene);
+    const carte = S.creer('div', 'mod-carte', plan);
+    a(carte, [{ opacity: 0, transform: 'translateY(80px) scale(0.92)' }, { opacity: 1, transform: 'none' }], 0.3, 0.9, 'douce');
+    const tag = S.creer('div', 'mod-tag', carte);
+    tag.innerHTML = '<i></i>' + esc(R.ligne1);
+    a(tag, [{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'none' }], 0.8, 0.6, 'rebond');
+    titreMasque(carte, 'mod-titre', (format === 'paysage' ? 1160 : 760), 0.95, 0.12, 0.85);
+    if (R.ligne3) entrer(S.creer('div', 'mod-detail', carte, R.ligne3), 1.6, 24);
+    const pied = S.creer('div', 'mod-pied', carte);
+    const info = S.creer('div', 'mod-info', pied, R.ligne4 || '');
+    entrer(info, 2.0, 20);
+    const b = bouton(pied, 'mod-bouton');
+    if (b) {
+      a(b, [{ opacity: 0, transform: 'translateX(40px)' }, { opacity: 1, transform: 'none' }], 2.1, 0.7, 'douce');
+      a(b, [{ transform: 'none' }, { transform: 'scale(1.05)' }, { transform: 'none' }], 3.2, 0.8, 'fluide', { iterations: 3 });
+    }
+    entrer(S.creer('div', 'mod-marque', scene, R.marque), 2.4, 20);
+  }
+
+  /* ---------- 3. ÉDITORIAL : une couverture de magazine, serif et italique ---------- */
+  function editorial() {
+    const plan = S.creer('div', 'edi', scene);
+    const tete = S.creer('div', 'edi-tete', plan);
+    tete.innerHTML = '<span>' + esc(R.marque) + '</span><span>' + esc(R.ligne4 || '') + '</span><i class="regle"></i>';
+    a(tete.querySelector('.regle'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], 0.1, 1.2, 'fluide');
+    tete.querySelectorAll('span').forEach((s, i) => a(s, [{ opacity: 0 }, { opacity: 1 }], 0.6 + i * 0.2, 0.8, 'douce'));
+    const centre = S.creer('div', 'edi-centre', plan);
+    const sur = S.creer('div', 'edi-sur', centre, '— ' + R.ligne1 + ' —');
+    entrer(sur, 0.7, 20);
+    titreMasque(centre, 'edi-titre', largeurTexte, 1.0, 0.22, 1.1);
+    if (R.ligne3) entrer(S.creer('div', 'edi-detail', centre, R.ligne3), 1.9, 24, 1.0);
+    const pied = S.creer('div', 'edi-pied', plan);
+    pied.innerHTML = '<i class="regle"></i><span>' + esc(R.ligne1) + '</span>';
+    const b = bouton(pied, 'edi-appel');
+    a(pied.querySelector('.regle'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], 0.3, 1.2, 'fluide');
+    a(pied.querySelector('span'), [{ opacity: 0 }, { opacity: 1 }], 2.2, 0.8, 'douce');
+    if (b) entrer(b, 2.4, 14);
+  }
+
+  /* ---------- 4. BRUTALISTE : gros blocs, bords épais, bandeaux qui défilent ---------- */
+  function brutal() {
+    const texteBande = (txt) => Array(10).fill('<span>' + esc(txt) + '</span><span>✦</span>').join('');
+    [['haut', R.ligne1, 1], ['bas', R.marque, -1]].forEach(([pos, txt, sens], i) => {
+      const bande = S.creer('div', 'bru-bande ' + pos, scene);
+      const d = S.creer('div', 'bru-defile', bande);
+      d.innerHTML = texteBande(txt);
+      a(bande, [{ transform: 'translateX(' + (sens * -110) + '%)' }, { transform: 'none' }], 0.05 + i * 0.12, 0.45, 'steps(5)');
+      a(d, [{ transform: 'translateX(' + (sens > 0 ? '0' : '-50%') + ')' }, { transform: 'translateX(' + (sens > 0 ? '-50%' : '0') + ')' }], 0, 9, 'lineaire', { iterations: Infinity });
+    });
+    const plan = S.creer('div', 'bru', scene);
+    const boite = S.creer('div', 'bru-boite', plan);
+    const bloc = S.creer('div', 'titre bru-titre', boite);
+    const spans = lignes.map((l) => S.creer('span', 'masque', bloc)).map((m, i) => S.creer('span', '', m, lignes[i]));
+    S.ajuster(bloc, (format === 'paysage' ? 1300 : 780), spans);
+    a(boite, [{ opacity: 0, transform: 'translate(-60px, 60px)', boxShadow: '0 0 0 var(--texte)' }, { opacity: 1, transform: 'none', boxShadow: '22px 22px 0 var(--texte)' }], 0.5, 0.4, 'steps(4)');
+    spans.forEach((s, i) => a(s, [{ transform: 'translateY(100%)' }, { transform: 'none' }], 0.8 + i * 0.15, 0.3, 'steps(3)'));
+    a(boite, [{ transform: 'none' }, { transform: 'translate(-8px, 4px)' }, { transform: 'translate(6px, -4px)' }, { transform: 'none' }], 1.5, 0.2, 'steps(4)');
+    if (R.ligne3) {
+      const det = S.creer('div', 'bru-detail', plan, R.ligne3);
+      a(det, [{ opacity: 0, transform: 'scaleX(0)' }, { opacity: 1, transform: 'none' }], 1.7, 0.3, 'steps(4)');
+      det.style.transformOrigin = 'left';
+    }
+    const b = bouton(plan, 'bru-bouton');
+    if (b) {
+      a(b, [{ opacity: 0 }, { opacity: 1 }], 2.2, 0.3, 'steps(3)');
+      a(b, [{ transform: 'none', boxShadow: '12px 12px 0 var(--texte)' }, { transform: 'translate(12px,12px)', boxShadow: '0 0 0 var(--texte)' }, { transform: 'none', boxShadow: '12px 12px 0 var(--texte)' }], 3.4, 0.5, 'steps(2)', { iterations: 3 });
+    }
+    if (R.ligne4) {
+      const st = S.creer('div', 'bru-sticker', scene, R.ligne4);
+      a(st, [{ opacity: 0, transform: 'rotate(30deg) scale(2)' }, { opacity: 1, transform: 'rotate(8deg) scale(1)' }], 2.6, 0.3, 'steps(3)');
+    }
+  }
+
+  /* ---------- 5. RÉTRO : soleil qui tourne, arcs 70s, lettres qui rebondissent ---------- */
+  function retro() {
+    const soleil = S.creer('div', 'ret-soleil', scene);
+    a(soleil, [{ transform: 'rotate(0deg)', opacity: 0 }, { transform: 'rotate(20deg)', opacity: 1 }], 0, 1.2, 'douce');
+    a(soleil, [{ transform: 'rotate(20deg)' }, { transform: 'rotate(380deg)' }], 1.2, 40, 'lineaire', { iterations: Infinity });
+    const couleursArcs = ['var(--accent)', 'var(--texte-doux)', 'var(--fond2)', 'var(--texte)'];
+    ['a1', 'a2'].forEach((cl, k) => {
+      const g = S.creer('div', 'ret-arcs ' + cl, scene);
+      couleursArcs.forEach((c, i) => {
+        const r = (format === 'carre' ? 300 : 380) - i * (format === 'carre' ? 56 : 70);
+        const arc = S.creer('i', '', g);
+        Object.assign(arc.style, { width: r * 2 + 'px', height: r * 2 + 'px', left: -r + 'px', top: -r + 'px', borderWidth: '36px', borderColor: c });
+        a(arc, [{ transform: 'scale(0)' }, { transform: 'scale(1)' }], 0.2 + k * 0.2 + i * 0.08, 0.8, 'rebond');
+      });
+    });
+    const plan = S.creer('div', 'ret', scene);
+    const badge = S.creer('div', 'ret-badge', plan, R.ligne1);
+    a(badge, [{ opacity: 0, transform: 'rotate(-20deg) scale(0.3)' }, { opacity: 1, transform: 'rotate(-4deg) scale(1)' }], 0.6, 0.7, 'rebond');
+    const parLigne = titreLettres(plan, 'ret-titre', largeurTexte);
+    let n = 0;
+    parLigne.forEach((ls) => ls.forEach((l) => {
+      a(l, [{ opacity: 0, transform: 'translateY(-140px) rotate(-12deg)' }, { opacity: 1, transform: 'none' }], 1.0 + n * 0.035, 0.7, 'rebond');
+      n++;
+    }));
+    const fin = 1.0 + n * 0.035;
+    if (R.ligne3) entrer(S.creer('div', 'ret-detail', plan, R.ligne3), fin + 0.2, 30);
+    const b = bouton(plan, 'ret-bouton');
+    if (b) {
+      a(b, [{ opacity: 0, transform: 'scale(0.4)' }, { opacity: 1, transform: 'none' }], fin + 0.6, 0.7, 'rebond');
+      a(b, [{ transform: 'rotate(0)' }, { transform: 'rotate(-3deg)' }, { transform: 'rotate(3deg)' }, { transform: 'rotate(0)' }], fin + 1.6, 0.6, 'fluide', { iterations: 2 });
+    }
+    entrer(S.creer('div', 'ret-marque', scene, R.marque + (R.ligne4 ? ' · ' + R.ligne4 : '')), fin + 0.8, 20);
+  }
+
+  /* ---------- 6. NÉON : grille synthwave, titre qui grésille et s'allume ---------- */
+  function neon() {
+    const lueur = S.creer('div', 'neo-lueur', scene);
+    const sol = S.creer('div', 'neo-sol', scene);
+    const horizon = S.creer('div', 'neo-horizon', scene);
+    if (format === 'vertical') { lueur.style.top = horizon.style.top = '62%'; }
+    a(sol, [{ opacity: 0 }, { opacity: 0.55 }], 0.1, 1.0, 'douce');
+    a(sol, [{ backgroundPosition: '0 0' }, { backgroundPosition: '0 130px' }], 0, 0.9, 'lineaire', { iterations: Infinity });
+    a(horizon, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], 0.2, 0.8, 'fluide');
+    a(lueur, [{ opacity: 0 }, { opacity: 1 }], 0.4, 1.2, 'douce');
+    const plan = S.creer('div', 'neo', scene);
+    const sur = S.creer('div', 'titre neo-sur', plan, R.ligne1);
+    S.ajuster(sur, largeurTexte);
+    a(sur, [{ opacity: 0 }, { opacity: 1, offset: 0.1 }, { opacity: 0.1, offset: 0.2 }, { opacity: 1, offset: 0.35 }, { opacity: 0.3, offset: 0.5 }, { opacity: 1 }], 0.5, 0.9, 'lineaire');
+    const bloc = S.creer('div', 'titre neo-titre', plan);
+    const spans = lignes.map((l) => S.creer('span', 'masque', bloc)).map((m, i) => S.creer('span', '', m, lignes[i]));
+    S.ajuster(bloc, largeurTexte, spans);
+    a(bloc, [{ opacity: 0, filter: 'brightness(0.3)' }, { opacity: 1, filter: 'brightness(1)', offset: 0.08 }, { opacity: 0.15, offset: 0.16 }, { opacity: 1, offset: 0.3 }, { opacity: 0.4, offset: 0.42 }, { opacity: 1, offset: 0.5 }, { opacity: 1, filter: 'brightness(1)' }], 1.0, 1.2, 'lineaire');
+    a(bloc, [{ opacity: 1 }, { opacity: 0.82 }, { opacity: 1 }], 3.0, 0.16, 'lineaire', { iterations: 3, delay: 0 });
+    if (R.ligne3) entrer(S.creer('div', 'neo-detail', plan, R.ligne3), 2.1, 20);
+    const b = bouton(plan, 'neo-bouton');
+    if (b) {
+      a(b, [{ opacity: 0, transform: 'scale(0.8)' }, { opacity: 1, transform: 'none' }], 2.5, 0.6, 'rebond');
+      a(b, [{ boxShadow: '0 0 22px var(--accent), inset 0 0 22px color-mix(in srgb, var(--accent) 60%, transparent)' },
+        { boxShadow: '0 0 50px var(--accent), inset 0 0 32px var(--accent)' },
+        { boxShadow: '0 0 22px var(--accent), inset 0 0 22px color-mix(in srgb, var(--accent) 60%, transparent)' }], 3.3, 0.9, 'fluide', { iterations: 4 });
+    }
+    entrer(S.creer('div', 'neo-info', scene, [R.ligne4, R.marque].filter(Boolean).join('  ·  ')), 2.8, 16);
+    S.creer('div', 'neo-trames', scene);
+  }
+
+  /* ---------- 7. PASTEL : formes douces qui flottent, lettres qui sautillent ---------- */
+  function pastel() {
+    const formes = [
+      ['rond', 0.08, 0.12, 170, 'var(--accent)'], ['etoile', 0.86, 0.1, 150, 'var(--texte-doux)'], ['anneau', 0.88, 0.82, 190, 'var(--accent)'],
+      ['carre', 0.1, 0.84, 140, 'var(--fond2)'], ['rond', 0.78, 0.45, 60, 'var(--texte-doux)'], ['etoile', 0.18, 0.5, 70, 'var(--accent)'],
+      ['rond', 0.5, 0.06, 46, 'var(--fond2)'], ['carre', 0.93, 0.6, 70, 'var(--accent)']
+    ];
+    formes.forEach(([type, x, y, taille, couleur], i) => {
+      const f = S.creer('div', 'pas-forme ' + type, scene);
+      Object.assign(f.style, { width: taille + 'px', height: taille + 'px', left: (x * W - taille / 2) + 'px', top: (y * H - taille / 2) + 'px', background: couleur, borderColor: couleur, opacity: 0.85 });
+      a(f, [{ transform: 'scale(0) rotate(-90deg)' }, { transform: 'scale(1) rotate(0deg)' }], 0.1 + i * 0.08, 0.8, 'rebond');
+      a(f, [{ transform: 'translateY(0) rotate(0deg)' }, { transform: 'translateY(' + (i % 2 ? 26 : -26) + 'px) rotate(' + (i % 2 ? 12 : -12) + 'deg)' }], 1.0 + i * 0.1, 1.6 + (i % 3) * 0.3, 'fluide', { iterations: Infinity, direction: 'alternate' });
+    });
+    const plan = S.creer('div', 'pas', scene);
+    const sticker = S.creer('div', 'pas-sticker', plan, R.ligne1);
+    a(sticker, [{ opacity: 0, transform: 'rotate(-4deg) scale(0.3)' }, { opacity: 1, transform: 'rotate(-4deg) scale(1)' }], 0.5, 0.7, 'rebond');
+    const parLigne = titreLettres(plan, 'pas-titre', largeurTexte);
+    let n = 0;
+    parLigne.forEach((ls) => ls.forEach((l) => {
+      a(l, [{ opacity: 0, transform: 'scale(0) rotate(' + (n % 2 ? 20 : -20) + 'deg)' }, { opacity: 1, transform: 'none' }], 0.9 + n * 0.045, 0.6, 'rebond');
+      n++;
+    }));
+    const fin = 0.9 + n * 0.045;
+    // les lettres font une petite vague
+    let k = 0;
+    parLigne.forEach((ls) => ls.forEach((l) => {
+      a(l, [{ transform: 'none' }, { transform: 'translateY(-18px)' }, { transform: 'none' }], fin + 1.2 + k * 0.04, 0.45, 'fluide');
+      k++;
+    }));
+    if (R.ligne3) entrer(S.creer('div', 'pas-detail', plan, R.ligne3), fin + 0.2, 26);
+    const b = bouton(plan, 'pas-bouton', false);
+    if (b) {
+      a(b, [{ opacity: 0, transform: 'translateY(60px) scale(0.6)' }, { opacity: 1, transform: 'none' }], fin + 0.5, 0.7, 'rebond');
+      a(b, [{ transform: 'none' }, { transform: 'scale(1.07) rotate(-2deg)' }, { transform: 'none' }], fin + 1.8, 0.6, 'rebond', { iterations: 2 });
+    }
+    entrer(S.creer('div', 'pas-marque', scene, R.marque + (R.ligne4 ? ' · ' + R.ligne4 : '')), fin + 0.8, 20);
+  }
+
+  /* ---------- 8. SUISSE : grille stricte, grand aplat de couleur, typo serrée ---------- */
+  function suisse() {
+    const nb = format === 'paysage' ? 6 : 4;
+    for (let i = 1; i < nb; i++) {
+      const l = S.creer('div', 'sui-ligne', scene);
+      l.style.left = (i * W / nb) + 'px';
+      a(l, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], i * 0.06, 1.0, 'fluide');
+    }
+    const bloc = S.creer('div', 'sui-bloc', scene);
+    a(bloc, [{ transform: format === 'paysage' ? 'scaleX(0)' : 'scaleY(0)' }, { transform: 'none' }], 0.2, 0.8, 'fluide');
+    const label = S.creer('div', 'sui-label', bloc, R.ligne1);
+    entrer(label, 0.9, 20, 0.6);
+    const fl = S.creer('div', 'sui-fleche', bloc);
+    fl.innerHTML = '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M6 6l12 12M8 18h10V8"/></svg>';
+    a(fl, [{ opacity: 0, transform: 'translate(-60px,-60px)' }, { opacity: 1, transform: 'none' }], 1.0, 0.7, 'douce');
+    const plan = S.creer('div', 'sui', scene);
+    const titreSui = titreMasque(plan, 'sui-titre', format === 'paysage' ? 960 : 900, 1.0, 0.1, 0.7);
+    // 3 lignes ou plus : on réduit pour garder la place du bas
+    if (lignes.length > 2 && format !== 'vertical') titreSui.style.fontSize = (parseFloat(getComputedStyle(titreSui).fontSize) * 0.72) + 'px';
+    if (R.ligne3) entrer(S.creer('div', 'sui-detail', plan, R.ligne3), 1.6, 20, 0.6);
+    if (R.ligne4) entrer(S.creer('div', 'sui-info', plan, '— ' + R.ligne4), 1.8, 20, 0.6);
+    const pied = S.creer('div', 'sui-pied', plan);
+    entrer(S.creer('div', 'sui-marque', pied, R.marque), 2.1, 16, 0.6);
+    const b = bouton(pied, 'sui-bouton');
+    if (b) {
+      a(b, [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], 2.2, 0.6, 'fluide');
+      a(fl, [{ transform: 'none' }, { transform: 'translate(14px,14px)' }, { transform: 'none' }], 3.0, 0.8, 'fluide', { iterations: 3 });
+    }
+  }
+}
+
+// Noir ou blanc sur la couleur d'accent ? (contraste WCAG)
+function surAccent(hex) {
+  const n = (hex || '#000').replace('#', '');
+  const c = [0, 2, 4].map((i) => parseInt(n.substr(i, 2), 16) / 255).map((v) => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+  const L = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  return (L + 0.05) / 0.0625 >= 1.05 / (L + 0.05) ? '#111111' : '#ffffff';
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>
