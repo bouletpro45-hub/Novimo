@@ -1,0 +1,118 @@
+/* =========================================================
+   STUDIO.CSS — styles communs à toutes les animations
+   (la page, la "scène" 1080 px, la barre de boutons)
+   Tu n'as normalement pas besoin de modifier ce fichier.
+   ========================================================= */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #111114;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Le cadre = la zone de la fenêtre où la scène est affichée */
+#cadre {
+  position: fixed;
+  inset: 0 0 76px 0; /* on laisse 76 px en bas pour la barre de boutons */
+}
+
+/* La scène = l'image finale, toujours 1080 px de large.
+   Elle est réduite (transform: scale) pour tenir dans la fenêtre. */
+#scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  overflow: hidden;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police-texte), system-ui, sans-serif;
+}
+
+/* ---------- Barre de boutons ---------- */
+#barre {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: 76px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  background: #1b1b20;
+  border-top: 1px solid #2c2c33;
+  color: #a9a9b3;
+  font-size: 13px;
+}
+
+#barre button {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f2f2f5;
+  background: #2c2c34;
+  border: 1px solid #3a3a44;
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+#barre button:hover { background: #393943; }
+#barre button:active { transform: scale(0.96); }
+#barre button.principal { background: #f2f2f5; color: #111114; border-color: #f2f2f5; }
+#barre button.principal:hover { background: #ffffff; }
+
+#barre .info { opacity: 0.8; }
+#barre kbd {
+  font-family: inherit;
+  font-size: 11px;
+  padding: 1px 6px;
+  border: 1px solid #3a3a44;
+  border-radius: 5px;
+  background: #24242a;
+}
+
+/* ---------- Mode propre (pour enregistrer) ---------- */
+body.propre { background: #000; cursor: none; }
+body.propre #cadre { inset: 0; }
+body.propre #barre { display: none; }
+
+/* ---------- Mode intégré (dans le site Novimo) ---------- */
+body.integre { background: transparent; }
+body.integre #cadre { inset: 0; }
+body.integre #barre { display: none; }
+
+/* ---------- Petits outils réutilisés par les modèles ---------- */
+.lettre { display: inline-block; white-space: pre; }
+
+/* Un mot dans un "masque" : le mot monte depuis le bas, caché par le masque */
+.masque {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding: 0.02em 0.06em 0.14em;
+  margin: 0 -0.06em -0.14em;
+}
+.mot { display: inline-block; position: relative; }
+
+.symbole-boite { color: var(--accent); line-height: 0; }
+.symbole-boite svg { width: 100%; height: 100%; overflow: visible; }
+
+/* Par défaut, les traits sont entièrement dessinés
+   (l'animation "dessiner" les fait partir de zéro) */
+.symbole-boite .trait {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.etoile-fond {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--texte);
+}

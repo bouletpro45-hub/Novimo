@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Logo Novimo : un N penché vers l'avant, avec deux traits de vitesse -->
+  <rect width="100" height="100" rx="26" fill="#d4ff3f"/>
+  <g fill="#0b0c09" transform="translate(6 0) skewX(-12) translate(10.6 0)">
+    <path d="M30 76V24h13l15 27V24h13v52H58L43 49v27z" stroke="#0b0c09" stroke-width="3" stroke-linejoin="round"/>
+  </g>
+  <g stroke="#0b0c09" stroke-width="6" stroke-linecap="round">
+    <path d="M13 41h11M17 55h8"/>
+  </g>
+</svg>

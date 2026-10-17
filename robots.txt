@@ -1,0 +1,10 @@
+# Robots des moteurs de recherche (Google, Bing…)
+User-agent: *
+Allow: /
+# Pages privées : pas d'intérêt dans les résultats de recherche
+Disallow: /site/dashboard.html
+Disallow: /site/compte.html
+Disallow: /site/messages.html
+
+# Remplace https://www.novimo.fr par ton vrai domaine
+Sitemap: https://www.novimo.fr/sitemap.xml

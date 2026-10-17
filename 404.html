@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Tous les liens de cette page partent du dossier du site, quelle que soit l'adresse demandée -->
+<base href="/site/">
+<title>Page introuvable (404) — Novimo</title>
+<meta name="description" content="Cette page n'existe pas ou a été déplacée. Retrouvez les animations Novimo depuis l'accueil.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
+<link rel="stylesheet" href="style.css?v=10">
+<style>
+  .page-404 { min-height: 100vh; display: grid; place-items: center; padding: 120px var(--marge) 80px; text-align: center; }
+  .page-404 .grand { font-size: clamp(120px, 26vw, 340px); font-weight: 800; line-height: 0.85; letter-spacing: -0.06em; }
+  .page-404 .grand span { display: inline-block; color: var(--accent); animation: tourne 2.4s var(--douce) infinite; }
+  @keyframes tourne { 0%, 60% { transform: rotate(0); } 80%, 100% { transform: rotate(360deg); } }
+  .page-404 h1 { margin-top: 24px; font-size: clamp(28px, 4vw, 48px); text-transform: uppercase; letter-spacing: -0.03em; }
+  .page-404 p { margin: 16px auto 0; max-width: 46ch; color: var(--encre-douce); font-size: var(--t-texte); }
+  .page-404 .actions-404 { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 36px; }
+  @media (prefers-reduced-motion: reduce) { .page-404 .grand span { animation: none; } }
+</style>
+</head>
+<body data-page="404">
+
+<main class="page-404" id="contenu">
+  <div>
+    <p class="grand" aria-hidden="true">4<span>0</span>4</p>
+    <h1>Cette page a <span class="accent">pris la fuite</span></h1>
+    <p>Le lien est peut-être ancien ou mal recopié. Pas de panique : tout le reste du site est bien là.</p>
+    <div class="actions-404">
+      <a class="bouton bouton-icone" href="devis.html"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>Demander mon devis gratuit</a>
+      <a class="bouton-fantome" href="index.html">Retour à l’accueil</a>
+    </div>
+  </div>
+</main>
+
+<script src="config.js?v=10"></script>
+<script src="reglages.js?v=10"></script>
+<script src="commun.js?v=10"></script>
+<script src="confiance.js?v=10"></script>
+</body>
+</html>

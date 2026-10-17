@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Messagerie — Novimo</title>
+<!-- SEO -->
+<meta name="description" content="Écrivez à Novimo directement sur le site : choisissez le sujet de votre demande, discutez avec nous. Messages chiffrés, compte gratuit.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://www.novimo.fr/site/messages.html">
+<meta name="theme-color" content="#0b0c09">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Novimo">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Messagerie — Novimo">
+<meta property="og:description" content="Écrivez à Novimo directement sur le site : choisissez le sujet de votre demande, discutez avec nous. Messages chiffrés, compte gratuit.">
+<meta property="og:url" content="https://www.novimo.fr/site/messages.html">
+<meta property="og:image" content="https://www.novimo.fr/site/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Novimo : votre marque, en mouvement. Logos animés, pubs et spots vidéo.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Messagerie — Novimo">
+<meta name="twitter:description" content="Écrivez à Novimo directement sur le site : choisissez le sujet de votre demande, discutez avec nous. Messages chiffrés, compte gratuit.">
+<meta name="twitter:image" content="https://www.novimo.fr/site/og-image.jpg">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<!-- /SEO -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
+<link rel="stylesheet" href="style.css?v=10">
+</head>
+<body data-page="messages">
+<a class="aller-contenu" href="#contenu">Aller au contenu</a>
+
+<!-- La messagerie : réservée aux comptes. Tout est géré par messagerie.js
+     et la fonction serveur "messagerie" (messages chiffrés). -->
+<main class="messagerie" id="contenu">
+  <header class="messagerie-tete">
+    <p class="bulle" data-entree>Messagerie</p>
+    <h1 class="messagerie-titre" data-entree id="msg-titre">Écrivez-<span class="accent">nous</span></h1>
+    <p class="texte-section" data-entree id="msg-intro">Une question, un projet, une retouche ? Choisissez le sujet de votre demande et écrivez-nous : on vous répond directement ici.</p>
+    <p class="msg-securite" data-entree><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Messages chiffrés : en connexion HTTPS, puis en AES-256 dans notre base.</p>
+  </header>
+
+  <!-- Supabase pas branché -->
+  <section class="carte-compte" id="vue-demo" hidden>
+    <h2>Bientôt disponible</h2>
+    <p>La messagerie s’activera dès que le site sera en ligne. En attendant : <a data-r="email" data-mail="Question" href="#">écrivez-nous par e-mail</a>.</p>
+  </section>
+
+  <!-- Pas connecté -->
+  <section class="carte-compte msg-connexion" id="vue-connexion" hidden>
+    <h2>La messagerie est réservée aux comptes</h2>
+    <p>C’est gratuit, sans mot de passe, et bien plus simple pour discuter : vous retrouvez toute la conversation au même endroit, et on vous prévient par e-mail quand on vous répond.</p>
+    <a class="bouton bouton-icone" href="compte.html" id="msg-creer-compte"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>Créer mon compte ou me connecter</a>
+  </section>
+
+  <!-- La messagerie -->
+  <section class="msg-app" id="vue-messagerie" hidden>
+    <!-- Colonne de gauche : les conversations -->
+    <aside class="msg-liste" aria-label="Conversations">
+      <button class="bouton msg-nouveau" type="button" id="msg-nouveau" hidden>+ Nouvelle demande</button>
+      <div class="segment msg-onglets" id="msg-onglets" role="tablist" aria-label="Trier les conversations" hidden>
+        <button type="button" role="tab" data-onglet="acceptee" aria-selected="true">Acceptées <b id="n-acceptee">0</b></button>
+        <button type="button" role="tab" data-onglet="demande" aria-selected="false">Demandes <b id="n-demande">0</b></button>
+        <button type="button" role="tab" data-onglet="archive" aria-selected="false">Archives</button>
+      </div>
+      <div class="msg-conversations" id="msg-conversations"></div>
+    </aside>
+
+    <!-- Colonne de droite : la conversation ouverte, ou le formulaire -->
+    <div class="msg-panneau" id="msg-panneau">
+      <div class="msg-vide" id="msg-vide">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4z"/></svg>
+        <p id="msg-vide-texte">Choisissez une conversation.</p>
+      </div>
+
+      <!-- Nouvelle demande (client) -->
+      <form class="msg-formulaire" id="msg-formulaire" novalidate hidden>
+        <button class="msg-retour" type="button" data-retour>← Conversations</button>
+        <h2>Nouvelle demande</h2>
+        <fieldset class="msg-categories">
+          <legend>1. De quoi voulez-vous parler ?</legend>
+          <div class="msg-categories-grille" id="msg-categories"></div>
+          <span class="champ-erreur" id="err-categorie" hidden></span>
+        </fieldset>
+        <label class="champ">
+          <span>2. Le sujet, en quelques mots</span>
+          <input id="msg-sujet" type="text" maxlength="120" required placeholder="Ex. Logo animé pour ma boulangerie" aria-describedby="err-sujet">
+          <span class="champ-erreur" id="err-sujet" hidden></span>
+        </label>
+        <label class="champ">
+          <span>3. Votre message</span>
+          <textarea id="msg-message" rows="6" maxlength="2000" required placeholder="Décrivez votre besoin : votre activité, ce que vous voulez montrer, vos délais…" aria-describedby="err-message"></textarea>
+          <span class="msg-compteur" id="msg-compteur">0 / 2000</span>
+          <span class="champ-erreur" id="err-message" hidden></span>
+        </label>
+        <p class="compte-message" id="msg-form-statut" role="status"></p>
+        <button class="bouton bouton-icone" type="submit" id="msg-envoyer-demande"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>Envoyer ma demande</button>
+      </form>
+
+      <!-- Conversation ouverte -->
+      <div class="msg-fil" id="msg-fil" hidden>
+        <header class="msg-fil-tete">
+          <button class="msg-retour" type="button" data-retour>←</button>
+          <div class="msg-fil-infos">
+            <p class="msg-fil-categorie" id="fil-categorie"></p>
+            <h2 id="fil-sujet"></h2>
+            <p class="msg-fil-qui" id="fil-qui"></p>
+          </div>
+          <span class="statut" id="fil-statut"></span>
+        </header>
+        <div class="msg-actions-admin" id="fil-actions" hidden>
+          <button class="bouton" type="button" data-statut="acceptee">Accepter</button>
+          <button class="bouton-fantome" type="button" data-statut="refusee">Refuser</button>
+          <button class="bouton-fantome" type="button" data-statut="fermee">Archiver</button>
+        </div>
+        <ol class="msg-bulles" id="fil-messages" aria-live="polite"></ol>
+        <p class="msg-attente" id="fil-attente" hidden></p>
+        <form class="msg-ecrire" id="fil-ecrire" novalidate>
+          <label class="visuellement-cache" for="fil-texte">Votre message</label>
+          <textarea id="fil-texte" rows="1" maxlength="2000" placeholder="Écrire un message…"></textarea>
+          <button class="bouton" type="submit" id="fil-envoyer" aria-label="Envoyer le message"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-8-6 16-2-6z"/></svg></button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="pied">
+  <p class="pied-nom" aria-hidden="true">Novimo</p>
+  <div class="pied-ligne">
+    <span>Motion design pour les marques, les entreprises et les créateurs.</span>
+    <nav class="pied-legal" aria-label="Informations légales">
+      <a href="cgu.html#mentions">Mentions légales</a>
+      <a href="confidentialite.html">Confidentialité (RGPD)</a>
+      <a href="cgu.html">CGU / CGV</a>
+      <a href="#" data-cookies>Gérer les cookies</a>
+    </nav>
+    <nav class="pied-reseaux" aria-label="Novimo sur les réseaux sociaux">
+      <a data-reseau="instagram" href="https://www.instagram.com/novimo_md/" target="_blank" rel="noopener me" aria-label="Instagram de Novimo (@novimo_md)"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+      <a data-reseau="tiktok" href="https://www.tiktok.com/@novimo.com" target="_blank" rel="noopener me" aria-label="TikTok de Novimo (@novimo.com)"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M16.6 3c.4 2.2 1.8 3.7 4 3.9v3.2c-1.5 0-2.9-.4-4-1.2v6.4a5.7 5.7 0 1 1-5.7-5.7c.3 0 .6 0 .9.1v3.3a2.5 2.5 0 1 0 1.7 2.3V3h3.1z"/></svg></a>
+    </nav>
+    <span>© <span class="annee">2026</span> Novimo</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js?v=10"></script>
+<script src="reglages.js?v=10"></script>
+<script src="api.js?v=10"></script>
+<script src="commun.js?v=10"></script>
+<script src="confiance.js?v=10"></script>
+<script src="messagerie.js?v=10"></script>
+</body>
+</html>

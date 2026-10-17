@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tous vos écrans</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  RÉGLAGES — "Tous vos écrans" : un cadre qui se transforme
+     du carré au vertical puis au 16:9. Format paysage, 13 secondes.
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Tous vos écrans — Novimo',
+  formats: ['paysage'],
+
+  marque: 'novimo',
+  contenu: 'Votre pub ici',
+
+  // Les 3 étapes : format, où on l'utilise
+  etapes: [
+    { ratio: '1:1',  ou: 'Instagram, Facebook' },
+    { ratio: '9:16', ou: 'TikTok, Reels, Stories' },
+    { ratio: '16:9', ou: 'YouTube, TV, vitrine' }
+  ],
+  conclusion: 'Un seul studio.|Tous vos écrans.',   // | = retour à la ligne
+
+  couleurs: {
+    fond:      '#0b0c09',
+    fond2:     '#1a1c14',
+    accent:    '#d4ff3f',
+    texte:     '#f2f0e8',
+    texteDoux: '#8f9186'
+  },
+  polices: { titre: 'Bricolage Grotesque', texte: 'Inter' },
+  vitesse: 1
+};
+</script>
+
+<style>
+  .halo { position: absolute; left: 50%; top: 50%; width: 1500px; height: 1000px; margin: -500px 0 0 -750px; background: radial-gradient(ellipse at center, rgba(212, 255, 63, 0.10), transparent 62%); }
+  .grille { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px); background-size: 60px 60px; }
+
+  /* Le cadre qui change de forme */
+  .cadre {
+    position: absolute; left: 50%; top: 50%;
+    width: 560px; height: 560px;
+    transform: translate(-50%, -50%);
+    border-radius: 36px;
+    background: var(--fond2);
+    box-shadow: inset 0 0 0 4px var(--accent), 0 0 90px rgba(212, 255, 63, 0.22);
+    overflow: hidden;
+  }
+  .cadre-contenu { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 22px; }
+  .cadre-logo { width: 120px; height: 120px; }
+  .cadre-logo svg { width: 100%; height: 100%; display: block; }
+  .cadre-texte { font-family: var(--police-titre), system-ui, sans-serif; font-size: 46px; font-weight: 800; letter-spacing: -0.03em; white-space: nowrap; }
+  .cadre-barre { position: absolute; left: 40px; right: 40px; bottom: 34px; height: 8px; border-radius: 6px; background: rgba(255,255,255,0.12); overflow: hidden; }
+  .cadre-barre i { display: block; height: 100%; background: var(--accent); transform-origin: left center; }
+
+  /* L'étiquette du format, à gauche */
+  .etiquette { position: absolute; left: 150px; top: 50%; transform: translateY(-50%); }
+  .etiquette-ratio { font-family: var(--police-titre), system-ui, sans-serif; font-size: 170px; font-weight: 800; line-height: 0.9; letter-spacing: -0.05em; color: var(--accent); }
+  .etiquette-ou { margin-top: 20px; font-size: 36px; color: var(--texte-doux); }
+
+  /* La fin : trois petits cadres côte à côte et la conclusion */
+  .fin { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 70px; }
+  .fin-titre { font-family: var(--police-titre), system-ui, sans-serif; font-size: 112px; font-weight: 800; line-height: 0.95; letter-spacing: -0.045em; text-align: center; }
+  .masque { display: block; overflow: hidden; padding-bottom: 0.06em; }
+  .masque > span { display: block; }
+  .fin-titre .masque:last-child { color: var(--accent); }
+  .mini { display: flex; align-items: flex-end; gap: 46px; }
+  .mini-cadre { border-radius: 18px; background: var(--fond2); box-shadow: inset 0 0 0 3px var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 26px; color: var(--texte-doux); }
+</style>
+</head>
+<body>
+
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+// Le logo Novimo (même dessin que site/logo.svg)
+const LOGO = '<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="26" fill="#d4ff3f"/>' +
+  '<path fill="#0b0c09" stroke="#0b0c09" stroke-width="3" stroke-linejoin="round" transform="translate(6 0) skewX(-12) translate(10.6 0)" d="M30 76V24h13l15 27V24h13v52H58L43 49v27z"/>' +
+  '<path fill="none" stroke="#0b0c09" stroke-width="6" stroke-linecap="round" d="M13 41h11M17 55h8"/></svg>';
+
+/* =======================================================
+   🎬  L'ANIMATION — 13 secondes
+   ======================================================= */
+function construire(scene, R, S) {
+  S.creer('div', 'grille', scene);
+  S.creer('div', 'halo', scene);
+
+  // Les tailles du cadre pour chaque format (en pixels, sur un écran 1920 × 1080)
+  const TAILLES = [
+    { w: 560, h: 560, x: 0 },      // 1:1
+    { w: 400, h: 711, x: 0 },      // 9:16
+    { w: 1040, h: 585, x: 180 }    // 16:9 (décalé à droite pour laisser la place à l'étiquette)
+  ];
+  const DEBUTS = [0.3, 3.3, 6.3];   // quand chaque format apparaît (secondes)
+
+  /* ---------- Le cadre ---------- */
+  const cadre = S.creer('div', 'cadre', scene);
+  const contenu = S.creer('div', 'cadre-contenu', cadre);
+  const logo = S.creer('div', 'cadre-logo', contenu);
+  logo.innerHTML = LOGO;
+  S.creer('div', 'cadre-texte', contenu, R.contenu);
+  const barre = S.creer('div', 'cadre-barre', cadre);
+  const progression = S.creer('i', '', barre);
+
+  S.anim(cadre, [{ opacity: 0, transform: 'translate(-50%, -50%) scale(0.6)' }, { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }], 0.1, 0.8, 'rebond');
+  S.anim(logo, [{ transform: 'scale(0) rotate(-90deg)' }, { transform: 'none' }], 0.5, 0.8, 'rebond');
+  S.anim(progression, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], 0.4, 9, 'lineaire');
+
+  // le cadre se transforme d'un format à l'autre (la forme ET la position)
+  [1, 2].forEach((i) => {
+    const a = TAILLES[i - 1], b = TAILLES[i];
+    S.anim(cadre, [
+      { width: a.w + 'px', height: a.h + 'px', marginLeft: a.x + 'px' },
+      { width: b.w + 'px', height: b.h + 'px', marginLeft: b.x + 'px' }
+    ], DEBUTS[i] - 0.1, 0.9, 'fluide');
+  });
+
+  /* ---------- L'étiquette du format ---------- */
+  R.etapes.forEach((e, i) => {
+    const et = S.creer('div', 'etiquette', scene);
+    S.creer('div', 'etiquette-ratio', et, e.ratio);
+    S.creer('div', 'etiquette-ou', et, e.ou);
+    const t = DEBUTS[i] + 0.3;
+    S.anim(et, [{ opacity: 0, transform: 'translate(-40px, -50%)' }, { opacity: 1, transform: 'translate(0, -50%)' }], t, 0.7, 'douce');
+    S.anim(et, [{ opacity: 1 }, { opacity: 0 }], (DEBUTS[i + 1] || 9.2) - 0.35, 0.3, 'fluide');
+  });
+
+  /* ---------- La fin : les trois formats côte à côte ---------- */
+  S.anim(cadre, [{ opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }, { opacity: 0, transform: 'translate(-50%, -50%) scale(0.85)' }], 9.0, 0.5, 'sortie');
+  const fin = S.creer('div', 'fin', scene);
+  const titre = S.creer('div', 'fin-titre', fin);
+  R.conclusion.split('|').forEach((ligne, i) => {
+    const m = S.creer('span', 'masque', titre);
+    const sp = S.creer('span', '', m, ligne.trim());
+    S.anim(sp, [{ transform: 'translateY(110%)' }, { transform: 'none' }], 9.5 + i * 0.15, 0.9, 'douce');
+  });
+  const mini = S.creer('div', 'mini', fin);
+  [[150, 150, '1:1'], [120, 213, '9:16'], [300, 169, '16:9']].forEach(([w, h, nom], i) => {
+    const c = S.creer('div', 'mini-cadre', mini, nom);
+    c.style.width = w + 'px'; c.style.height = h + 'px';
+    S.anim(c, [{ opacity: 0, transform: 'translateY(60px) scale(0.8)' }, { opacity: 1, transform: 'none' }], 10.0 + i * 0.15, 0.8, 'rebond');
+  });
+
+  S.tenir(13);
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>

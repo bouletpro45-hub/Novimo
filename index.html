@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boîte à outils motion</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    padding: 48px 16px;
+    background: #111114;
+    color: #f2f2f5;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 30px; margin-bottom: 8px; }
+  p.intro { color: #a9a9b3; margin-bottom: 32px; line-height: 1.5; }
+  a.carte {
+    display: block;
+    padding: 22px 24px;
+    margin-bottom: 14px;
+    border: 1px solid #2c2c33;
+    border-radius: 14px;
+    background: #1b1b20;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  a.carte:hover { border-color: #e6b85c; transform: translateY(-2px); }
+  a.carte strong { display: block; font-size: 19px; margin-bottom: 4px; }
+  a.carte span { color: #a9a9b3; font-size: 15px; }
+  .formats { margin-top: 10px; font-size: 13px; color: #e6b85c; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Boîte à outils motion</h1>
+  <p class="intro">Clique sur un modèle pour l'ouvrir. Chaque fichier se règle tout en haut (bloc <code>REGLAGES</code>). Le mode d'emploi complet est dans <code>GUIDE.md</code>.</p>
+
+  <a class="carte" href="site/index.html">
+    <strong>Site Novimo</strong>
+    <span>Ton site vitrine : tes animations en direct, l'essai avec le nom du client, tes tarifs et ton contact.</span>
+    <div class="formats">Ordinateur · Téléphone</div>
+  </a>
+  <a class="carte" href="vitrine-ui.html">
+    <strong>Vitrine UI (style appli)</strong>
+    <span>Une forme lumineuse se transforme : pilule, carte de score qui se remplit, icône, bouton cliqué, logo. 3 démos : ?demo=garage, coiffeur ou cafe. Environ 16 s.</span>
+    <div class="formats">Carré · Vertical</div>
+  </a>
+  <a class="carte" href="spot-30s.html">
+    <strong>Spot 30 secondes</strong>
+    <span>Une vraie pub en 6 scènes : logo, accroche, offres avec prix, comparaison, étapes, appel à l'action. Ici, le spot de Novimo.</span>
+    <div class="formats">Paysage 16:9 (1920×1080)</div>
+  </a>
+  <a class="carte" href="typo-choc.html">
+    <strong>Typo choc</strong>
+    <span>Des mots énormes qui claquent, des aplats de couleur qui alternent, des bandeaux qui défilent. Environ 11 s.</span>
+    <div class="formats">Carré · Vertical</div>
+  </a>
+  <a class="carte" href="produit-vedette.html">
+    <strong>Produit vedette</strong>
+    <span>Fond clair, produit dessiné au centre, grains qui tombent, texte en cercle, prix qui se balance. Environ 11 s.</span>
+    <div class="formats">Carré · Vertical</div>
+  </a>
+  <a class="carte" href="logo-reveal.html">
+    <strong>Logo reveal</strong>
+    <span>Le symbole se dessine, le nom apparaît lettre par lettre, puis le slogan. Environ 4 s.</span>
+    <div class="formats">Carré · Vertical</div>
+  </a>
+  <a class="carte" href="texte-anime.html">
+    <strong>Texte animé</strong>
+    <span>Une phrase d'accroche dont les mots apparaissent en rythme, pour un post ou une story. Environ 5 s.</span>
+    <div class="formats">Carré · Vertical</div>
+  </a>
+  <a class="carte" href="promo-commerce.html">
+    <strong>Promo commerce</strong>
+    <span>Une petite pub en 3 écrans : le commerce, l'offre, le réseau social. Environ 8 s.</span>
+    <div class="formats">Carré · Vertical</div>
+  </a>
+</main>
+</body>
+</html>

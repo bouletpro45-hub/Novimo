@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modèles prêts</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  MODÈLES PRÊTS À PERSONNALISER — 10 styles dans un seul fichier
+     Choisis le style avec "style" (ou ?style=promo dans l'adresse) :
+       promo · nouveau · evenement · chiffres · recrute
+       horaires · merci · citation · lancement · teaser
+     Chaque style marche en carré, en vertical ET en 16:9.
+     Tous les textes ci-dessous peuvent aussi être changés par l'adresse
+     (c'est ce que fait la page "Modèles" du site).
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Modèle prêt — Novimo',
+  formats: ['vertical', 'carre', 'paysage'],
+  style: 'promo',
+
+  // Les textes : chaque style les utilise à sa façon (voir le catalogue site/modeles.js)
+  marque: 'Votre marque',
+  ligne1: 'Soldes d\'hiver',
+  ligne2: '-30%',
+  ligne3: 'sur toute la boutique',
+  ligne4: 'Jusqu\'au 31 janvier',
+  appel: 'J\'en profite',
+  // Pour le style "chiffres" et "horaires"
+  chiffre1: '120', texte1: 'projets livrés',
+  chiffre2: '98',  texte2: '% de clients ravis',
+  chiffre3: '48',  texte3: 'h pour un aperçu',
+  liste: 'Lundi – Vendredi : 9 h – 19 h|Samedi : 10 h – 18 h|Dimanche : fermé',
+
+  couleurs: {
+    fond:      '#0b0c09',
+    fond2:     '#1c1e15',
+    accent:    '#d4ff3f',
+    texte:     '#f2f0e8',
+    texteDoux: '#a3a59a'
+  },
+  polices: { titre: 'Bricolage Grotesque', texte: 'Inter' },
+  vitesse: 1
+};
+// ?police=Anton change la police des titres (choisie dans l'éditeur du site)
+(function () {
+  const p = new URLSearchParams(location.search).get('police');
+  if (p) REGLAGES.polices.titre = p;
+})();
+</script>
+
+<style>
+  @property --n { syntax: '<integer>'; inherits: false; initial-value: 0; }
+  .nombre { --n: 0; counter-reset: n var(--n); font-variant-numeric: tabular-nums; }
+  .nombre::before { content: counter(n); }
+
+  .plan { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 110px; }
+  #scene.paysage .plan { padding: 100px 200px; }
+  #scene.vertical .plan { padding: 160px 100px; }
+  .titre { font-family: var(--police-titre), system-ui, sans-serif; font-weight: 800; letter-spacing: -0.04em; line-height: 0.95; }
+  .masque { display: block; overflow: hidden; padding: 0.12em 0.04em 0.06em; }
+  .masque > span { display: block; white-space: nowrap; }
+  .accent { color: var(--accent); }
+  .doux { color: var(--texte-doux); }
+  .petit { font-size: 40px; font-weight: 500; }
+  .marque-bas { position: absolute; left: 0; right: 0; bottom: 70px; text-align: center; font-size: 30px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--texte-doux); }
+  #scene.vertical .marque-bas { bottom: 120px; }
+  .bouton-appel { display: inline-flex; align-items: center; gap: 18px; margin-top: 56px; padding: 26px 46px; border-radius: 999px; background: var(--accent); color: var(--fond); font-size: 40px; font-weight: 800; }
+  .bouton-appel svg { width: 40px; height: 40px; }
+  .puce { display: inline-block; margin-top: 30px; padding: 16px 30px; border-radius: 999px; border: 3px solid var(--accent); color: var(--accent); font-size: 34px; font-weight: 700; }
+  .halo { position: absolute; left: 50%; top: 50%; width: 1400px; height: 1400px; margin: -700px 0 0 -700px; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 22%, transparent), transparent); }
+
+  .nouveau-mot, .recrute-mot, .merci-mot { white-space: nowrap; }
+  /* promo */
+  .promo-grand { font-size: 360px; color: var(--accent); }
+  #scene.vertical .promo-grand { font-size: 420px; }
+  .promo-haut { font-size: 84px; text-transform: uppercase; }
+  .rond-tourne { position: absolute; width: 1000px; height: 1000px; left: 50%; top: 50%; margin: -500px 0 0 -500px; border-radius: 50%; border: 4px dashed color-mix(in srgb, var(--accent) 45%, transparent); }
+
+  /* nouveau */
+  .bande { position: absolute; left: -30%; width: 160%; height: 240px; background: var(--accent); transform: rotate(-12deg); }
+  .nouveau-mot { font-size: 230px; text-transform: uppercase; color: var(--texte); }
+  .nouveau-mot .lettre { display: inline-block; }
+  .nouveau-nom { margin-top: 30px; font-size: 92px; }
+
+  /* événement */
+  .date-carte { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 340px; height: 380px; border-radius: 48px; background: var(--accent); color: var(--fond); box-shadow: 0 40px 100px rgba(0,0,0,0.35); }
+  .date-jour { font-family: var(--police-titre), system-ui, sans-serif; font-size: 200px; font-weight: 800; line-height: 0.9; letter-spacing: -0.05em; }
+  .date-mois { font-size: 52px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+  .evenement { display: flex; flex-direction: column; align-items: center; gap: 50px; }
+  #scene.paysage .evenement { flex-direction: row; gap: 90px; text-align: left; }
+  #scene.paysage .evenement-texte { align-items: flex-start; }
+  .evenement-texte { display: flex; flex-direction: column; align-items: center; }
+  .evenement-titre { font-size: 104px; }
+  .evenement-lieu { margin-top: 24px; font-size: 40px; }
+
+  /* chiffres */
+  .chiffres { display: flex; flex-direction: column; gap: 46px; margin-top: 70px; }
+  #scene.paysage .chiffres { flex-direction: row; gap: 80px; }
+  .chiffre { display: flex; flex-direction: column; align-items: center; }
+  .chiffre-n { font-family: var(--police-titre), system-ui, sans-serif; font-size: 160px; font-weight: 800; color: var(--accent); line-height: 1; letter-spacing: -0.04em; }
+  .chiffre-t { margin-top: 8px; font-size: 38px; color: var(--texte-doux); }
+  .chiffres-titre { font-size: 92px; }
+
+  /* recrute */
+  .recrute-mot { font-size: 190px; text-transform: uppercase; }
+  .curseur { display: inline-block; width: 0.08em; height: 0.8em; margin-left: 0.06em; background: var(--accent); vertical-align: -0.05em; }
+  .poste { margin-top: 40px; font-size: 76px; }
+  .puces { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; }
+
+  /* horaires */
+  .horaires-titre { font-size: 110px; }
+  .ouvert { display: inline-flex; align-items: center; gap: 14px; margin-top: 30px; padding: 14px 28px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); font-size: 32px; font-weight: 800; }
+  .ouvert i { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); }
+  .lignes-horaires { margin-top: 60px; display: flex; flex-direction: column; gap: 22px; width: 100%; max-width: 860px; }
+  .ligne-horaire { display: flex; justify-content: space-between; gap: 30px; padding: 30px 40px; border-radius: 28px; background: var(--fond2); font-size: 40px; font-weight: 600; text-align: left; }
+  .ligne-horaire span:last-child { color: var(--accent); white-space: nowrap; }
+
+  /* merci */
+  .confetti { position: absolute; width: 22px; height: 34px; border-radius: 6px; }
+  .merci-mot { font-size: 260px; text-transform: uppercase; }
+  .merci-mot .lettre { display: inline-block; }
+  .merci-sous { margin-top: 30px; font-size: 80px; }
+
+  /* citation */
+  .guillemet { font-family: Georgia, serif; font-size: 360px; line-height: 0.6; color: var(--accent); height: 170px; }
+  .citation { font-family: var(--police-titre), system-ui, sans-serif; font-size: 82px; font-weight: 700; line-height: 1.12; letter-spacing: -0.025em; max-width: 1500px; }
+  .citation .masque { display: inline-block; vertical-align: top; padding: 0.04em 0.02em; }
+  .citation .mot { display: inline-block; }
+  .auteur { display: flex; align-items: center; gap: 20px; margin-top: 50px; font-size: 38px; color: var(--texte-doux); }
+  .auteur i { width: 70px; height: 4px; background: var(--accent); }
+
+  /* lancement */
+  .decompte { position: absolute; inset: 0; display: grid; place-items: center; }
+  .decompte span { grid-area: 1 / 1; font-family: var(--police-titre), system-ui, sans-serif; font-size: 520px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .barre-adresse { display: inline-flex; align-items: center; gap: 18px; margin-top: 50px; padding: 24px 40px; border-radius: 26px; background: var(--fond2); font-size: 42px; font-weight: 600; }
+  .barre-adresse i { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); }
+  .lancement-titre { font-size: 140px; }
+
+  /* teaser */
+  .trait { width: 0; height: 4px; background: var(--accent); }
+  .teaser-mot { font-size: 120px; font-weight: 300; letter-spacing: 0.4em; text-transform: uppercase; padding-left: 0.4em; }
+  .teaser-date { margin-top: 34px; font-size: 44px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--texte-doux); padding-left: 0.3em; }
+</style>
+</head>
+<body>
+
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+const FLECHE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+/* =======================================================
+   🎬  LES 10 STYLES
+   ======================================================= */
+function construire(scene, R, S) {
+  const format = scene.className;                         // 'carre', 'vertical' ou 'paysage'
+  const LARGEUR = format === 'paysage' ? 1920 : 1080;
+  const largeurTexte = format === 'paysage' ? 1520 : 860;
+
+  /* ---------- Petits outils communs ---------- */
+  const entrer = (el, t, dy) => S.anim(el, [{ opacity: 0, transform: 'translateY(' + (dy || 40) + 'px)' }, { opacity: 1, transform: 'none' }], t, 0.8, 'douce');
+  const pop = (el, t) => S.anim(el, [{ opacity: 0, transform: 'scale(0.4)' }, { opacity: 1, transform: 'scale(1)' }], t, 0.8, 'rebond');
+  // un titre dont chaque ligne monte depuis un cache ( | = retour à la ligne )
+  const titre = (parent, texte, classe, t) => {
+    const bloc = S.creer('div', 'titre ' + (classe || ''), parent);
+    const lignes = String(texte).split('|').map((l) => {
+      const m = S.creer('span', 'masque', bloc);
+      return S.creer('span', '', m, l.trim());
+    });
+    S.ajuster(bloc, largeurTexte, lignes);
+    lignes.forEach((l, i) => S.anim(l, [{ transform: 'translateY(150%)' }, { transform: 'none' }], t + i * 0.12, 0.85, 'douce'));
+    return bloc;
+  };
+  const marqueEnBas = (t) => { const m = S.creer('div', 'marque-bas', scene, R.marque); entrer(m, t, 20); };
+  const bouton = (parent, t) => {
+    if (!R.appel) return;
+    const b = S.creer('div', 'bouton-appel', parent);
+    b.innerHTML = '<span>' + R.appel.replace(/</g, '&lt;') + '</span>' + FLECHE;
+    pop(b, t);
+    S.anim(b, [{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], t + 1.2, 0.7, 'fluide', { iterations: 3 });
+  };
+  const STYLES = { promo, nouveau, evenement, chiffres, recrute, horaires, merci, citation, lancement, teaser };
+  (STYLES[R.style] || promo)();
+
+  /* ---------- 1. PROMO : grosse réduction qui claque ---------- */
+  function promo() {
+    S.creer('div', 'halo', scene);
+    const rond = S.creer('div', 'rond-tourne', scene);
+    S.anim(rond, [{ transform: 'rotate(0deg) scale(0.6)', opacity: 0 }, { transform: 'rotate(40deg) scale(1)', opacity: 1 }], 0.1, 1.2, 'douce');
+    S.anim(rond, [{ transform: 'rotate(40deg)' }, { transform: 'rotate(400deg)' }], 1.3, 14, 'lineaire', { iterations: Infinity });
+    const plan = S.creer('div', 'plan', scene);
+    titre(plan, R.ligne1, 'promo-haut', 0.2);
+    const grand = S.creer('div', 'titre promo-grand', plan, R.ligne2);
+    S.ajuster(grand, largeurTexte);
+    S.anim(grand, [{ opacity: 0, transform: 'scale(2.4) rotate(-6deg)', filter: 'blur(14px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], 0.7, 0.6, 'douce');
+    S.anim(grand, [{ transform: 'translate(0,0)' }, { transform: 'translate(-12px,6px)' }, { transform: 'translate(10px,-4px)' }, { transform: 'translate(0,0)' }], 1.25, 0.22, 'lineaire');
+    const detail = S.creer('div', 'petit', plan, R.ligne3);
+    entrer(detail, 1.6);
+    if (R.ligne4) { const p = S.creer('div', 'puce', plan, R.ligne4); entrer(p, 2.1, 20); }
+    bouton(plan, 2.8);
+    marqueEnBas(3.2);
+    S.tenir(8);
+  }
+
+  /* ---------- 2. NOUVEAU : des bandes balaient, le mot apparaît ---------- */
+  function nouveau() {
+    [-260, 0, 260].forEach((dy, i) => {
+      const b = S.creer('div', 'bande', scene);
+      b.style.top = 'calc(50% - 120px + ' + dy + 'px)';
+      b.style.opacity = i === 1 ? 1 : 0.35;
+      S.anim(b, [{ transform: 'rotate(-12deg) translateX(-110%)' }, { transform: 'rotate(-12deg) translateX(0)' }, { transform: 'rotate(-12deg) translateX(110%)' }], 0.1 + i * 0.12, 1.3, 'fluide');
+    });
+    const plan = S.creer('div', 'plan', scene);
+    const mot = S.creer('div', 'titre nouveau-mot', plan);
+    const lettres = S.lettres(mot, R.ligne1);
+    S.ajuster(mot, largeurTexte, [mot]);
+    lettres.forEach((l, i) => S.anim(l, [{ opacity: 0, transform: 'translateY(80px) rotate(12deg)' }, { opacity: 1, transform: 'none' }], 1.1 + i * 0.05, 0.7, 'rebond'));
+    const nom = titre(plan, R.ligne2, 'nouveau-nom accent', 1.7);
+    nom.style.marginTop = '30px';
+    const sous = S.creer('div', 'petit doux', plan, R.ligne3);
+    sous.style.marginTop = '26px';
+    entrer(sous, 2.3);
+    bouton(plan, 2.9);
+    marqueEnBas(3.2);
+    S.tenir(7);
+  }
+
+  /* ---------- 3. ÉVÉNEMENT : la carte-date se retourne ---------- */
+  function evenement() {
+    S.creer('div', 'halo', scene);
+    const plan = S.creer('div', 'plan', scene);
+    const bloc = S.creer('div', 'evenement', plan);
+    const carte = S.creer('div', 'date-carte', bloc);
+    carte.style.perspective = '800px';
+    S.creer('div', 'date-jour', carte, R.ligne1);
+    S.creer('div', 'date-mois', carte, R.ligne2);
+    S.anim(carte, [{ opacity: 0, transform: 'perspective(900px) rotateX(90deg)' }, { opacity: 1, transform: 'perspective(900px) rotateX(0)' }], 0.2, 0.9, 'rebond');
+    const texte = S.creer('div', 'evenement-texte', bloc);
+    titre(texte, R.ligne3, 'evenement-titre', 0.9);
+    const lieu = S.creer('div', 'evenement-lieu doux', texte, R.ligne4);
+    entrer(lieu, 1.5);
+    bouton(texte, 2.1);
+    marqueEnBas(2.6);
+    S.tenir(9);
+  }
+
+  /* ---------- 4. CHIFFRES : trois compteurs ---------- */
+  function chiffres() {
+    const plan = S.creer('div', 'plan', scene);
+    titre(plan, R.ligne1, 'chiffres-titre', 0.2);
+    const zone = S.creer('div', 'chiffres', plan);
+    [[R.chiffre1, R.texte1], [R.chiffre2, R.texte2], [R.chiffre3, R.texte3]].forEach(([n, txt], i) => {
+      if (!n) return;
+      const bloc = S.creer('div', 'chiffre', zone);
+      const morceaux = String(n).match(/^(\D*)(\d+)(.*)$/) || ['', '', '0', n];
+      const ligne = S.creer('div', 'chiffre-n', bloc);
+      ligne.innerHTML = morceaux[1] + '<span class="nombre"></span>' + morceaux[3];
+      S.creer('div', 'chiffre-t', bloc, txt);
+      const t = 0.8 + i * 0.45;
+      entrer(bloc, t, 50);
+      S.anim(ligne.querySelector('.nombre'), [{ '--n': 0 }, { '--n': parseInt(morceaux[2], 10) || 0 }], t, 1.6, 'douce');
+    });
+    marqueEnBas(2.6);
+    S.tenir(9);
+  }
+
+  /* ---------- 5. ON RECRUTE : le titre se tape au clavier ---------- */
+  function recrute() {
+    S.creer('div', 'halo', scene);
+    const plan = S.creer('div', 'plan', scene);
+    const mot = S.creer('div', 'titre recrute-mot', plan);
+    const lettres = S.lettres(mot, R.ligne1);
+    const curseur = S.creer('span', 'curseur', mot);
+    S.ajuster(mot, largeurTexte, [mot]);
+    lettres.forEach((l, i) => S.anim(l, [{ opacity: 0 }, { opacity: 1 }], 0.3 + i * 0.07, 0.01, 'lineaire'));
+    S.anim(curseur, [{ opacity: 1 }, { opacity: 0 }], 0, 0.5, 'lineaire', { iterations: 16, direction: 'alternate' });
+    const fin = 0.3 + lettres.length * 0.07;
+    titre(plan, R.ligne2, 'poste accent', fin + 0.2);
+    const puces = S.creer('div', 'puces', plan);
+    [R.ligne3, R.ligne4].filter(Boolean).forEach((txt, i) => { const p = S.creer('div', 'puce', puces, txt); entrer(p, fin + 0.7 + i * 0.15, 20); });
+    bouton(plan, fin + 1.3);
+    marqueEnBas(fin + 1.6);
+    S.tenir(8);
+  }
+
+  /* ---------- 6. HORAIRES : les lignes glissent une par une ---------- */
+  function horaires() {
+    const plan = S.creer('div', 'plan', scene);
+    titre(plan, R.ligne1, 'horaires-titre', 0.2);
+    const ouvert = S.creer('div', 'ouvert', plan);
+    ouvert.innerHTML = '<i></i>' + R.ligne2;
+    pop(ouvert, 0.8);
+    S.anim(ouvert.querySelector('i'), [{ opacity: 1 }, { opacity: 0.2 }], 1.6, 0.6, 'fluide', { iterations: 10, direction: 'alternate' });
+    const zone = S.creer('div', 'lignes-horaires', plan);
+    String(R.liste).split('|').forEach((l, i) => {
+      const [jour, heures] = l.split(':').map((x) => (x || '').trim());
+      const ligne = S.creer('div', 'ligne-horaire', zone);
+      S.creer('span', '', ligne, jour);
+      S.creer('span', '', ligne, heures || '');
+      S.anim(ligne, [{ opacity: 0, transform: 'translateX(-80px)' }, { opacity: 1, transform: 'none' }], 1.2 + i * 0.25, 0.7, 'douce');
+    });
+    marqueEnBas(2.4);
+    S.tenir(9);
+  }
+
+  /* ---------- 7. MERCI : explosion de confettis ---------- */
+  function merci() {
+    const hasard = (() => { let s = 11; return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; })();
+    const H = format === 'vertical' ? 1920 : 1080;
+    const couleurs = ['var(--accent)', 'var(--texte)', 'var(--texte-doux)'];
+    for (let i = 0; i < 70; i++) {
+      const c = S.creer('div', 'confetti', scene);
+      c.style.left = LARGEUR / 2 + 'px'; c.style.top = H / 2 + 'px';
+      c.style.background = couleurs[i % 3];
+      const angle = hasard() * Math.PI * 2, dist = 300 + hasard() * 700;
+      const x = Math.cos(angle) * dist, y = Math.sin(angle) * dist;
+      S.anim(c, [
+        { opacity: 1, transform: 'translate(0,0) rotate(0deg) scale(0.3)' },
+        { opacity: 1, transform: 'translate(' + x + 'px,' + y + 'px) rotate(' + (hasard() * 720) + 'deg) scale(1)', offset: 0.5 },
+        { opacity: 0, transform: 'translate(' + x * 1.1 + 'px,' + (y + 500) + 'px) rotate(' + (hasard() * 1080) + 'deg) scale(1)' }
+      ], 0.5 + hasard() * 0.15, 2.8, 'douce');
+    }
+    const plan = S.creer('div', 'plan', scene);
+    const mot = S.creer('div', 'titre merci-mot accent', plan);
+    const lettres = S.lettres(mot, R.ligne1);
+    S.ajuster(mot, largeurTexte, [mot]);
+    lettres.forEach((l, i) => S.anim(l, [{ opacity: 0, transform: 'translateY(-160px) scale(0.6)' }, { opacity: 1, transform: 'none' }], 0.3 + i * 0.06, 0.8, 'rebond'));
+    titre(plan, R.ligne2, 'merci-sous', 1.2);
+    const sous = S.creer('div', 'petit doux', plan, R.ligne3);
+    sous.style.marginTop = '24px';
+    entrer(sous, 1.8);
+    marqueEnBas(2.3);
+    S.tenir(7);
+  }
+
+  /* ---------- 8. CITATION : les mots apparaissent un par un ---------- */
+  function citation() {
+    const plan = S.creer('div', 'plan', scene);
+    const g = S.creer('div', 'guillemet', plan, '“');
+    pop(g, 0.2);
+    const bloc = S.creer('div', 'citation', plan);
+    const mots = S.mots(bloc, R.ligne1);
+    S.ajuster(bloc, largeurTexte + 60, [bloc]);
+    mots.forEach((m, i) => S.anim(m, [{ opacity: 0, transform: 'translateY(100%)' }, { opacity: 1, transform: 'none' }], 0.7 + i * 0.12, 0.6, 'douce'));
+    const fin = 0.7 + mots.length * 0.12;
+    const auteur = S.creer('div', 'auteur', plan);
+    auteur.innerHTML = '<i></i><span></span>';
+    auteur.querySelector('span').textContent = R.ligne2;
+    entrer(auteur, fin + 0.3, 20);
+    marqueEnBas(fin + 0.6);
+    S.tenir(Math.max(8, fin + 3));
+  }
+
+  /* ---------- 9. LANCEMENT : 3, 2, 1… c'est en ligne ---------- */
+  function lancement() {
+    S.creer('div', 'halo', scene);
+    const decompte = S.creer('div', 'decompte', scene);
+    ['3', '2', '1'].forEach((n, i) => {
+      const s = S.creer('span', '', decompte, n);
+      S.anim(s, [{ opacity: 0, transform: 'scale(1.8)' }, { opacity: 1, transform: 'scale(1)', offset: 0.35 }, { opacity: 0, transform: 'scale(0.6)' }], 0.2 + i * 0.75, 0.75, 'fluide');
+    });
+    const plan = S.creer('div', 'plan', scene);
+    titre(plan, R.ligne1, 'lancement-titre', 2.5);
+    const sous = S.creer('div', 'petit doux', plan, R.ligne3);
+    sous.style.marginTop = '24px';
+    entrer(sous, 3.0);
+    const adresse = S.creer('div', 'barre-adresse', plan);
+    adresse.innerHTML = '<i></i><span></span>';
+    adresse.querySelector('span').textContent = R.ligne2;
+    pop(adresse, 3.4);
+    bouton(plan, 4.0);
+    marqueEnBas(4.3);
+    S.tenir(8);
+  }
+
+  /* ---------- 10. TEASER : minimaliste, tout en retenue ---------- */
+  function teaser() {
+    const plan = S.creer('div', 'plan', scene);
+    const trait = S.creer('div', 'trait', plan);
+    S.anim(trait, [{ width: '0px' }, { width: '260px' }], 0.3, 1.2, 'fluide');
+    const mot = S.creer('div', 'titre teaser-mot', plan, R.ligne1);
+    mot.style.marginTop = '50px';
+    S.ajuster(mot, largeurTexte);
+    S.anim(mot, [{ opacity: 0, letterSpacing: '0.9em', filter: 'blur(10px)' }, { opacity: 1, letterSpacing: '0.4em', filter: 'blur(0)' }], 0.9, 1.8, 'douce');
+    const date = S.creer('div', 'teaser-date', plan, R.ligne2);
+    entrer(date, 2.4, 20);
+    marqueEnBas(3.0);
+    S.tenir(6);
+  }
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>

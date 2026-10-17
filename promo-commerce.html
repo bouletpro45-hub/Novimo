@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Promo commerce</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  RÉGLAGES — c'est ici que tu modifies pour un client
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Promo commerce — Fournil Lune',
+
+  // ÉCRAN 1 : présentation du commerce
+  marque: 'Fournil Lune',
+  typeCommerce: 'Boulangerie artisanale',
+  symbole: 'lune-ble',               // 'lune-ble', 'ciseaux', 'etoile' ou 'aucun'
+
+  // ÉCRAN 2 : l'offre ou le produit
+  accroche: 'Cette semaine seulement',
+  offre: '-20%',                     // gros texte : '-20%', '2 achetés = 1 offert', 'Nouveau'...
+  detailOffre: 'sur toutes les viennoiseries',
+  texteBadge: 'OFFRE SPÉCIALE',      // le texte qui tourne dans le badge rond
+
+  // ÉCRAN 3 : où trouver le commerce
+  appel: 'Suivez-nous',
+  reseau: '@fournil.lune',
+  infos: 'Ouvert dès 6h · 7 jours sur 7',
+
+  couleurs: {
+    fond:      '#0b1430',
+    fond2:     '#1c2f63',
+    accent:    '#e6b85c',
+    texte:     '#f6efe0',
+    texteDoux: '#b9bfd6'
+  },
+
+  polices: {
+    titre: 'Fraunces',
+    texte: 'Inter'
+  },
+
+  vitesse: 1
+};
+</script>
+
+<style>
+  .halo {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 1400px; height: 1400px;
+    margin: -700px 0 0 -700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--fond2) 0%, transparent 62%);
+  }
+
+  /* Chaque "écran" occupe toute la scène, ils sont superposés */
+  .ecran {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 80px;
+  }
+
+  .titre {
+    font-family: var(--police-titre), Georgia, serif;
+    color: var(--texte);
+    white-space: nowrap;
+    width: max-content;
+  }
+
+  /* --- Écran 1 --- */
+  .ecran1 .symbole-boite { width: 300px; height: 300px; margin-bottom: 36px; }
+  #scene.vertical .ecran1 .symbole-boite { width: 400px; height: 400px; margin-bottom: 56px; }
+  .ecran1 .titre { font-size: 130px; line-height: 1.05; }
+  #scene.vertical .ecran1 .titre { font-size: 148px; }
+  .sous {
+    margin-top: 26px;
+    font-size: 34px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* --- Écran 2 --- */
+  .entete {
+    position: absolute;
+    top: 90px; left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--texte);
+  }
+  #scene.vertical .entete { top: 200px; }
+  .entete .symbole-boite { width: 56px; height: 56px; }
+
+  .accroche {
+    font-size: 40px;
+    letter-spacing: 0.08em;
+    color: var(--texte-doux);
+  }
+  .offre {
+    font-size: 300px;
+    line-height: 1;
+    margin: 20px 0 30px;
+    color: var(--accent);
+  }
+  #scene.vertical .offre { font-size: 380px; margin: 40px 0 50px; }
+  .detail {
+    font-family: var(--police-titre), Georgia, serif;
+    font-style: italic;
+    font-size: 62px;
+    color: var(--texte);
+  }
+  #scene.vertical .detail { font-size: 70px; }
+
+  /* Badge rond qui tourne */
+  .badge {
+    position: absolute;
+    bottom: 60px; right: 60px;
+    width: 220px; height: 220px;
+  }
+  #scene.vertical .badge { bottom: 300px; right: 70px; width: 260px; height: 260px; }
+  .badge svg { width: 100%; height: 100%; overflow: visible; }
+  .badge-texte { font-size: 21px; font-weight: 700; letter-spacing: 0.1em; fill: var(--fond); }
+
+  /* --- Écran 3 --- */
+  .appel { font-size: 84px; font-style: italic; margin-bottom: 44px; }
+  #scene.vertical .appel { font-size: 96px; }
+  .reseau {
+    font-size: 70px;
+    font-weight: 700;
+    white-space: nowrap;
+    padding: 30px 64px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--fond);
+  }
+  .infos {
+    margin-top: 44px;
+    font-size: 36px;
+    letter-spacing: 0.04em;
+    color: var(--texte-doux);
+  }
+  .signature {
+    position: absolute;
+    bottom: 90px; left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    font-family: var(--police-titre), Georgia, serif;
+    font-size: 46px;
+    color: var(--texte);
+  }
+  #scene.vertical .signature { bottom: 220px; }
+  .signature .symbole-boite { width: 80px; height: 80px; }
+
+  /* Bande dorée qui balaie l'écran entre deux écrans */
+  .bande {
+    position: absolute;
+    top: -30%;
+    left: 0;
+    width: 70%;
+    height: 160%;
+    background: var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+/* =======================================================
+   🎬  L'ANIMATION — 3 écrans, environ 8 secondes
+     0,0 s → 2,2 s : écran 1 (le commerce)
+     2,2 s → 5,0 s : écran 2 (l'offre)
+     5,0 s → 8,0 s : écran 3 (le réseau social)
+   ======================================================= */
+function construire(scene, R, S) {
+
+  // Les moments clés (en secondes) : change-les pour allonger un écran
+  const TRANSITION_1 = 2.0;
+  const TRANSITION_2 = 4.9;
+
+  const halo = S.creer('div', 'halo', scene);
+  S.anim(halo, [{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'scale(1)' }], 0, 2, 'douce');
+  S.anim(halo, [{ transform: 'scale(1)' }, { transform: 'scale(1.12)' }], 2, 3, 'fluide',
+    { iterations: Infinity, direction: 'alternate' });
+
+  /* ---------------- ÉCRAN 1 ---------------- */
+  const e1 = S.creer('div', 'ecran ecran1', scene);
+  const sym1 = S.symbole(R.symbole, e1);
+  const nom = S.creer('h1', 'titre', e1);
+  const lettres = S.lettres(nom, R.marque);
+  const sous = S.creer('p', 'sous', e1, R.typeCommerce);
+  S.ajuster(nom, 920);
+  S.ajuster(sous, 920);
+
+  S.anim(sym1, [{ opacity: 0, transform: 'scale(0.7)' }, { opacity: 1, transform: 'scale(1)' }], 0, 1, 'rebond');
+  S.dessiner(sym1, 0.05, 1.1);
+  lettres.forEach((l, i) => {
+    S.anim(l, [
+      { opacity: 0, transform: 'translateY(70px)' },
+      { opacity: 1, transform: 'translateY(0)' }
+    ], 0.55 + i * 0.035, 0.8, 'douce');
+  });
+  S.anim(sous, [{ opacity: 0, letterSpacing: '0.5em' }, { opacity: 1, letterSpacing: '0.24em' }], 1.0, 1, 'douce');
+
+  // Sortie de l'écran 1
+  S.anim(e1, [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(0.92)' }], TRANSITION_1 + 0.1, 0.4, 'sortie');
+
+  /* ---------------- ÉCRAN 2 ---------------- */
+  const t2 = TRANSITION_1 + 0.35; // début de l'écran 2
+  const e2 = S.creer('div', 'ecran ecran2', scene);
+
+  const entete = S.creer('div', 'entete', e2);
+  S.symbole(R.symbole, entete);
+  S.creer('span', '', entete, R.marque);
+
+  const accroche = S.creer('p', 'accroche', e2, R.accroche);
+  const offre = S.creer('div', 'titre offre', e2, R.offre);
+  const detail = S.creer('p', 'detail', e2, R.detailOffre);
+  S.ajuster(offre, 900);
+  S.ajuster(detail, 900);
+
+  // Badge rond : texte écrit sur un cercle
+  const badge = S.creer('div', 'badge', e2);
+  const tourne = S.creer('div', '', badge);
+  tourne.style.cssText = 'width:100%;height:100%';
+  const texteCercle = (R.texteBadge + ' • ').repeat(2);
+  tourne.innerHTML =
+    '<svg viewBox="0 0 200 200">' +
+    '<defs><path id="cercle-badge" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>' +
+    '<circle cx="100" cy="100" r="98" fill="var(--accent)"/>' +
+    '<circle cx="100" cy="100" r="50" fill="none" stroke="var(--fond)" stroke-width="2" stroke-dasharray="3 6"/>' +
+    '<text class="badge-texte"><textPath href="#cercle-badge" textLength="462" lengthAdjust="spacing">' + texteCercle + '</textPath></text>' +
+    '<path fill="var(--fond)" d="M100 78 Q100 100 122 100 Q100 100 100 122 Q100 100 78 100 Q100 100 100 78 Z"/>' +
+    '</svg>';
+
+  S.anim(entete, [{ opacity: 0, transform: 'translateY(-24px)' }, { opacity: 1, transform: 'translateY(0)' }], t2, 0.8, 'douce');
+  S.anim(accroche, [{ opacity: 0, transform: 'translateY(30px)' }, { opacity: 1, transform: 'translateY(0)' }], t2 + 0.1, 0.8, 'douce');
+  S.anim(offre, [
+    { opacity: 0, transform: 'scale(0.4)', filter: 'blur(14px)' },
+    { opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' }
+  ], t2 + 0.25, 0.9, 'rebond');
+  // petit "battement" de l'offre pour attirer l'œil
+  S.anim(offre, [{ transform: 'scale(1)' }, { transform: 'scale(1.07)' }, { transform: 'scale(1)' }], t2 + 1.5, 0.7, 'fluide');
+  S.anim(detail, [{ opacity: 0, transform: 'translateY(30px)' }, { opacity: 1, transform: 'translateY(0)' }], t2 + 0.55, 0.9, 'douce');
+  S.anim(badge, [{ opacity: 0, transform: 'scale(0) rotate(-90deg)' }, { opacity: 1, transform: 'scale(1) rotate(0deg)' }], t2 + 0.7, 0.9, 'rebond');
+  S.anim(tourne, [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], 0, 9, 'lineaire', { iterations: Infinity });
+
+  // Sortie de l'écran 2
+  S.anim(e2, [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(0.92)' }], TRANSITION_2 + 0.1, 0.4, 'sortie');
+
+  /* ---------------- ÉCRAN 3 ---------------- */
+  const t3 = TRANSITION_2 + 0.35;
+  const e3 = S.creer('div', 'ecran ecran3', scene);
+  const appel = S.creer('p', 'titre appel', e3, R.appel);
+  const reseau = S.creer('div', 'reseau', e3, R.reseau);
+  const infos = S.creer('p', 'infos', e3, R.infos);
+  const signature = S.creer('div', 'signature', e3);
+  const sym3 = S.symbole(R.symbole, signature);
+  S.creer('span', '', signature, R.marque);
+  S.ajuster(reseau, 920);
+  S.ajuster(infos, 920);
+
+  S.anim(appel, [{ opacity: 0, transform: 'translateY(40px)' }, { opacity: 1, transform: 'translateY(0)' }], t3, 0.9, 'douce');
+  S.anim(reseau, [
+    { opacity: 0, transform: 'scale(0.6)', clipPath: 'inset(0 50% 0 50% round 999px)' },
+    { opacity: 1, transform: 'scale(1)', clipPath: 'inset(0 0% 0 0% round 999px)' }
+  ], t3 + 0.2, 0.9, 'rebond');
+  S.anim(infos, [{ opacity: 0, transform: 'translateY(30px)' }, { opacity: 1, transform: 'translateY(0)' }], t3 + 0.5, 0.9, 'douce');
+  S.anim(signature, [{ opacity: 0, transform: 'translateY(30px)' }, { opacity: 1, transform: 'translateY(0)' }], t3 + 0.7, 0.9, 'douce');
+  S.dessiner(sym3, t3 + 0.7, 1.0);
+
+  /* ---------------- TRANSITIONS (bandes dorées) ---------------- */
+  [TRANSITION_1, TRANSITION_2].forEach((moment) => {
+    const bande = S.creer('div', 'bande', scene);
+    S.anim(bande, [
+      { transform: 'translateX(-175%) skewX(-14deg)' },
+      { transform: 'translateX(215%) skewX(-14deg)' }
+    ], moment, 0.9, 'fluide');
+  });
+
+  S.tenir(t3 + 2.6);
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>

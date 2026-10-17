@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pub appli Mac 3D — Novimo</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  RÉGLAGES : la même pub que pub-appli.html, avec un MacBook
+     (9:16, 20 s). Le Mac est posé sur un bureau en bois sombre,
+     l'écran s'allume, la caméra tourne, record à 100 000 vues, fin.
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Pub appli Mac 3D — Novimo',
+  formats: ['vertical'],
+
+  marque: 'novimo',
+  slogan: 'Votre marque, en mouvement.',
+  appel: 'Demander mon devis',   // ← mets 'Télécharger' le jour où tu as une appli
+  site: 'novimo.fr',
+  record: '100 000',
+
+  couleurs: { fond: '#050504', fond2: '#121309', accent: '#d4ff3f', texte: '#f2f0e8', texteDoux: '#a3a59a' },
+  polices: { titre: 'Bricolage Grotesque', texte: 'Bricolage Grotesque' },
+  vitesse: 1
+};
+</script>
+
+<style>
+  @counter-style trois { system: extends decimal; pad: 3 "0"; }
+  @property --v { syntax: '<integer>'; inherits: false; initial-value: 0; }
+  @property --k { syntax: '<integer>'; inherits: false; initial-value: 0; }
+  @property --u { syntax: '<integer>'; inherits: false; initial-value: 0; }
+  @property --n { syntax: '<integer>'; inherits: false; initial-value: 0; }
+  .milliers { --v: 0; --k: calc((var(--v) - 499.5) / 1000); --u: calc(var(--v) - var(--k) * 1000); counter-reset: k var(--k) u var(--u); font-variant-numeric: tabular-nums; }
+  .milliers::before { content: counter(k) "\202F" counter(u, trois); }
+  .nombre { --n: 0; counter-reset: n var(--n); font-variant-numeric: tabular-nums; }
+  .nombre::before { content: counter(n); }
+
+  #scene { background: #050504; font-family: var(--police-titre), system-ui, sans-serif; }
+  .accent { color: var(--accent); }
+
+  /* ---------- Le bureau en bois sombre ---------- */
+  .vue { position: absolute; inset: 0; perspective: 1600px; perspective-origin: 50% 44%; overflow: hidden; }
+  .bureau {
+    position: absolute; left: -1600px; right: -1600px; top: 820px; height: 3200px; transform-origin: 50% 0;
+    -webkit-mask: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%); mask: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+    background-color: #1c130c;
+    background-image:
+      radial-gradient(ellipse 60% 30% at 50% 20%, rgba(255, 200, 140, 0.10), transparent 70%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.004 0.09' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.10  0 0 0 0 0.06  0 0 0 0.9 0'/></filter><rect width='900' height='900' filter='url(%23b)'/></svg>"),
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.25) 0 2px, transparent 2px 23px, rgba(255,220,180,0.03) 23px 25px, transparent 25px 61px);
+    background-size: 100% 100%, 900px 900px, 100% 100%;
+  }
+  .lueur-bureau { position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px; margin: -450px 0 0 -800px; border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(212, 255, 63, 0.33), rgba(110, 160, 255, 0.10) 40%, transparent 70%); filter: blur(30px); }
+  .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 45%, transparent 40%, rgba(0,0,0,0.85) 100%); pointer-events: none; }
+
+  /* ---------- Le MacBook en 3D (capot + dessus avec clavier) ---------- */
+  .mac { position: absolute; left: 60px; top: 600px; width: 960px; height: 620px; transform-style: preserve-3d; transform-origin: 50% 100%; }
+  .capot-dos { position: absolute; inset: 0; border-radius: 26px 26px 10px 10px; background: linear-gradient(135deg, #9a9ca1, #4a4b4f 40%, #7c7e83 60%, #2b2c30); }
+  .capot { position: absolute; inset: 0; border-radius: 26px 26px 10px 10px; padding: 14px 14px 22px; background: #050505;
+    box-shadow: inset 0 0 0 3px #8e9095, inset 0 0 0 5px #222326; }
+  .ecran { position: relative; width: 100%; height: 100%; border-radius: 12px 12px 4px 4px; overflow: hidden; background: #0b0c09; }
+  .encoche { position: absolute; left: 50%; top: 0; width: 120px; height: 22px; margin-left: -60px; border-radius: 0 0 12px 12px; background: #050505; z-index: 6; }
+  .noir { position: absolute; inset: 0; background: #000; z-index: 5; }
+  .eclair-ecran { position: absolute; inset: 0; background: #fff; z-index: 7; mix-blend-mode: screen; }
+  .reflet { position: absolute; inset: 0; z-index: 8; pointer-events: none; background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.08) 48%, transparent 58%); }
+
+  .pont { position: absolute; left: 0; right: 0; top: 100%; height: 670px; transform-origin: 50% 0; transform: rotateX(90deg); transform-style: preserve-3d;
+    display: flex; flex-direction: column; align-items: center; padding-top: 32px; border-radius: 6px 6px 30px 30px;
+    background: linear-gradient(#0e0f11 0 12px, transparent 12px), linear-gradient(#4a4c51, #3d3f44 55%, #34363a); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.12); }
+  .pont::after { content: ""; position: absolute; left: 0.6%; right: 0.6%; top: 100%; height: 16px; transform-origin: 50% 0; transform: rotateX(-90deg); border-radius: 0 0 16px 16px; background: linear-gradient(#6a6c71, #2a2b2f); }
+  .pont::before { content: ""; position: absolute; bottom: 0; left: 50%; width: 15%; height: 10px; transform: translateX(-50%); border-radius: 12px 12px 0 0; background: #24252a; }
+  .clavier { width: 89%; height: 318px; flex: none; display: flex; flex-direction: column; gap: 5px; padding: 6px; border-radius: 9px; background: #232427; box-shadow: inset 0 2px 5px rgba(0,0,0,0.6); }
+  .rangee { display: flex; gap: 5px; flex-basis: 0; min-height: 0; }
+  .rangee span { flex-basis: 0; min-width: 0; border-radius: 5px; background: linear-gradient(#18181b, #0f0f11); box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.07); }
+  .pave { flex: none; width: 40%; height: 246px; margin-top: 32px; border-radius: 17px; background: linear-gradient(#45474c, #3c3e43); box-shadow: inset 0 0 0 2px rgba(0,0,0,0.35); }
+
+  /* ---------- L'interface : le tableau de bord Novimo sur ordinateur ---------- */
+  .ui { position: absolute; inset: 0; display: grid; grid-template-rows: 26px 1fr; color: #f2f0e8; background: radial-gradient(ellipse at 40% 0%, #1d2112, #0b0c09 65%); }
+  .menu-mac { display: flex; align-items: center; gap: 18px; padding: 0 16px; background: rgba(20,21,17,0.9); font-size: 12px; font-weight: 600; color: #cfcdc4; }
+  .menu-mac b { font-weight: 800; color: #fff; }
+  .menu-mac .heure { margin-left: auto; }
+  .appli { display: grid; grid-template-columns: 150px 1fr; min-height: 0; }
+  .cote { padding: 16px 12px; border-right: 1px solid rgba(242,240,232,0.07); background: rgba(0,0,0,0.25); }
+  .cote-logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 800; letter-spacing: -0.04em; }
+  .tuile-mini { width: 30px; height: 30px; border-radius: 9px; background: var(--accent); overflow: hidden; flex: none; }
+  .tuile-mini svg, .tuile svg { width: 100%; height: 100%; overflow: visible; }
+  .logo-n { fill: #0b0c09; stroke: #0b0c09; stroke-width: 3; stroke-linejoin: round; }
+  .logo-vitesse { fill: none; stroke: #0b0c09; stroke-width: 6; stroke-linecap: round; transform-box: fill-box; transform-origin: right center; }
+  .cote-lien { margin-top: 10px; padding: 8px 10px; border-radius: 9px; font-size: 13px; font-weight: 700; color: #b4b2a8; }
+  .cote-lien:nth-of-type(2) { margin-top: 18px; background: var(--accent); color: #0b0c09; }
+  .contenu { display: grid; grid-template-columns: 1fr 1fr 1fr 220px; grid-template-rows: auto 1fr auto; gap: 12px; padding: 14px; min-height: 0; }
+  .carte { padding: 14px; border-radius: 16px; background: rgba(242,240,232,0.06); border: 1px solid rgba(242,240,232,0.08); min-height: 0; }
+  .carte h4 { font-size: 12px; color: #a3a59a; font-weight: 700; }
+  .grand { margin-top: 4px; font-size: 40px; font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
+  .hausse { display: inline-block; margin-top: 6px; padding: 3px 7px; border-radius: 6px; background: rgba(212,255,63,0.14); color: var(--accent); font-size: 11px; font-weight: 800; }
+  .graph { grid-column: 1 / 4; display: flex; flex-direction: column; }
+  .barres { flex: 1; display: flex; align-items: flex-end; gap: 6px; margin-top: 10px; }
+  .barres i { flex: 1; border-radius: 5px 5px 2px 2px; background: linear-gradient(#d4ff3f, rgba(212,255,63,0.25)); transform-origin: bottom; box-shadow: 0 0 12px rgba(212,255,63,0.25); }
+  .fil { grid-column: 4; grid-row: 1 / 4; overflow: hidden; position: relative; }
+  .fil-piste { display: grid; gap: 8px; margin-top: 10px; }
+  .evt { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 10px; background: rgba(242,240,232,0.05); font-size: 11.5px; font-weight: 700; }
+  .evt i { width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .evt small { margin-left: auto; color: #8d8f84; font-weight: 600; }
+  .etapes { grid-column: 1 / 4; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .etape { display: flex; align-items: center; gap: 8px; padding: 10px; border-radius: 12px; background: rgba(242,240,232,0.05); font-size: 12px; font-weight: 700; }
+  .valide { width: 24px; height: 24px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #0b0c09; font-size: 14px; font-weight: 900; box-shadow: 0 0 14px rgba(212,255,63,0.6); }
+
+  /* Plan 3 : notification macOS de record */
+  .record { position: absolute; right: 14px; top: 38px; width: 340px; zoom: 1.3; z-index: 4; display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 18px;
+    background: rgba(40, 42, 34, 0.96); border: 1px solid rgba(212,255,63,0.4); box-shadow: 0 14px 40px rgba(0,0,0,0.6), 0 0 40px rgba(212,255,63,0.25); }
+  .record .trophee { width: 44px; height: 44px; flex: none; border-radius: 12px; background: var(--accent); display: grid; place-items: center; font-size: 24px; }
+  .record b { display: block; font-size: 16px; }
+  .record span { display: block; margin-top: 2px; font-size: 12.5px; color: #c9c7bd; }
+
+  /* La lumière du record */
+  .eclat { position: absolute; left: 50%; top: 44%; width: 1900px; height: 1900px; margin: -950px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(212,255,63,0.55) 12%, rgba(212,255,63,0.12) 35%, transparent 62%); mix-blend-mode: screen; }
+  .rayons { position: absolute; left: 50%; top: 44%; width: 2600px; height: 2600px; margin: -1300px; mix-blend-mode: screen;
+    background: repeating-conic-gradient(from 0deg, rgba(212,255,63,0.16) 0deg 4deg, transparent 4deg 18deg); -webkit-mask: radial-gradient(circle, #000 10%, transparent 60%); mask: radial-gradient(circle, #000 10%, transparent 60%); }
+  .trait-lumiere { position: absolute; left: -200px; right: -200px; top: 44%; height: 6px; margin-top: -3px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9) 45%, #fff 50%, rgba(255,255,255,0.9) 55%, transparent); filter: blur(2px); mix-blend-mode: screen; }
+  .etincelle { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #fff; box-shadow: 0 0 16px #d4ff3f, 0 0 4px #fff; }
+
+  /* ---------- Fin ---------- */
+  .fin { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; text-align: center; background: radial-gradient(ellipse at 50% 42%, #1a1d10, #050504 60%); }
+  .tuile { width: 230px; height: 230px; border-radius: 64px; background: var(--accent); overflow: hidden; box-shadow: 0 0 140px rgba(212,255,63,0.5); }
+  .fin-nom { margin-top: 44px; font-size: 150px; font-weight: 800; letter-spacing: -0.06em; line-height: 1; }
+  .fin-slogan { margin-top: 26px; font-size: 42px; color: #a3a59a; }
+  .appel { margin-top: 110px; display: inline-flex; align-items: center; gap: 22px; padding: 18px 46px 18px 18px; border-radius: 999px; background: var(--accent); color: #0b0c09; font-size: 46px; font-weight: 800; box-shadow: 0 0 80px rgba(212,255,63,0.45); }
+  .appel .rond { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; background: #0b0c09; color: var(--accent); font-size: 40px; }
+  .fin-site { margin-top: 34px; font-size: 34px; color: #a3a59a; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+
+<script src="commun/son.js"></script>
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+const LOGO_SVG = '<svg viewBox="0 0 100 100"><g><path class="logo-n" transform="translate(6 0) skewX(-12) translate(10.6 0)" d="M30 76V24h13l15 27V24h13v52H58L43 49v27z"/></g><path class="logo-vitesse" d="M13 41h11M17 55h8"/></svg>';
+
+function construire(scene, R, S) {
+  const P = { allumage: 1.75, plan2: 3, plan3: 9, plan4: 15, fin: 16 };
+  const FIN = 20;
+  const a = S.anim;
+  const hasard = S.hasard(5);
+
+  const vue = S.creer('div', 'vue', scene);
+  const bureau = S.creer('div', 'bureau', vue);
+  const lueur = S.creer('div', 'lueur-bureau', vue);
+  const mac = S.creer('div', 'mac', vue);
+  // l'épaisseur du capot (couches d'aluminium derrière l'écran)
+  for (let i = 1; i <= 6; i++) {
+    const c = S.creer('div', 'capot-dos', mac);
+    c.style.transform = 'translateZ(' + (-i * 1.6) + 'px)';
+  }
+  const capot = S.creer('div', 'capot', mac);
+  const ecran = S.creer('div', 'ecran', capot);
+  S.creer('div', 'encoche', ecran);
+  // le dessus : clavier + pavé tactile
+  const pont = S.creer('div', 'pont', mac);
+  const clavier = S.creer('div', 'clavier', pont);
+  [[0.62, Array(14).fill(1)], [1, Array(13).fill(1).concat(1.5)], [1, [1.5].concat(Array(13).fill(1))],
+   [1, [1.8].concat(Array(11).fill(1), 1.8)], [1, [2.35].concat(Array(10).fill(1), 2.35)], [1, [1, 1, 1, 1.25, 5.4, 1.25, 1, 1, 1, 1]]].forEach(([h, touches]) => {
+    const r = S.creer('div', 'rangee', clavier);
+    r.style.flexGrow = h;
+    touches.forEach((l) => { S.creer('span', '', r).style.flexGrow = l; });
+  });
+  S.creer('div', 'pave', pont);
+  S.creer('div', 'vignette', scene);
+
+  /* ---------- L'interface ---------- */
+  const ui = S.creer('div', 'ui', ecran);
+  const EVTS = ['Vue · Lyon', 'Partage · Instagram', 'Clic · site web', 'Vue · Paris', 'Nouveau client', 'Vue · Bordeaux', 'Partage · TikTok', 'Clic · itinéraire', 'Vue · Lille', 'Vue · Nantes', 'Abonné · TikTok', 'Clic · appel', 'Vue · Marseille', 'Partage · WhatsApp', 'Vue · Rennes', 'Nouveau client', 'Vue · Nice', 'Clic · site web', 'Vue · Toulouse', 'Partage · Instagram'];
+  ui.innerHTML =
+    '<div class="menu-mac"><b></b><b>novimo</b><span>Fichier</span><span>Affichage</span><span>Fenêtre</span><span class="heure">ven. 9:41</span></div>' +
+    '<div class="appli"><div class="cote"><div class="cote-logo"><span class="tuile-mini">' + LOGO_SVG + '</span>novimo</div>' +
+      '<div class="cote-lien">Tableau de bord</div><div class="cote-lien">Mes pubs</div><div class="cote-lien">Clients</div><div class="cote-lien">Messages</div></div>' +
+      '<div class="contenu">' +
+        '<div class="carte"><h4>Vues de votre pub</h4><div class="grand milliers" id="vues"></div><span class="hausse">▲ +312 %</span></div>' +
+        '<div class="carte"><h4>Clics</h4><div class="grand milliers" id="clics"></div><span class="hausse">▲ +84 %</span></div>' +
+        '<div class="carte"><h4>Nouveaux clients</h4><div class="grand"><span class="nombre" id="clients"></span></div><span class="hausse">▲ ce mois-ci</span></div>' +
+        '<div class="carte fil"><h4>En direct</h4><div class="fil-piste">' + EVTS.concat(EVTS).map((e, i) => '<div class="evt"><i></i>' + e + '<small>' + (i % 9 + 1) + ' s</small></div>').join('') + '</div></div>' +
+        '<div class="carte graph"><h4>Vues par jour</h4><div class="barres">' + '<i></i>'.repeat(24) + '</div></div>' +
+        '<div class="etapes">' + ['Logo animé livré', 'Pub sur Instagram', 'Pub sur TikTok', 'Spot en vitrine'].map((t) => '<div class="etape"><span class="valide">✓</span>' + t + '</div>').join('') + '</div>' +
+      '</div></div>';
+  const noir = S.creer('div', 'noir', ecran);
+  const eclairEcran = S.creer('div', 'eclair-ecran', ecran);
+  a(eclairEcran, [{ opacity: 0 }, { opacity: 0 }], 0, 0.01, 'lineaire');
+  S.creer('div', 'reflet', ecran);
+  const record = S.creer('div', 'record', ecran);
+  record.innerHTML = '<span class="trophee">🏆</span><div><b>Record battu !</b><span>Votre pub a dépassé ' + R.record + ' vues</span></div>';
+  a(record, [{ opacity: 0, transform: 'translateX(380px)' }, { opacity: 0, transform: 'translateX(380px)' }], 0, 0.01, 'lineaire');
+
+  /* ===== PLAN 1 (0 → 3 s) : macro le long de la tranche du Mac, l'écran s'allume ===== */
+  const vueMacro1 = 'translate3d(-230px, 40px, 720px) rotateX(-14deg) rotateY(-62deg)';
+  const vueMacro2 = 'translate3d(-60px, 30px, 650px) rotateX(-14deg) rotateY(-46deg)';
+  a(mac, [{ transform: vueMacro1 }, { transform: vueMacro2 }], 0, 2.9, 'lineaire');
+  a(bureau, [{ transform: 'rotateX(80deg) translateY(-200px)', backgroundPosition: '0 0, 0 0, 0 0' }, { transform: 'rotateX(80deg) translateY(-200px)', backgroundPosition: '0 0, -500px 0, -500px 0' }], 0, 2.9, 'lineaire');
+  a(lueur, [{ opacity: 0 }, { opacity: 0 }], 0, 0.01, 'lineaire');
+  a(noir, [{ opacity: 1 }, { opacity: 0 }], P.allumage, 0.12, 'douce');
+  a(eclairEcran, [{ opacity: 0 }, { opacity: 0.8, offset: 0.15 }, { opacity: 0 }], P.allumage, 0.5, 'douce');
+  a(lueur, [{ opacity: 0 }, { opacity: 1 }], P.allumage, 0.4, 'douce');
+  S.son('montee', 0.6, { duree: 1.15 });
+  S.son('impact', P.allumage);
+
+  /* ===== PLAN 2 (3 → 9 s) : rotation 3D face à l'écran, les données s'emballent ===== */
+  const p2 = P.plan2;
+  const v2a = 'translate3d(0, -40px, 40px) rotateX(-16deg) rotateY(-24deg)';
+  const v2b = 'translate3d(0, -60px, 90px) rotateX(-10deg) rotateY(20deg)';
+  const v2c = 'translate3d(0, -40px, 260px) rotateX(-12deg) rotateY(-8deg)';
+  a(mac, [{ transform: vueMacro2 }, { transform: v2a }], p2, 0.65, 'douce');
+  a(mac, [{ transform: v2a }, { transform: v2b }], p2 + 0.65, 2.85, 'fluide');
+  a(mac, [{ transform: v2b }, { transform: v2c }], p2 + 3.5, 2.5, 'fluide');
+  a(bureau, [{ transform: 'rotateX(80deg) translateY(-200px)', filter: 'blur(0px) brightness(1)' }, { transform: 'rotateX(80deg) translateY(-200px)', filter: 'blur(8px) brightness(0.35)' }], p2, 0.65, 'douce');
+  S.son('zoom', p2 - 0.3);
+
+  const vues = ui.querySelector('#vues');
+  a(vues, [{ '--v': 1240 }, { '--v': 98760 }], p2 + 0.5, 5.0, 'douce');
+  S.son('compteur', p2 + 0.5, { duree: 1.6, n: 16 });
+  ui.querySelectorAll('.barres i').forEach((b, i) => {
+    b.style.height = (22 + i * 3.2 + (i % 3) * 6) + '%';
+    a(b, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], p2 + 1.0 + i * 0.035, 0.45, 'rebond');
+  });
+  S.son('chargement', p2 + 1.0, { duree: 0.8 });
+  // le fil "En direct" défile à toute vitesse
+  const filPiste = ui.querySelector('.fil-piste');
+  a(filPiste, [{ transform: 'translateY(0)' }, { transform: 'translateY(-760px)' }], p2 + 0.4, 5.6, 'lineaire');
+  S.son('glisse', p2 + 2.0);
+  const sons = ['tick', 'pop', 'bloup', 'badge'];
+  ui.querySelectorAll('.etape .valide').forEach((v, i) => {
+    const t = p2 + 2.5 + i * 0.5;
+    a(v, [{ transform: 'scale(0)', background: 'rgba(242,240,232,0.1)' }, { transform: 'scale(1.25)', background: '#d4ff3f', offset: 0.6 }, { transform: 'scale(1)', background: '#d4ff3f' }], t, 0.35, 'rebond');
+    S.son(sons[i], t);
+  });
+  a(ui.querySelector('#clics'), [{ '--v': 1020 }, { '--v': 8920 }], p2 + 1.2, 4.0, 'douce');
+  a(ui.querySelector('#clients'), [{ '--n': 0 }, { '--n': 47 }], p2 + 1.6, 3.6, 'douce');
+  S.son('envoi', p2 + 4.5);
+
+  /* ===== PLAN 3 (9 → 15 s) : zoom arrière rapide, record, lumière éclatante ===== */
+  const p3 = P.plan3;
+  const v3 = 'translate3d(0, -40px, 50px) rotateX(-10deg) rotateY(0deg)';
+  a(mac, [{ transform: v2c }, { transform: v3 }], p3, 0.45, 'sortie');
+  S.son('aspire', p3 - 0.4);
+  a(record, [{ opacity: 0, transform: 'translateX(380px)' }, { opacity: 1, transform: 'none' }], p3 + 0.5, 0.5, 'rebond');
+  a(vues, [{ '--v': 98760 }, { '--v': 100000 }], p3 + 0.5, 0.6, 'douce');
+  S.son('carillon', p3 + 0.5);
+  const eclat = S.creer('div', 'eclat', vue);
+  const rayons = S.creer('div', 'rayons', vue);
+  const trait = S.creer('div', 'trait-lumiere', vue);
+  vue.insertBefore(eclat, mac); vue.insertBefore(rayons, mac);
+  a(eclat, [{ opacity: 0, transform: 'scale(0.2)' }, { opacity: 1, transform: 'scale(1)', offset: 0.18 }, { opacity: 0.35, transform: 'scale(1.1)' }], p3 + 1.0, 1.6, 'douce');
+  a(eclat, [{ opacity: 0.35 }, { opacity: 0.25 }], p3 + 2.6, 3.0, 'fluide');
+  a(rayons, [{ opacity: 0, transform: 'rotate(0deg) scale(0.6)' }, { opacity: 1, transform: 'rotate(40deg) scale(1)' }], p3 + 1.0, 1.2, 'douce');
+  a(rayons, [{ opacity: 1, transform: 'rotate(40deg) scale(1)' }, { opacity: 0.5, transform: 'rotate(110deg) scale(1.05)' }], p3 + 2.2, 3.6, 'lineaire');
+  a(trait, [{ opacity: 0, transform: 'scaleX(0)' }, { opacity: 1, transform: 'scaleX(1)', offset: 0.3 }, { opacity: 0, transform: 'scaleX(1.2)' }], p3 + 1.0, 0.9, 'douce');
+  a(eclairEcran, [{ opacity: 0 }, { opacity: 0.5, offset: 0.2 }, { opacity: 0 }], p3 + 1.0, 0.7, 'douce');
+  a(mac, [{ transform: v3 }, { transform: 'translate3d(0, -40px, 100px) rotateX(-10deg) rotateY(0deg)' }, { transform: v3 }], p3 + 1.0, 0.5, 'rebond');
+  for (let i = 0; i < 22; i++) {
+    const e = S.creer('i', 'etincelle', vue);
+    const ang = hasard() * Math.PI * 2, dist = 300 + hasard() * 460;
+    e.style.left = '540px'; e.style.top = (1920 * 0.44) + 'px';
+    a(e, [{ opacity: 0, transform: 'translate(0,0) scale(1)' }, { opacity: 1, transform: 'translate(0,0) scale(1)', offset: 0.05 },
+      { opacity: 0, transform: 'translate(' + Math.cos(ang) * dist + 'px,' + Math.sin(ang) * dist + 'px) scale(0.3)' }], p3 + 1.05 + hasard() * 0.15, 1.3 + hasard() * 0.6, 'douce');
+  }
+  S.son('scintille', p3 + 1.0);
+  S.son('caisse', p3 + 1.15);
+  a(record, [{ transform: 'none' }, { transform: 'scale(1.04)' }, { transform: 'none' }], p3 + 3.0, 0.5, 'fluide', { iterations: 2 });
+  S.son('succes', p3 + 3.0);
+
+  /* ===== PLAN 4 (15 → 20 s) : la caméra recule, l'interface s'efface, fin ===== */
+  const p4 = P.plan4;
+  a(mac, [{ transform: v3 }, { transform: 'translate3d(0, 0, -520px) rotateX(-14deg) rotateY(0deg)' }], p4, 0.8, 'douce');
+  a(eclat, [{ opacity: 0.25 }, { opacity: 0 }], p4, 0.6, 'sortie');
+  a(rayons, [{ opacity: 0.5 }, { opacity: 0 }], p4, 0.6, 'sortie');
+  a(lueur, [{ opacity: 1 }, { opacity: 0.3 }], p4, 0.8, 'douce');
+  a(bureau, [{ filter: 'blur(8px) brightness(0.35)' }, { filter: 'blur(12px) brightness(0.15)' }], p4, 0.8, 'douce');
+  S.son('whoosh', p4 - 0.1);
+  a(ui, [{ opacity: 1, filter: 'blur(0)' }, { opacity: 0, filter: 'blur(12px)' }], p4 + 0.5, 0.5, 'sortie');
+  a(record, [{ opacity: 1 }, { opacity: 0 }], p4 + 0.5, 0.3, 'sortie');
+  S.son('flip', p4 + 0.5);
+  const fin = S.creer('div', 'fin', scene);
+  a(fin, [{ opacity: 0 }, { opacity: 1 }], P.fin, 0.45, 'douce');
+  const tuile = S.creer('div', 'tuile', fin);
+  tuile.innerHTML = LOGO_SVG;
+  const nom = S.creer('div', 'fin-nom', fin);
+  const lettres = S.lettres(nom, R.marque);
+  const slogan = S.creer('div', 'fin-slogan', fin, R.slogan);
+  const appel = S.creer('div', 'appel', fin);
+  appel.innerHTML = '<span class="rond">' + (/t[ée]l[ée]charger/i.test(R.appel) ? '↓' : '→') + '</span>' + R.appel;
+  const site = S.creer('div', 'fin-site', fin, R.site);
+  a(tuile, [{ opacity: 0, transform: 'scale(0.3) rotate(-120deg)' }, { opacity: 1, transform: 'none' }], P.fin + 0.2, 0.8, 'rebond');
+  a(tuile.querySelector('g'), [{ opacity: 0, transform: 'translateX(-30px)' }, { opacity: 1, transform: 'none' }], P.fin + 0.55, 0.5, 'douce');
+  a(tuile.querySelector('.logo-vitesse'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], P.fin + 0.7, 0.4, 'douce');
+  lettres.forEach((l, i) => a(l, [{ opacity: 0, transform: 'translateY(50px)' }, { opacity: 1, transform: 'none' }], P.fin + 0.5 + i * 0.05, 0.5, 'douce'));
+  a(slogan, [{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'none' }], P.fin + 1.0, 0.5, 'douce');
+  a(appel, [{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'none' }], P.fin + 1.5, 0.6, 'rebond');
+  a(appel, [{ transform: 'none' }, { transform: 'scale(1.05)' }, { transform: 'none' }], P.fin + 2.5, 0.5, 'fluide', { iterations: 2 });
+  a(site, [{ opacity: 0 }, { opacity: 1 }], P.fin + 2.0, 0.5, 'douce');
+  S.son('boum', P.fin + 0.2);
+  S.son('notif', P.fin + 1.5, { ton: 3 });
+
+  S.son('musique', 0, { duree: FIN, drop: P.plan2 });
+  S.tenir(FIN);
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>

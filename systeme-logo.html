@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Système de logo — Novimo</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  RÉGLAGES : "système de logo" (carrousel 3:4, 1080×1440)
+     Un logo principal + ses 4 déclinaisons : logotype, symbole,
+     icône d'appli, monochrome. L'animation se termine sur l'image
+     fixe (à exporter en PNG pour un carrousel TikTok / Instagram).
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Système de logo — Novimo',
+  formats: ['portrait'],
+
+  marque: 'novimo',
+  pseudo: '@novimo_md',
+  titre1: ['Il vous faut ', 'plus', ' qu’un'],     // le mot du milieu est surligné
+  titre2: 'seul logo.',
+  titre3: ['Construisez un ', 'système de logo.'],
+  pied: 'Même identité. Prête pour toutes les tailles.',
+  etiquettes: ['Logotype', 'Symbole', 'Icône d’appli', 'Monochrome'],
+
+  couleurs: { fond: '#efede6', fond2: '#e6e3d9', accent: '#d4ff3f', texte: '#0b0c09', texteDoux: '#5d5e57' },
+  polices: { titre: 'Bricolage Grotesque', texte: 'Bricolage Grotesque' },
+  vitesse: 1
+};
+</script>
+
+<style>
+  #scene { color: #0b0c09; font-family: var(--police-titre), system-ui, sans-serif;
+    background-color: #efede6;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='3'/><feColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.38  0 0 0 0 0.33  0 0 0 0.10 0'/></filter><rect width='400' height='400' filter='url(%23p)'/></svg>"); }
+
+  .entete { position: absolute; left: 64px; right: 64px; top: 52px; display: flex; justify-content: space-between; font-size: 17px; font-weight: 700; letter-spacing: 0.32em; }
+  .titre { position: absolute; left: 0; right: 0; text-align: center; font-size: 74px; font-weight: 500; letter-spacing: -0.045em; line-height: 1.02; }
+  .titre b { font-weight: 800; }
+  .surl { position: relative; display: inline-block; }
+  .surl b { position: relative; }
+  .surl .fond { position: absolute; left: -8px; right: -8px; top: 52%; bottom: -6%; transform-origin: left center; }
+  .t1 { top: 96px; }
+  .t2 { top: 172px; }
+  .t3 { top: 608px; font-size: 60px; }
+
+  /* Les cartes */
+  .carte { position: absolute; overflow: hidden; display: grid; place-items: center; background: #0b0c09; }
+  .carte.claire { background: #f6f4ee; border: 2px solid #dcd9cf; }
+  .principal { left: 212px; width: 656px; top: 290px; height: 290px; }
+  .etiquette { position: absolute; font-size: 34px; font-weight: 500; letter-spacing: -0.03em; }
+  .petite { width: 436px; height: 204px; }
+
+  /* Le logo Novimo et ses variantes */
+  .bloc { display: flex; align-items: center; gap: 30px; }
+  .tuile { width: 150px; height: 150px; border-radius: 42px; background: #d4ff3f; overflow: hidden; flex: none; box-shadow: 0 0 60px rgba(212,255,63,0.35); }
+  .tuile svg, .symbole svg { width: 100%; height: 100%; overflow: visible; }
+  .logo-n { fill: #0b0c09; stroke: #0b0c09; stroke-width: 3; stroke-linejoin: round; }
+  .logo-vitesse { fill: none; stroke: #0b0c09; stroke-width: 6; stroke-linecap: round; transform-box: fill-box; transform-origin: right center; }
+  .mot { font-size: 128px; font-weight: 800; letter-spacing: -0.065em; line-height: 1; color: #f2f0e8; padding-bottom: 14px; }
+  .mot .lettre { display: inline-block; }
+  .logotype .mot { font-size: 116px; color: #d4ff3f; }
+  .symbole { width: 168px; height: 168px; }
+  .symbole .logo-n { fill: #d4ff3f; stroke: #d4ff3f; }
+  .symbole .logo-vitesse { stroke: #d4ff3f; }
+  .appli .tuile { width: 150px; height: 150px; border-radius: 38px; box-shadow: 0 14px 30px rgba(11,12,9,0.25), inset 0 0 0 1px rgba(0,0,0,0.06); }
+  .mono .bloc { gap: 20px; }
+  .mono .tuile { width: 92px; height: 92px; border-radius: 26px; background: #f2f0e8; box-shadow: none; }
+  .mono .mot { font-size: 86px; color: #f2f0e8; padding-bottom: 8px; }
+
+  .pied { position: absolute; left: 0; right: 0; top: 1316px; text-align: center; font-size: 38px; font-weight: 500; letter-spacing: -0.03em; }
+</style>
+</head>
+<body>
+
+<script src="commun/son.js"></script>
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+const LOGO_SVG = '<svg viewBox="0 0 100 100"><g><path class="logo-n" transform="translate(6 0) skewX(-12) translate(10.6 0)" d="M30 76V24h13l15 27V24h13v52H58L43 49v27z"/></g><path class="logo-vitesse" d="M13 41h11M17 55h8"/></svg>';
+
+/* =======================================================
+   🎬  L'image se construit en 5 s, puis reste fixe
+   ======================================================= */
+function construire(scene, R, S) {
+  const FIN = 7;
+  const a = S.anim;
+
+  // En-tête
+  const ent = S.creer('div', 'entete', scene);
+  ent.innerHTML = '<span>SYSTÈME DE MARQUE</span><span>' + R.pseudo.toUpperCase() + '</span>';
+  a(ent, [{ opacity: 0 }, { opacity: 1 }], 0, 0.5, 'douce');
+
+  // Un titre avec un mot surligné (le surlignage se "peint" de gauche à droite)
+  function titre(classe, morceaux, couleur, debut) {
+    const t = S.creer('div', 'titre ' + classe, scene);
+    t.innerHTML = morceaux.map((m, i) => i === 1 ? '<span class="surl"><i class="fond" style="background:' + couleur + '"></i><b>' + m + '</b></span>' : m).join('');
+    a(t, [{ opacity: 0, transform: 'translateY(40px)' }, { opacity: 1, transform: 'none' }], debut, 0.6, 'douce');
+    a(t.querySelector('.fond'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], debut + 0.45, 0.4, 'fluide');
+    return t;
+  }
+  titre('t1', R.titre1, '#d4ff3f', 0.15);
+  titre('t2', ['', R.titre2], '#dccdf2', 0.3);
+  S.son('whoosh', 0.1);
+  S.son('glisse', 0.6);
+
+  // Le logo principal : la tuile + le mot
+  const principal = S.creer('div', 'carte principal', scene);
+  const bloc = S.creer('div', 'bloc', principal);
+  const tuile = S.creer('div', 'tuile', bloc);
+  tuile.innerHTML = LOGO_SVG;
+  const mot = S.creer('div', 'mot', bloc);
+  const lettres = S.lettres(mot, R.marque);
+  const t0 = 1.0;
+  a(principal, [{ opacity: 0, transform: 'scale(0.85)' }, { opacity: 1, transform: 'none' }], t0, 0.6, 'rebond');
+  a(tuile, [{ transform: 'scale(0.2) rotate(-120deg)' }, { transform: 'none' }], t0 + 0.2, 0.7, 'rebond');
+  a(tuile.querySelector('g'), [{ opacity: 0, transform: 'translateX(-30px)' }, { opacity: 1, transform: 'none' }], t0 + 0.5, 0.45, 'douce');
+  a(tuile.querySelector('.logo-vitesse'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], t0 + 0.65, 0.35, 'douce');
+  lettres.forEach((l, i) => a(l, [{ opacity: 0, transform: 'translateY(50px)' }, { opacity: 1, transform: 'none' }], t0 + 0.45 + i * 0.05, 0.45, 'douce'));
+  S.son('boum', t0 + 0.15);
+  S.son('scintille', t0 + 0.6);
+
+  titre('t3', R.titre3, '#c8f08c', 2.0);
+  S.son('flip', 2.0);
+
+  // Les 4 déclinaisons
+  const places = [
+    { x: 90, y: 765 }, { x: 554, y: 765 },
+    { x: 90, y: 1062 }, { x: 554, y: 1062 }
+  ];
+  const sons = ['pop', 'tick', 'bloup', 'badge'];
+  places.forEach((p, i) => {
+    const t = 2.7 + i * 0.35;
+    const etiq = S.creer('div', 'etiquette', scene, R.etiquettes[i]);
+    etiq.style.left = (p.x + 2) + 'px'; etiq.style.top = (p.y - 50) + 'px';
+    const c = S.creer('div', 'carte petite' + (i === 2 ? ' claire' : ''), scene);
+    c.style.left = p.x + 'px'; c.style.top = p.y + 'px';
+    if (i === 0) { c.classList.add('logotype'); S.lettres(S.creer('div', 'mot', c), R.marque); }
+    if (i === 1) { c.classList.add('symbole-carte'); S.creer('div', 'symbole', c).innerHTML = LOGO_SVG; }
+    if (i === 2) { c.classList.add('appli'); S.creer('div', 'tuile', c).innerHTML = LOGO_SVG; }
+    if (i === 3) {
+      c.classList.add('mono');
+      const b = S.creer('div', 'bloc', c);
+      S.creer('div', 'tuile', b).innerHTML = LOGO_SVG;
+      S.lettres(S.creer('div', 'mot', b), R.marque);
+    }
+    a(etiq, [{ opacity: 0, transform: 'translateX(-20px)' }, { opacity: 1, transform: 'none' }], t, 0.4, 'douce');
+    a(c, [{ opacity: 0, transform: 'translateY(40px) scale(0.92)' }, { opacity: 1, transform: 'none' }], t + 0.05, 0.5, 'rebond');
+    const dedans = c.firstElementChild;
+    a(dedans, [{ opacity: 0, transform: 'scale(0.7)' }, { opacity: 1, transform: 'none' }], t + 0.2, 0.5, 'douce');
+    S.son(sons[i], t + 0.1);
+  });
+
+  const pied = S.creer('div', 'pied', scene, R.pied);
+  a(pied, [{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'none' }], 4.3, 0.6, 'douce');
+  S.son('carillon', 4.3);
+
+  S.son('musique', 0, { duree: FIN, drop: 1.0 });
+  S.tenir(FIN);
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>

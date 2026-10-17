@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Produit vedette</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  RÉGLAGES — style "produit vedette" : fond clair,
+     produit illustré au centre, grains qui tombent, texte en
+     cercle qui tourne, étiquette de prix qui se balance (~11 s)
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Produit vedette — Novimo',
+  formats: ['carre', 'vertical', 'paysage'],   // aussi en 16:9 (YouTube, TV)
+
+  marque: 'Novimo',
+  slogan: 'Votre marque, en mouvement',
+
+  // Le produit dessiné au centre : 'telephone', 'tasse' (ou un symbole : 'lune-ble', 'ciseaux', 'etoile')
+  produit: 'telephone',
+  // Ce qui tombe autour : 'etincelle' ou 'grain' (de café)
+  particule: 'etincelle',
+
+  surtitre: 'Petite pub animée',
+  nomProduit: 'Prête pour vos Reels',
+  prix: '150 €',
+  notes: ['Carré', 'Vertical', '8 secondes'],   // 3 petites bulles
+
+  // Texte qui tourne autour du produit
+  anneau: 'NOVIMO ✦ MOTION DESIGN POUR COMMERCES ✦ ',
+
+  couleurs: {
+    fond:      '#f2f0e8',   // crème clair
+    fond2:     '#e2e0d4',
+    accent:    '#d4ff3f',   // vert citron Novimo
+    texte:     '#0b0c09',   // presque noir
+    texteDoux: '#55574d'
+  },
+
+  polices: { titre: 'Bricolage Grotesque', texte: 'Inter' },
+  vitesse: 1
+};
+</script>
+
+<style>
+  .scene-produit { position: absolute; left: 0; right: 0; top: 0; height: 760px; display: grid; place-items: center; }
+  #scene.vertical .scene-produit { top: 220px; height: 900px; }
+  .scene-produit > * { grid-area: 1 / 1; }
+
+  .disque { width: 600px; height: 600px; border-radius: 50%; background: var(--accent); }
+  #scene.vertical .disque { width: 720px; height: 720px; }
+
+  .anneau { width: 720px; height: 720px; color: var(--texte); }
+  #scene.vertical .anneau { width: 860px; height: 860px; }
+  .anneau svg { width: 100%; height: 100%; overflow: visible; }
+  .anneau text { font-size: 30px; font-weight: 700; letter-spacing: 6px; fill: currentColor; }
+
+  .produit { width: 430px; height: 430px; color: var(--texte); }
+  #scene.vertical .produit { width: 520px; height: 520px; }
+  .produit svg { width: 100%; height: 100%; overflow: visible; }
+
+  .grain { position: absolute; width: 46px; height: 62px; }
+  .grain svg { width: 100%; height: 100%; }
+
+  /* Carte du produit en bas */
+  .carte {
+    position: absolute; left: 70px; right: 70px; bottom: 70px;
+    padding: 40px 48px;
+    border-radius: 40px;
+    background: #fffaf2;
+    box-shadow: 0 30px 60px rgba(59, 36, 24, 0.15);
+  }
+  #scene.vertical .carte { bottom: 200px; padding: 54px 56px; }
+  /* 16:9 : le produit à gauche, la carte à droite */
+  #scene.paysage .scene-produit { right: auto; width: 1000px; height: 1080px; }
+  #scene.paysage .disque { width: 640px; height: 640px; }
+  #scene.paysage .anneau { width: 780px; height: 780px; }
+  #scene.paysage .produit { width: 460px; height: 460px; }
+  #scene.paysage .carte { left: auto; right: 110px; bottom: auto; top: 50%; width: 760px; margin-top: -170px; padding: 54px 56px; }
+  .carte-sur { font-size: 30px; color: var(--texte-doux); text-transform: uppercase; letter-spacing: 0.14em; }
+  .carte-nom { margin-top: 10px; font-family: var(--police-titre), Georgia, serif; font-size: 68px; color: var(--texte); line-height: 1.05; white-space: nowrap; width: max-content; }
+  .notes { display: flex; gap: 14px; margin-top: 22px; }
+  .note { padding: 10px 24px; border-radius: 999px; border: 3px solid var(--texte); color: var(--texte); font-size: 28px; font-weight: 700; }
+
+  .etiquette {
+    position: absolute; right: 60px; top: -70px;
+    padding: 22px 30px;
+    border-radius: 22px;
+    background: var(--texte); color: var(--fond);
+    font-size: 54px; font-weight: 700;
+    transform-origin: 50% -40px;
+  }
+  .etiquette::before { /* le petit trou de l'étiquette */
+    content: ""; position: absolute; left: 50%; top: 10px; width: 14px; height: 14px; margin-left: -7px;
+    border-radius: 50%; background: var(--fond);
+  }
+
+  /* Fin */
+  .fin { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .fin-nom { font-family: var(--police-titre), Georgia, serif; font-size: 150px; color: var(--texte); white-space: nowrap; width: max-content; }
+  .fin-slogan { margin-top: 20px; font-size: 38px; color: var(--texte); letter-spacing: 0.08em; text-transform: uppercase; }
+  .fin .petit-produit { width: 170px; height: 170px; margin-bottom: 30px; color: var(--texte); }
+  .fin .petit-produit svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+/* Les produits illustrés (dessin sur 300 x 300).
+   class="trait" -> se dessine ; data-plein -> se remplit ensuite ; class="vapeur" -> s'envole */
+const PRODUITS = {
+  telephone:
+    '<rect class="trait" data-plein="#fffdf6" x="92" y="20" width="116" height="226" rx="24"/>' +
+    '<path class="trait" d="M132 38 H168"/>' +
+    '<path class="trait" data-plein="var(--accent)" d="M136 100 L178 128 L136 156 Z"/>' +
+    '<path class="trait" d="M120 200 H180"/>' +
+    '<path class="trait" d="M120 216 H160"/>' +
+    '<path class="trait vapeur" d="M232 60 l8 -16 l8 16 l16 8 l-16 8 l-8 16 l-8 -16 l-16 -8 z"/>' +
+    '<path class="trait vapeur" d="M56 150 l6 -12 l6 12 l12 6 l-12 6 l-6 12 l-6 -12 l-12 -6 z"/>',
+  tasse:
+    '<ellipse class="trait" data-plein="var(--fond2)" cx="150" cy="236" rx="118" ry="24"/>' +
+    '<path class="trait" data-plein="#fffaf2" d="M74 118 H226 V162 C226 210 192 238 150 238 C108 238 74 210 74 162 Z"/>' +
+    '<path class="trait" d="M226 134 C270 134 270 196 220 198"/>' +
+    '<ellipse class="trait" data-plein="#6b3f24" cx="150" cy="118" rx="76" ry="15"/>' +
+    '<path class="trait vapeur" d="M118 92 C106 76 130 66 118 50 C108 36 126 28 120 16"/>' +
+    '<path class="trait vapeur" d="M150 88 C138 72 162 62 150 46 C140 32 158 24 152 12"/>' +
+    '<path class="trait vapeur" d="M182 92 C170 76 194 66 182 50 C172 36 190 28 184 16"/>'
+};
+const PARTICULES = {};
+PARTICULES.etincelle = '<svg viewBox="0 0 46 62"><path d="M23 4 L28 26 L44 31 L28 36 L23 58 L18 36 L2 31 L18 26 Z" fill="#0b0c09"/></svg>';
+const GRAIN = '<svg viewBox="0 0 46 62"><ellipse cx="23" cy="31" rx="20" ry="28" fill="#5a331d"/><path d="M23 6 C14 22 32 40 23 56" fill="none" stroke="#e3a15a" stroke-width="4" stroke-linecap="round"/></svg>';
+
+function dessinProduit(nom) {
+  if (PRODUITS[nom]) {
+    return '<svg viewBox="0 0 300 300" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">' + PRODUITS[nom] + '</svg>';
+  }
+  // Sinon : un symbole de la bibliothèque commune
+  const s = window.Symboles && window.Symboles[nom] ? window.Symboles[nom]() : '';
+  return '<svg viewBox="0 0 200 200" fill="currentColor" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">' + s + '</svg>';
+}
+
+/* =======================================================
+   🎬  L'ANIMATION
+   ======================================================= */
+function construire(scene, R, S) {
+  const zone = S.creer('div', 'scene-produit', scene);
+
+  /* ---------- 1. Le disque caramel grandit ---------- */
+  const disque = S.creer('div', 'disque', zone);
+  S.anim(disque, [{ transform: 'scale(0)' }, { transform: 'scale(1)' }], 0.15, 0.9, 'rebond');
+
+  /* ---------- 2. Le texte en cercle apparaît et tourne ---------- */
+  const anneau = S.creer('div', 'anneau', zone);
+  anneau.innerHTML = '<svg viewBox="0 0 720 720"><defs><path id="cercle-texte" d="M360,360 m-330,0 a330,330 0 1,1 660,0 a330,330 0 1,1 -660,0"/></defs>' +
+    '<text><textPath href="#cercle-texte" textLength="2070" lengthAdjust="spacing">' + R.anneau.repeat(2) + '</textPath></text></svg>';
+  S.anim(anneau, [{ opacity: 0, transform: 'scale(0.85) rotate(-40deg)' }, { opacity: 1, transform: 'scale(1) rotate(0deg)' }], 0.9, 1.2, 'douce');
+  S.anim(anneau.querySelector('svg'), [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], 0, 24, 'lineaire', { iterations: Infinity });
+
+  /* ---------- 3. Le produit se dessine puis se remplit ---------- */
+  const produit = S.creer('div', 'produit', zone);
+  produit.innerHTML = dessinProduit(R.produit);
+  const traits = produit.querySelectorAll('.trait, path, ellipse, circle, rect');
+  Array.from(new Set(traits)).forEach((el, i) => {
+    el.setAttribute('pathLength', '1');
+    S.anim(el, [{ strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDasharray: 1, strokeDashoffset: 0 }], 0.6 + i * 0.12, 0.8, 'fluide');
+    if (el.dataset.plein) {
+      el.style.fill = el.dataset.plein;
+      S.anim(el, [{ fillOpacity: 0 }, { fillOpacity: 1 }], 1.4 + i * 0.05, 0.6, 'douce');
+    }
+  });
+  // la vapeur monte et s'efface en boucle
+  produit.querySelectorAll('.vapeur').forEach((v, i) => {
+    S.anim(v, [
+      { transform: 'translateY(0)', opacity: 1 },
+      { transform: 'translateY(-26px)', opacity: 0 }
+    ], 2.4 + i * 0.35, 1.6, 'douce', { iterations: Infinity });
+  });
+  // le produit flotte doucement
+  S.anim(produit, [{ transform: 'translateY(0)' }, { transform: 'translateY(-14px)' }], 2, 2.2, 'fluide', { iterations: Infinity, direction: 'alternate' });
+
+  /* ---------- 4. Les grains tombent et rebondissent autour ---------- */
+  const positions = [[-300, -120, -25], [290, -170, 30], [-250, 190, 15], [310, 150, -35], [-60, -330, 60], [110, 300, -10]];
+  positions.forEach(([x, y, r], i) => {
+    const g = S.creer('div', 'grain', zone);
+    g.innerHTML = R.particule === 'etincelle' ? PARTICULES.etincelle : GRAIN;
+    S.anim(g, [
+      { opacity: 0, transform: 'translate(' + x + 'px, -900px) rotate(' + (r - 180) + 'deg)' },
+      { opacity: 1, transform: 'translate(' + x + 'px, ' + y + 'px) rotate(' + r + 'deg)' }
+    ], 1.6 + i * 0.12, 0.9, 'rebond');
+  });
+
+  /* ---------- 5. La carte du produit + le prix qui se balance ---------- */
+  const carte = S.creer('div', 'carte', scene);
+  S.creer('div', 'carte-sur', carte, R.surtitre);
+  const nom = S.creer('div', 'carte-nom', carte, R.nomProduit);
+  const notes = S.creer('div', 'notes', carte);
+  const bulles = R.notes.map((n) => S.creer('span', 'note', notes, n));
+  const etiquette = S.creer('div', 'etiquette', carte, R.prix);
+  S.ajuster(nom, 700);
+  S.anim(carte, [{ opacity: 0, transform: 'translateY(120px)' }, { opacity: 1, transform: 'none' }], 3.0, 0.9, 'douce');
+  bulles.forEach((b, i) => S.anim(b, [{ opacity: 0, transform: 'scale(0.5)' }, { opacity: 1, transform: 'scale(1)' }], 3.7 + i * 0.12, 0.5, 'rebond'));
+  S.anim(etiquette, [
+    { opacity: 0, transform: 'rotate(30deg)' },
+    { opacity: 1, transform: 'rotate(-14deg)', offset: 0.3 },
+    { transform: 'rotate(8deg)', offset: 0.55 },
+    { transform: 'rotate(-4deg)', offset: 0.78 },
+    { transform: 'rotate(0deg)' }
+  ], 3.5, 1.8, 'fluide');
+
+  /* ---------- 6. Fin : le disque envahit l'écran + nom ---------- */
+  const tFin = 7.2;
+  [carte, anneau, produit].forEach((el) => S.anim(el, [{ opacity: 1 }, { opacity: 0 }], tFin, 0.35, 'sortie'));
+  zone.querySelectorAll('.grain').forEach((g) => S.anim(g, [{ opacity: 1 }, { opacity: 0 }], tFin, 0.3, 'sortie'));
+  S.anim(disque, [{ transform: 'scale(1)' }, { transform: 'scale(5)' }], tFin + 0.1, 0.9, 'fluide');
+
+  const fin = S.creer('div', 'fin', scene);
+  const petit = S.creer('div', 'petit-produit', fin);
+  petit.innerHTML = dessinProduit(R.produit);
+  petit.querySelectorAll('[data-plein]').forEach((el) => { el.style.fill = el.dataset.plein; });
+  const finNom = S.creer('div', 'fin-nom', fin);
+  const lettres = S.lettres(finNom, R.marque);
+  const slogan = S.creer('div', 'fin-slogan', fin, R.slogan);
+  S.ajuster(finNom, 940);
+  S.anim(petit, [{ opacity: 0, transform: 'scale(0.5) rotate(-15deg)' }, { opacity: 1, transform: 'none' }], tFin + 0.7, 0.8, 'rebond');
+  lettres.forEach((l, i) => S.anim(l, [{ opacity: 0, transform: 'translateY(60px)' }, { opacity: 1, transform: 'none' }], tFin + 0.85 + i * 0.045, 0.8, 'douce'));
+  S.anim(slogan, [{ opacity: 0, letterSpacing: '0.4em' }, { opacity: 1, letterSpacing: '0.08em' }], tFin + 1.3, 1, 'douce');
+
+  S.tenir(tFin + 3.4);
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>

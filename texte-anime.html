@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Texte animé</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  RÉGLAGES — c'est ici que tu modifies pour un client
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Texte animé — Fournil Lune',
+
+  // La phrase d'accroche.
+  //   |      = retour à la ligne
+  //   *mot*  = mot mis en valeur (couleur accent + soulignement)
+  phrase: 'Le *croissant* | qui réveille | tout le quartier, | dès *6h*.',
+
+  etiquette: 'Fournil Lune',               // petit nom en haut
+  signature: 'Boulangerie · @fournil.lune', // petite ligne en bas
+  symbole: 'lune-ble',                      // petit symbole à côté de l'étiquette
+
+  rythme: 0.26,            // secondes entre deux mots (plus petit = plus rapide)
+  pauseLigne: 0.18,        // petite pause en plus à chaque retour à la ligne
+
+  couleurs: {
+    fond:      '#0b1430',
+    fond2:     '#1c2f63',
+    accent:    '#e6b85c',
+    texte:     '#f6efe0',
+    texteDoux: '#9aa3c4'
+  },
+
+  polices: {
+    titre: 'Fraunces',
+    texte: 'Inter'
+  },
+
+  vitesse: 1
+};
+</script>
+
+<style>
+  /* Deux grosses taches de lumière floues qui bougent lentement en fond */
+  .tache {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+  }
+  .tache.t1 { width: 760px; height: 760px; left: -220px; top: -180px; background: var(--fond2); }
+  .tache.t2 { width: 620px; height: 620px; right: -220px; bottom: -200px; background: var(--accent); opacity: 0.14; }
+
+  .contenu {
+    position: absolute;
+    inset: 0;
+    padding: 110px 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  #scene.vertical .contenu { padding: 230px 100px; }
+
+  .etiquette {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--texte);
+  }
+  .etiquette .symbole-boite { width: 64px; height: 64px; }
+
+  .phrase {
+    font-family: var(--police-titre), Georgia, serif;
+    font-size: 116px;
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    color: var(--texte);
+  }
+  #scene.vertical .phrase { font-size: 128px; }
+
+  .ligne { display: block; width: max-content; white-space: nowrap; }
+
+  .mot.accent { color: var(--accent); font-style: italic; }
+  .souligne {
+    position: absolute;
+    left: 0.04em; right: 0.04em;
+    bottom: 0.02em;
+    height: 0.07em;
+    border-radius: 1em;
+    background: var(--accent);
+    transform-origin: left center;
+  }
+
+  .signature {
+    font-size: 32px;
+    letter-spacing: 0.06em;
+    color: var(--texte-doux);
+  }
+  .signature .tiret {
+    display: inline-block;
+    width: 60px; height: 2px;
+    margin-right: 22px;
+    vertical-align: middle;
+    background: var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+/* =======================================================
+   🎬  L'ANIMATION
+   ======================================================= */
+function construire(scene, R, S) {
+
+  // --- Fond vivant ---
+  const t1 = S.creer('div', 'tache t1', scene);
+  const t2 = S.creer('div', 'tache t2', scene);
+  S.anim(t1, [{ transform: 'translate(0, 0) scale(1)' }, { transform: 'translate(160px, 120px) scale(1.2)' }],
+    0, 7, 'fluide', { iterations: Infinity, direction: 'alternate' });
+  S.anim(t2, [{ transform: 'translate(0, 0)' }, { transform: 'translate(-140px, -160px)' }],
+    0, 6, 'fluide', { iterations: Infinity, direction: 'alternate' });
+
+  const contenu = S.creer('div', 'contenu', scene);
+
+  // --- Étiquette en haut ---
+  const etiquette = S.creer('div', 'etiquette', contenu);
+  const symbole = S.symbole(R.symbole, etiquette);
+  S.creer('span', '', etiquette, R.etiquette);
+  S.anim(etiquette, [{ opacity: 0, transform: 'translateY(-20px)' }, { opacity: 1, transform: 'translateY(0)' }], 0.1, 1, 'douce');
+  S.dessiner(symbole, 0.1, 1.0);
+
+  // --- La phrase, ligne par ligne, mot par mot ---
+  const phrase = S.creer('div', 'phrase', contenu);
+  const lignes = [];
+  let t = 0.55;            // moment où arrive le premier mot
+  const accents = [];
+
+  R.phrase.split('|').forEach((texteLigne) => {
+    const ligne = S.creer('span', 'ligne', phrase);
+    lignes.push(ligne);
+    S.mots(ligne, texteLigne).forEach((mot) => {
+      // Les mots entourés d'étoiles *comme ça* sont mis en valeur
+      if (mot.textContent.startsWith('*')) {
+        mot.textContent = mot.textContent.replace(/\*/g, '');
+        mot.classList.add('accent');
+        accents.push({ mot: mot, souligne: S.creer('span', 'souligne', mot), quand: t });
+      }
+      // Le mot monte depuis le bas de son masque
+      S.anim(mot, [
+        { transform: 'translateY(110%) rotate(5deg)' },
+        { transform: 'translateY(0) rotate(0deg)' }
+      ], t, 0.95, 'douce');
+      t += R.rythme;
+    });
+    t += R.pauseLigne;
+  });
+
+  // Taille du texte réduite automatiquement si une ligne est trop longue
+  S.ajuster(phrase, 880, lignes);
+
+  // --- Le soulignement des mots en valeur se trace ---
+  accents.forEach((a) => {
+    S.anim(a.souligne, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], a.quand + 0.45, 0.7, 'fluide');
+  });
+
+  // --- Signature en bas ---
+  const signature = S.creer('div', 'signature', contenu);
+  const tiret = S.creer('span', 'tiret', signature);
+  S.creer('span', '', signature, R.signature);
+  S.anim(signature, [{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'translateY(0)' }], t + 0.2, 1, 'douce');
+  tiret.style.transformOrigin = 'left center';
+  S.anim(tiret, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], t + 0.3, 0.8, 'fluide');
+
+  S.tenir(t + 2.2);
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>

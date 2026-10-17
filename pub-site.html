@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pub démo du site — Novimo</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  RÉGLAGES : la pub "démo du site" (16:9, 35 s)
+     Un visiteur, Marie, utilise le site Novimo : connexion, essai
+     de logo, devis, e-mail reçu, message et réponse rapide.
+     À filmer directement sur ton écran (mode propre : touche P).
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Pub démo du site — Novimo',
+  formats: ['paysage'],
+
+  prenom: 'Marie',
+  marqueClient: 'Chez Mila',
+  sloganClient: 'Coiffure & barbier',
+  numeroDevis: 'NOV-20261017-K7Q2',
+  messageClient: 'Hello ! Je veux mon logo pour samedi, c’est possible ?',
+  reponse: 'Oui Marie ! Premier aperçu demain matin 🚀',
+
+  slogan: 'Votre marque, en mouvement.',
+  site: 'novimo.fr',
+
+  couleurs: { fond: '#0b0c09', fond2: '#15160f', accent: '#d4ff3f', texte: '#f2f0e8', texteDoux: '#a3a59a' },
+  polices: { titre: 'Bricolage Grotesque', texte: 'Bricolage Grotesque' },
+  vitesse: 1
+};
+</script>
+
+<style>
+  @property --n { syntax: '<integer>'; inherits: false; initial-value: 0; }
+  .nombre { --n: 0; counter-reset: n var(--n); font-variant-numeric: tabular-nums; }
+  .nombre::before { content: counter(n); }
+  #scene { font-family: var(--police-titre), system-ui, sans-serif; }
+  .accent { color: var(--accent); }
+  .maj { text-transform: uppercase; letter-spacing: -0.04em; font-weight: 800; line-height: 0.92; }
+
+  /* ---------- Le "monde" : le site, que la caméra suit ---------- */
+  .monde { position: absolute; inset: 0; transform-origin: 0 0; background: #0b0c09; overflow: hidden; }
+  .halo { position: absolute; left: 700px; top: -300px; width: 1200px; height: 900px; background: radial-gradient(ellipse, rgba(212, 255, 63, 0.12), transparent 65%); }
+  .laterale { position: absolute; left: 24px; top: 24px; bottom: 24px; width: 240px; padding: 22px 14px; border: 1px solid rgba(242,240,232,0.08); border-radius: 26px; background: #121309; }
+  .logo-site { display: flex; align-items: center; gap: 12px; padding: 0 8px 26px; font-size: 34px; font-weight: 800; letter-spacing: -0.05em; }
+  .tuile-mini { width: 46px; height: 46px; border-radius: 13px; background: var(--accent); overflow: hidden; }
+  .tuile-mini svg, .tuile svg { width: 100%; height: 100%; overflow: visible; }
+  .logo-n { fill: #0b0c09; stroke: #0b0c09; stroke-width: 3; stroke-linejoin: round; }
+  .logo-vitesse { fill: none; stroke: #0b0c09; stroke-width: 6; stroke-linecap: round; transform-box: fill-box; transform-origin: right center; }
+  .onglet { display: flex; align-items: center; gap: 14px; height: 52px; padding: 0 14px; margin-bottom: 6px; border-radius: 14px; font-size: 21px; font-weight: 700; color: #cfcdc4; }
+  .onglet svg { width: 24px; height: 24px; flex: none; }
+  .onglet.actif { background: var(--accent); color: #0b0c09; }
+  .compte-haut { position: absolute; right: 40px; top: 30px; display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 22px; border: 1px solid rgba(242,240,232,0.12); border-radius: 999px; background: #121309; font-size: 20px; font-weight: 700; }
+  .compte-haut .avatar { width: 34px; height: 34px; margin-left: -10px; border-radius: 50%; background: linear-gradient(135deg, #ff8a73, #c792ea); display: grid; place-items: center; font-size: 17px; color: #fff; }
+
+  .page { position: absolute; inset: 0; z-index: 1; background: #0b0c09; }
+  .page.accueil { background: none; }
+  .laterale, .compte-haut { z-index: 10; }
+  .voile { z-index: 20; } .notif { z-index: 21; } .email { z-index: 22; }
+  .bouton { display: inline-flex; align-items: center; justify-content: center; gap: 14px; height: 84px; padding: 0 40px; border-radius: 999px; background: var(--accent); color: #0b0c09; font-size: 27px; font-weight: 800; box-shadow: 0 0 50px rgba(212, 255, 63, 0.35); }
+  .carte { position: absolute; border: 1px solid rgba(242,240,232,0.09); border-radius: 30px; background: #15160f; }
+  .bulle { display: inline-flex; align-items: center; gap: 10px; padding: 9px 18px; border: 1px solid rgba(242,240,232,0.1); border-radius: 999px; font-size: 19px; font-weight: 700; color: #d6d4cb; }
+  .bulle::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+  .doux { color: var(--texte-doux); }
+
+  /* Page 1 : accueil */
+  .hero { position: absolute; left: 300px; right: 0; top: 200px; text-align: center; }
+  .hero h1 { margin-top: 26px; font-size: 128px; }
+  .hero p { margin-top: 26px; font-size: 27px; }
+  .hero .bouton { margin-top: 40px; }
+  .vignettes { position: absolute; left: 420px; right: 120px; top: 840px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .vignette { height: 200px; border-radius: 22px; background: #1d1f16; overflow: hidden; position: relative; }
+  .vignette b { position: absolute; left: 50%; top: 50%; width: 90px; height: 90px; margin: -45px; border-radius: 26px; background: var(--accent); }
+  .vignette:nth-child(2) b { border-radius: 50%; background: #ff8a73; }
+  .vignette:nth-child(3) b { background: #82aaff; transform: rotate(45deg); }
+  .vignette:nth-child(4) b { border-radius: 50%; background: #c792ea; }
+
+  /* Page 2 : connexion */
+  .carte-connexion { left: 775px; top: 230px; width: 640px; height: 600px; padding: 48px; }
+  .carte-connexion h2 { font-size: 44px; }
+  .carte-connexion p { margin-top: 12px; font-size: 21px; }
+  .btn-google { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 44px; height: 84px; border-radius: 999px; background: #f2f0e8; color: #111; font-size: 26px; font-weight: 800; }
+  .btn-google svg { width: 34px; height: 34px; }
+  .separateur { margin: 34px 0; text-align: center; color: #6d6f64; font-size: 20px; }
+  .champ { height: 74px; border: 1px solid rgba(242,240,232,0.12); border-radius: 18px; background: #0d0e0a; padding: 0 22px; display: flex; align-items: center; font-size: 23px; color: #6d6f64; }
+  .connecte { position: absolute; inset: 0; padding: 48px; display: grid; place-items: center; align-content: center; text-align: center; border-radius: 30px; background: #15160f; }
+  .connecte .rond-ok { width: 120px; height: 120px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #0b0c09; font-size: 64px; font-weight: 800; box-shadow: 0 0 70px rgba(212,255,63,0.45); }
+  .connecte h2 { margin-top: 30px; font-size: 54px; }
+  .connecte p { margin-top: 10px; font-size: 23px; }
+  .roue { width: 34px; height: 34px; border: 4px solid rgba(17,17,17,0.2); border-top-color: #111; border-radius: 50%; }
+
+  /* Page 3 : essai */
+  .essai-texte { position: absolute; left: 360px; top: 230px; width: 700px; }
+  .essai-texte h2 { margin-top: 22px; font-size: 92px; }
+  .essai-champ { margin-top: 44px; height: 104px; border: 2px solid rgba(212,255,63,0.5); border-radius: 24px; background: #0d0e0a; padding: 0 28px; display: flex; align-items: center; font-size: 46px; font-weight: 800; letter-spacing: -0.02em; box-shadow: 0 0 0 6px rgba(212,255,63,0.08); }
+  .caret { display: inline-block; width: 4px; height: 52px; margin-left: 3px; background: var(--accent); vertical-align: middle; }
+  .msg-ecrire .caret { width: 3px; height: 30px; }
+  /* une lettre tapée : elle prend sa place au moment où elle apparaît (le curseur suit) */
+  .lettre { display: inline-block; max-width: 0; overflow: hidden; white-space: pre; vertical-align: bottom; }
+  .essai-texte .bouton { margin-top: 30px; }
+  .apercu { left: 1150px; top: 150px; width: 660px; height: 800px; display: grid; place-items: center; align-content: center; gap: 30px; overflow: hidden; background: radial-gradient(circle at 50% 40%, #262a1a, #0d0e0a 70%); }
+  .monogramme { width: 230px; height: 230px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #0b0c09; font-size: 96px; font-weight: 800; letter-spacing: -0.06em; box-shadow: 0 0 90px rgba(212,255,63,0.4); }
+  .apercu-nom { font-size: 76px; }
+  .apercu-slogan { font-size: 26px; }
+  .apercu-etiquette { position: absolute; top: 26px; left: 26px; }
+
+  /* Page 4 : devis */
+  .devis-titre { position: absolute; left: 340px; top: 120px; font-size: 76px; }
+  .produit { position: absolute; left: 340px; width: 840px; height: 118px; padding: 0 30px; display: flex; align-items: center; gap: 20px; border: 1px solid rgba(242,240,232,0.09); border-radius: 24px; background: #15160f; }
+  .produit.choisi { border-color: rgba(212,255,63,0.6); background: #1a1d10; }
+  .produit h3 { font-size: 30px; }
+  .produit small { display: block; margin-top: 4px; font-size: 19px; color: var(--texte-doux); font-weight: 500; }
+  .produit .prix { margin-left: auto; font-size: 32px; font-weight: 800; }
+  .compteur { display: flex; align-items: center; gap: 16px; padding: 6px; border-radius: 999px; background: #0d0e0a; }
+  .compteur span { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: #26281f; font-size: 28px; font-weight: 800; }
+  .compteur span.plus { background: var(--accent); color: #0b0c09; }
+  .compteur output { display: grid; min-width: 24px; text-align: center; font-size: 26px; font-weight: 800; }
+  .compteur output span { grid-area: 1 / 1; width: auto; height: auto; background: none; border-radius: 0; font-size: inherit; }
+  .recap { left: 1230px; top: 200px; width: 630px; height: 720px; padding: 40px; }
+  .recap h3 { font-size: 34px; }
+  .recap .ligne { display: flex; justify-content: space-between; margin-top: 18px; font-size: 23px; color: #d6d4cb; }
+  .recap .total { display: flex; align-items: baseline; justify-content: space-between; margin-top: 40px; padding-top: 26px; border-top: 1px solid rgba(242,240,232,0.1); }
+  .recap .total > span { font-size: 30px; font-weight: 800; }
+  .recap .total b { font-size: 92px; font-weight: 800; color: var(--accent); letter-spacing: -0.04em; }
+  .recap .acompte { margin-top: 12px; padding: 16px 20px; border-radius: 18px; background: var(--accent); color: #0b0c09; display: flex; justify-content: space-between; font-size: 22px; font-weight: 800; }
+  .recap .bouton { position: absolute; left: 40px; right: 40px; bottom: 40px; }
+  .envoye { position: absolute; left: 40px; right: 40px; bottom: 40px; height: 84px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 12px; background: #f2f0e8; color: #0b0c09; font-size: 27px; font-weight: 800; }
+  .confetti { position: absolute; width: 14px; height: 22px; border-radius: 3px; }
+
+  /* Page 5 : le mail */
+  .notif { position: absolute; right: 40px; top: 30px; width: 560px; padding: 22px 24px; display: flex; gap: 18px; border-radius: 26px; background: rgba(40, 42, 34, 0.96); box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+  .notif .appli { flex: none; width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #3b82f6, #60a5fa); display: grid; place-items: center; color: #fff; font-size: 34px; font-weight: 800; }
+  .notif b { display: block; font-size: 22px; }
+  .notif span { display: block; margin-top: 4px; font-size: 19px; color: #c9c7bd; }
+  .notif small { position: absolute; right: 22px; top: 22px; font-size: 16px; color: #8d8f84; }
+  .voile { position: absolute; inset: 0; background: rgba(5, 6, 4, 0.72); }
+  .email { position: absolute; left: 470px; top: 120px; width: 980px; height: 850px; border-radius: 30px; background: #f7f6f1; color: #17180f; overflow: hidden; box-shadow: 0 50px 120px rgba(0,0,0,0.7); }
+  .email-tete { padding: 34px 44px 24px; border-bottom: 1px solid #e3e1d8; }
+  .email-tete p { font-size: 20px; color: #6b6c63; }
+  .email-tete h2 { margin-top: 10px; font-size: 36px; letter-spacing: -0.02em; }
+  .email-corps { padding: 30px 44px; font-size: 22px; line-height: 1.5; }
+  .email-corps h3 { font-size: 34px; }
+  .email-table { margin-top: 20px; border: 1px solid #e3e1d8; border-radius: 18px; overflow: hidden; }
+  .email-table div { display: flex; justify-content: space-between; padding: 14px 22px; border-bottom: 1px solid #e3e1d8; }
+  .email-table div:last-child { border: 0; background: #17180f; color: var(--accent); font-weight: 800; font-size: 26px; }
+  .piece-jointe { margin-top: 26px; display: inline-flex; align-items: center; gap: 16px; padding: 14px 22px 14px 14px; border: 1px solid #e3e1d8; border-radius: 18px; background: #fff; font-size: 21px; font-weight: 700; }
+  .piece-jointe i { width: 52px; height: 62px; border-radius: 8px; background: #e5484d; color: #fff; display: grid; place-items: center; font-style: normal; font-size: 15px; font-weight: 800; }
+  .piece-jointe small { display: block; font-size: 16px; color: #6b6c63; font-weight: 500; }
+
+  /* Page 6 : messages */
+  .msg-titre { position: absolute; left: 340px; top: 110px; font-size: 64px; }
+  .msg-liste { left: 340px; top: 220px; width: 400px; height: 800px; padding: 20px; }
+  .msg-conv { padding: 18px; border-radius: 18px; border: 1px solid rgba(212,255,63,0.5); background: #1a1d10; }
+  .msg-conv b { font-size: 21px; } .msg-conv span { display: block; margin-top: 4px; font-size: 18px; color: var(--texte-doux); }
+  .msg-chat { left: 770px; top: 220px; width: 1100px; height: 800px; overflow: hidden; }
+  .msg-cats { padding: 30px 34px; border-bottom: 1px solid rgba(242,240,232,0.08); }
+  .msg-cats p { font-size: 20px; color: var(--texte-doux); font-weight: 700; }
+  .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+  .chip { padding: 12px 20px; border: 1px solid rgba(242,240,232,0.12); border-radius: 16px; font-size: 20px; font-weight: 700; color: #d6d4cb; }
+  .chip.choisie { border-color: var(--accent); background: rgba(212,255,63,0.12); color: var(--accent); }
+  .msg-fil { position: absolute; left: 0; right: 0; top: 190px; bottom: 120px; padding: 30px 34px; display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; }
+  .msg-bulle { max-width: 640px; padding: 18px 24px; border-radius: 26px 26px 26px 8px; background: rgba(242,240,232,0.08); font-size: 25px; line-height: 1.4; }
+  .msg-bulle.moi { align-self: flex-end; border-radius: 26px 26px 8px 26px; background: var(--accent); color: #0b0c09; font-weight: 600; }
+  .msg-bulle small { display: block; margin-top: 6px; font-size: 16px; opacity: 0.7; }
+  .points { display: inline-flex; gap: 8px; padding: 22px 24px; border-radius: 26px 26px 26px 8px; background: rgba(242,240,232,0.08); align-self: flex-start; }
+  .points i { width: 12px; height: 12px; border-radius: 50%; background: #c9c7bd; }
+  .msg-ecrire { position: absolute; left: 34px; right: 34px; bottom: 26px; height: 76px; display: flex; align-items: center; gap: 14px; }
+  .msg-ecrire .zone { flex: 1; height: 76px; padding: 0 24px; border: 1px solid rgba(242,240,232,0.12); border-radius: 22px; background: #0d0e0a; display: flex; align-items: center; font-size: 23px; white-space: nowrap; overflow: hidden; }
+  .msg-ecrire .envoyer { width: 76px; height: 76px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; color: #0b0c09; font-size: 30px; font-weight: 800; }
+  .badge-rapide { position: absolute; right: 34px; top: 30px; padding: 12px 22px; border-radius: 999px; background: var(--accent); color: #0b0c09; font-size: 22px; font-weight: 800; box-shadow: 0 0 40px rgba(212,255,63,0.5); }
+
+  /* ---------- Le curseur ---------- */
+  .curseur { position: absolute; left: 0; top: 0; width: 40px; height: 52px; z-index: 50; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5)); }
+  .curseur svg { width: 100%; height: 100%; transform-origin: 6px 4px; }
+  .onde { position: absolute; width: 80px; height: 80px; margin: -40px 0 0 -40px; border: 3px solid var(--accent); border-radius: 50%; z-index: 49; }
+
+  /* ---------- Intro et fin (hors du site) ---------- */
+  .plein { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; }
+  /* Intro : les notifications qui s'empilent */
+  .notifs { position: relative; width: 1000px; height: 560px; }
+  .notif-intro { position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; gap: 28px; padding: 28px 34px; border-radius: 36px;
+    background: rgba(38, 40, 32, 0.92); border: 1px solid rgba(242,240,232,0.1); box-shadow: 0 30px 80px rgba(0,0,0,0.55); text-align: left; transform-origin: 50% 0; }
+  .notif-intro .tuile-mini { width: 92px; height: 92px; border-radius: 24px; flex: none; }
+  .notif-intro .ni-haut { display: flex; justify-content: space-between; font-size: 22px; color: #a3a59a; font-weight: 700; }
+  .notif-intro .ni-texte { flex: 1; }
+  .notif-intro b { display: block; margin-top: 4px; font-size: 54px; letter-spacing: -0.03em; }
+  .notif-intro span.detail { display: block; margin-top: 2px; font-size: 24px; color: #c9c7bd; }
+  .lames { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(6, 1fr); z-index: 40; pointer-events: none; }
+  .lames i { background: var(--accent); transform-origin: top; }
+  .flash { position: absolute; inset: 0; background: #fff; z-index: 45; pointer-events: none; }
+  .fin { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, #23261b, #0b0c09 65%); display: grid; place-items: center; align-content: center; text-align: center; }
+  .fin-logo { display: flex; align-items: center; gap: 34px; }
+  .tuile { width: 190px; height: 190px; border-radius: 54px; background: var(--accent); overflow: hidden; box-shadow: 0 0 120px rgba(212,255,63,0.45); }
+  .fin-nom { font-size: 190px; font-weight: 800; letter-spacing: -0.06em; }
+  .fin-slogan { margin-top: 30px; font-size: 44px; color: var(--texte-doux); }
+  .fin-ligne { margin-top: 56px; display: flex; gap: 22px; justify-content: center; }
+  .fin-ligne span { padding: 16px 30px; border: 1px solid rgba(242,240,232,0.15); border-radius: 999px; font-size: 30px; font-weight: 700; }
+  .fin-ligne span.plein-accent { background: var(--accent); color: #0b0c09; border-color: var(--accent); }
+  .fin-site { margin-top: 40px; font-size: 40px; font-weight: 800; letter-spacing: -0.02em; }
+</style>
+</head>
+<body>
+
+<script src="commun/son.js"></script>
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+const LOGO_SVG = '<svg viewBox="0 0 100 100"><g><path class="logo-n" transform="translate(6 0) skewX(-12) translate(10.6 0)" d="M30 76V24h13l15 27V24h13v52H58L43 49v27z"/></g><path class="logo-vitesse" d="M13 41h11M17 55h8"/></svg>';
+const GOOGLE = '<svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.5z"/></svg>';
+
+/* =======================================================
+   🎬  L'ANIMATION — 7 moments, 35 secondes
+   ======================================================= */
+function construire(scene, R, S) {
+  // Le début de chaque moment (en secondes)
+  const T = { intro: 0, accueil: 3.0, connexion: 5.9, essai: 9.4, devis: 14.6, mail: 20.0, messages: 24.0, fin: 34.0 };
+  const FIN = 39.5;
+  const a = S.anim;
+  const entrer = (el, t, dy, d) => a(el, [{ opacity: 0, transform: 'translateY(' + (dy || 30) + 'px)' }, { opacity: 1, transform: 'none' }], t, d || 0.5, 'douce');
+  const montrer = (el, t, d) => a(el, [{ opacity: 0 }, { opacity: 1 }], t, d || 0.25, 'douce');
+  const cacher = (el, t, d) => a(el, [{ opacity: 1 }, { opacity: 0 }], t, d || 0.2, 'sortie');
+  const hasard = S.hasard(11);
+
+  /* ---------- Le site (le "monde" que la caméra filme) ---------- */
+  const monde = S.creer('div', 'monde', scene);
+  S.creer('div', 'halo', monde);
+  const lat = S.creer('div', 'laterale', monde);
+  // Les mêmes icônes que sur le vrai site (commun.js)
+  const ICONES = {
+    'Accueil': 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+    'Essayer': 'M13 2L4 14h7l-1 8 9-12h-7z',
+    'Modèles': 'M4 4h16v16H4zM4 9h16M4 15h16M9 4v5M15 4v5M9 15v5M15 15v5',
+    'Devis': 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6',
+    'Messages': 'M4 5h16v11H9l-5 4z',
+    'FAQ': 'M12 21a9 9 0 1 0 0-18a9 9 0 1 0 0 18zM9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5h.01',
+    'Mon compte': 'M12 12a4 4 0 1 0 0-8a4 4 0 1 0 0 8zM4 21a8 8 0 0 1 16 0'
+  };
+  const icone = (n) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + ICONES[n] + '"/></svg>';
+  lat.innerHTML = '<div class="logo-site"><span class="tuile-mini">' + LOGO_SVG + '</span>novimo</div>' +
+    Object.keys(ICONES).map((n) => '<div class="onglet" data-o="' + n + '">' + icone(n) + n + '</div>').join('');
+  const onglet = (n) => lat.querySelector('[data-o="' + n + '"]');
+  const activer = (n, t) => {
+    lat.querySelectorAll('.onglet').forEach((o) => a(o, [{ background: 'rgba(0,0,0,0)', color: '#cfcdc4' }], t, 0.01, 'lineaire', { fill: 'forwards' }));
+    a(onglet(n), [{ background: '#d4ff3f', color: '#0b0c09' }, { background: '#d4ff3f', color: '#0b0c09' }], t, 0.01, 'lineaire', { fill: 'forwards' });
+  };
+  const compteHaut = S.creer('div', 'compte-haut', monde);
+  compteHaut.innerHTML = '<span class="txt-compte">Se connecter <span class="doux">/ S’inscrire</span></span>';
+
+  // La caméra : déplacements et zooms du "monde"
+  let cam = 'translate(0px, 0px) scale(1)';
+  const camera = (t, d, versX, versY, zoom, courbe) => {
+    // zoom centré sur le point (versX, versY) du site
+    const cible = 'translate(' + (960 - versX * zoom) + 'px, ' + (540 - versY * zoom) + 'px) scale(' + zoom + ')';
+    a(monde, [{ transform: cam }, { transform: cible }], t, d, courbe || 'fluide');
+    cam = cible;
+  };
+  const cameraLarge = (t, d) => { a(monde, [{ transform: cam }, { transform: 'translate(0px, 0px) scale(1)' }], t, d, 'fluide'); cam = 'translate(0px, 0px) scale(1)'; };
+
+  // Le curseur et ses clics
+  const curseur = S.creer('div', 'curseur', monde);
+  curseur.innerHTML = '<svg viewBox="0 0 24 32"><path d="M2 2v24l6.5-6 4.2 9.5 4-1.8-4.2-9.3H21z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+  // Le centre d'un élément dans le site (calculé sur la mise en page, sans les animations)
+  const centre = (el) => {
+    let x = 0, y = 0, e = el;
+    while (e && e !== monde) { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; }
+    return [x + el.offsetWidth / 2, y + el.offsetHeight / 2];
+  };
+  // la pointe de la flèche est à 3 px du coin du dessin
+  const POINTE = 3;
+  let cx = 1500, cy = 900;
+  a(curseur, [{ transform: 'translate(1500px, 900px)', opacity: 0 }, { transform: 'translate(1500px, 900px)', opacity: 0 }], 0, 0.01, 'lineaire');
+  // bouger(t, durée, élément) : la pointe va au centre de l'élément ; ou bouger(t, durée, x, y)
+  const bouger = (t, d, x, y) => {
+    if (x instanceof Element) [x, y] = centre(x);
+    x = Math.round(x); y = Math.round(y);
+    a(curseur, [{ transform: 'translate(' + (cx - POINTE) + 'px, ' + (cy - POINTE) + 'px)', opacity: 1 }, { transform: 'translate(' + (x - POINTE) + 'px, ' + (y - POINTE) + 'px)', opacity: 1 }], t, d, 'fluide');
+    cx = x; cy = y;
+  };
+  const cliquer = (t) => {
+    a(curseur.querySelector('svg'), [{ transform: 'scale(1)' }, { transform: 'scale(0.78)' }, { transform: 'scale(1)' }], t, 0.22, 'douce');
+    const onde = S.creer('div', 'onde', monde);
+    onde.style.left = cx + 'px'; onde.style.top = cy + 'px';
+    a(onde, [{ opacity: 0, transform: 'scale(0.2)' }, { opacity: 0.9, transform: 'scale(0.3)', offset: 0.04 }, { opacity: 0, transform: 'scale(1.6)' }], t - 0.02, 0.5, 'douce');
+    S.son('clic', t);
+  };
+  // Écrire un texte lettre par lettre dans un élément
+  const taper = (el, texte, t, d) => {
+    const lettres = Array.from(texte).map((ch) => { const s = S.creer('span', 'lettre', el); s.textContent = ch; return s; });
+    // chaque lettre "s'ouvre" à son tour : le curseur clignotant avance avec le texte
+    lettres.forEach((s, i) => a(s, [{ maxWidth: '0px' }, { maxWidth: '1.4em' }], t + d * i / lettres.length, 0.01, 'lineaire'));
+    return lettres.length;
+  };
+
+  // Les pages du site
+  const page = (classe) => { const p = S.creer('div', 'page ' + classe, monde); a(p, [{ opacity: 0 }, { opacity: 0 }], 0, 0.01, 'lineaire'); return p; };
+
+  /* ======================================================
+     0. INTRO : trois questions qui claquent
+     ====================================================== */
+  const intro = S.creer('div', 'plein', scene);
+  const pile = S.creer('div', 'notifs', intro);
+  const NOTIFS = [
+    ['📄 Un devis ?', 'Gratuit, en une minute, reçu en PDF'],
+    ['💬 Un message ?', 'Écrivez-nous directement sur le site'],
+    ['⚡ <span class="accent">Une réponse ?</span>', 'En quelques minutes, pas en quelques jours']
+  ];
+  const ECART = 186;          // hauteur d'une notification + espace
+  const cartes = [];
+  NOTIFS.forEach(([titre, detail], i) => {
+    const n = S.creer('div', 'notif-intro', pile);
+    n.innerHTML = '<span class="tuile-mini">' + LOGO_SVG + '</span><div class="ni-texte"><div class="ni-haut"><span>NOVIMO</span><span>maintenant</span></div><b>' + titre + '</b><span class="detail">' + detail + '</span></div>';
+    const t = 0.15 + i * 0.85;
+    // la nouvelle arrive en haut…
+    a(n, [{ opacity: 0, transform: 'translateY(-120px) scale(0.9)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], t, 0.5, 'rebond');
+    // …et pousse les précédentes vers le bas (elles restent affichées)
+    cartes.forEach((c, j) => {
+      const rang = i - j;
+      a(c, [{ transform: 'translateY(' + (rang - 1) * ECART + 'px) scale(' + (1 - (rang - 1) * 0.04) + ')' }, { transform: 'translateY(' + rang * ECART + 'px) scale(' + (1 - rang * 0.04) + ')' }], t, 0.45, 'douce');
+    });
+    cartes.push(n);
+    S.son('notif', t + 0.05, { ton: i });
+  });
+  S.son('glitch', 0.02);
+
+  /* ======================================================
+     1. ACCUEIL — transition : on traverse l'intro (zoom)
+     ====================================================== */
+  const accueil = page('accueil');
+  accueil.innerHTML =
+    '<div class="hero"><span class="bulle">Moitié moins cher qu’un freelance</span>' +
+    '<h1 class="maj">Votre marque,<br><span class="accent">en mouvement.</span></h1>' +
+    '<p class="doux">Logos animés, pubs et spots vidéo pour toutes les marques.</p>' +
+    '<span class="bouton">→ Demander mon devis gratuit</span></div>' +
+    '<div class="vignettes"><div class="vignette"><b></b></div><div class="vignette"><b></b></div><div class="vignette"><b></b></div><div class="vignette"><b></b></div></div>';
+  a(intro, [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(5)' }], T.accueil - 0.15, 0.5, 'sortie');
+  a(monde, [{ transform: 'scale(0.55)', filter: 'blur(14px)', opacity: 0 }, { transform: 'scale(1)', filter: 'blur(0)', opacity: 1 }], T.accueil - 0.1, 0.7, 'douce');
+  a(accueil, [{ opacity: 1 }, { opacity: 1 }], T.accueil - 0.1, 0.01, 'lineaire');
+  activer('Accueil', T.accueil);
+  accueil.querySelectorAll('.vignette b').forEach((b, i) =>
+    a(b, [{ transform: (i === 2 ? 'rotate(45deg) ' : '') + 'scale(0.6)' }, { transform: (i === 2 ? 'rotate(225deg) ' : '') + 'scale(1.1)' }], T.accueil + i * 0.15, 1.2, 'rebond', { iterations: Infinity, direction: 'alternate' }));
+  S.son('zoom', T.accueil - 0.35);
+  // Marie arrive et clique sur "Se connecter"
+  bouger(T.accueil + 0.6, 1.1, compteHaut);
+  camera(T.accueil + 1.0, 1.0, 1500, 300, 1.45);
+  cliquer(T.accueil + 2.2);
+
+  /* ======================================================
+     2. CONNEXION — transition : cercle qui s'ouvre depuis le clic
+     ====================================================== */
+  const connexion = page('connexion');
+  connexion.innerHTML = '<div class="carte carte-connexion"><h2>Connexion ou inscription</h2><p class="doux">Pas de mot de passe à retenir.</p>' +
+    '<div class="btn-google">' + GOOGLE + '<span class="txt-google">Continuer avec Google</span></div>' +
+    '<div class="separateur">ou</div><div class="champ">vous@exemple.fr</div>' +
+    '<div class="connecte"><div class="rond-ok">✓</div><h2>Bonjour ' + R.prenom + ' !</h2><p class="doux">Connectée avec Google</p></div></div>';
+  const tc = T.connexion;
+  a(connexion, [{ opacity: 1, clipPath: 'circle(0px at 1760px 58px)' }, { opacity: 1, clipPath: 'circle(2300px at 1760px 58px)' }], tc, 0.75, 'douce');
+  cacher(accueil, tc + 0.6, 0.01);
+  camera(tc, 0.8, 1095, 540, 1.0);
+  activer('Mon compte', tc);
+  S.son('aspire', tc - 0.3);
+  const btnGoogle = connexion.querySelector('.btn-google');
+  bouger(tc + 0.5, 0.9, btnGoogle);
+  camera(tc + 0.9, 0.9, 1095, 560, 1.35);
+  cliquer(tc + 1.5);
+  a(btnGoogle, [{ transform: 'scale(1)' }, { transform: 'scale(0.96)' }, { transform: 'scale(1)' }], tc + 1.5, 0.25, 'douce');
+  // chargement : la roue tourne
+  const txtGoogle = connexion.querySelector('.txt-google');
+  const roue = S.creer('span', 'roue', btnGoogle);
+  a(roue, [{ opacity: 0 }, { opacity: 0 }], 0, 0.01, 'lineaire');
+  a(roue, [{ opacity: 1 }, { opacity: 1 }], tc + 1.65, 0.01, 'lineaire');
+  a(roue, [{ rotate: '0deg' }, { rotate: '360deg' }], tc + 1.65, 0.5, 'lineaire', { iterations: 3 });
+  S.son('chargement', tc + 1.65, { duree: 0.8 });
+  // connectée !
+  const connecte = connexion.querySelector('.connecte');
+  a(connecte, [{ opacity: 0, transform: 'scale(0.9)' }, { opacity: 1, transform: 'none' }], tc + 2.5, 0.45, 'rebond');
+  a(connecte.querySelector('.rond-ok'), [{ transform: 'scale(0) rotate(-90deg)' }, { transform: 'none' }], tc + 2.6, 0.6, 'rebond');
+  S.son('carillon', tc + 2.6);
+  // en haut à droite : son prénom
+  const txtCompte = compteHaut.querySelector('.txt-compte');
+  a(txtCompte, [{ opacity: 1 }, { opacity: 0 }], tc + 2.7, 0.15, 'sortie');
+  const prenomHaut = S.creer('span', '', compteHaut);
+  prenomHaut.innerHTML = '<span class="avatar">M</span> ' + R.prenom;
+  prenomHaut.style.cssText = 'position:absolute;left:22px;display:flex;align-items:center;gap:10px';
+  a(prenomHaut, [{ opacity: 0 }, { opacity: 1 }], tc + 2.8, 0.3, 'douce');
+  a(txtGoogle, [{ opacity: 1 }, { opacity: 1 }], 0, 0.01, 'lineaire');
+
+  /* ======================================================
+     3. ESSAI — transition : la page glisse (avec flou de vitesse)
+     ====================================================== */
+  const essai = page('essai');
+  essai.innerHTML = '<div class="essai-texte"><span class="bulle">Essai gratuit · 30 secondes</span><h2 class="maj">Votre logo,<br><span class="accent">tout de suite.</span></h2>' +
+    '<div class="essai-champ"><span class="frappe"></span><span class="caret"></span></div><span class="bouton">✨ Créer mon logo</span></div>' +
+    '<div class="carte apercu"><span class="bulle apercu-etiquette">Aperçu en direct</span><div class="monogramme">CM</div><div class="apercu-nom maj"></div><div class="apercu-slogan doux">' + R.sloganClient + '</div></div>';
+  const te = T.essai;
+  a(connexion, [{ transform: 'translateX(0)', filter: 'blur(0)' }, { transform: 'translateX(-1900px)', filter: 'blur(24px)' }], te, 0.5, 'sortie');
+  a(essai, [{ opacity: 1, transform: 'translateX(1900px)', filter: 'blur(24px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], te + 0.05, 0.6, 'douce');
+  cameraLarge(te, 0.6);
+  activer('Essayer', te);
+  S.son('glisse', te - 0.05);
+  a(essai.querySelector('.caret'), [{ opacity: 1 }, { opacity: 0 }], 0, 0.45, 'lineaire', { iterations: Infinity, direction: 'alternate' });
+  bouger(te + 0.4, 0.7, essai.querySelector('.essai-champ'));
+  cliquer(te + 1.15);
+  camera(te + 1.0, 0.8, 760, 560, 1.4);
+  const n = taper(essai.querySelector('.frappe'), R.marqueClient, te + 1.4, 1.1);
+  S.son('clavier', te + 1.4, { duree: 1.1, n: n });
+  bouger(te + 2.5, 0.5, essai.querySelector('.essai-texte .bouton'));
+  cliquer(te + 3.0);
+  camera(te + 2.9, 0.9, 1480, 550, 1.25);
+  // le logo du client apparaît dans l'aperçu
+  const apercu = essai.querySelector('.apercu');
+  const mono = apercu.querySelector('.monogramme');
+  a(mono, [{ opacity: 0, transform: 'scale(0.1) rotate(-200deg)' }, { opacity: 1, transform: 'none' }], te + 3.2, 0.9, 'rebond');
+  const lettresNom = S.lettres(apercu.querySelector('.apercu-nom'), R.marqueClient);
+  lettresNom.forEach((l, i) => a(l, [{ opacity: 0, transform: 'translateY(60px) rotate(10deg)' }, { opacity: 1, transform: 'none' }], te + 3.5 + i * 0.05, 0.5, 'douce'));
+  entrer(apercu.querySelector('.apercu-slogan'), te + 3.9, 20);
+  S.son('boum', te + 3.2);
+
+  /* ======================================================
+     4. DEVIS — transition : des lames vert citron balaient l'écran
+     ====================================================== */
+  const devis = page('devis');
+  const td = T.devis;
+  devis.innerHTML = '<h2 class="devis-titre maj">Votre <span class="accent">devis</span></h2>' +
+    [['Logo animé', '4 secondes, carré + vertical', 300], ['Petite pub', '8 secondes pour les Reels', 150], ['Spot 30 secondes', 'YouTube, TV, vitrine', 750]].map((p, i) =>
+      '<div class="produit" data-p="' + i + '" style="top:' + (250 + i * 140) + 'px"><div><h3>' + p[0] + '</h3><small>' + p[1] + '</small></div><span class="prix">' + p[2] + ' €</span>' +
+      '<div class="compteur"><span>−</span><output>0</output><span class="plus">+</span></div></div>').join('') +
+    '<div class="carte recap"><h3>Récapitulatif</h3><div class="lignes"></div>' +
+    '<div class="total"><span>Total</span><b><span class="nombre"></span> €</b></div>' +
+    '<div class="acompte"><span>Acompte à la signature (30 %)</span><span><span class="nombre"></span> €</span></div>' +
+    '<span class="bouton">Envoyer mon devis</span><div class="envoye">✓ Devis envoyé !</div></div>';
+  const lames = S.creer('div', 'lames', scene);
+  for (let i = 0; i < 6; i++) {
+    const l = S.creer('i', '', lames);
+    a(l, [{ transform: 'scaleY(0)', transformOrigin: 'top' }, { transform: 'scaleY(1)', transformOrigin: 'top' }], td - 0.35 + i * 0.04, 0.3, 'douce');
+    a(l, [{ transform: 'scaleY(1)', transformOrigin: 'bottom' }, { transform: 'scaleY(0)', transformOrigin: 'bottom' }], td + 0.15 + i * 0.04, 0.35, 'douce');
+  }
+  cacher(essai, td, 0.01);
+  montrer(devis, td, 0.01);
+  cameraLarge(td - 0.1, 0.01);
+  activer('Devis', td);
+  S.son('rideau', td - 0.35);
+  // + Logo animé, puis + Petite pub
+  const recap = devis.querySelector('.recap');
+  const [nbTotal, nbAcompte] = recap.querySelectorAll('.nombre');
+  const lignes = recap.querySelector('.lignes');
+  const choisir = (i, t, nom, prix, avant) => {
+    const prod = devis.querySelector('[data-p="' + i + '"]');
+    bouger(t - 0.55, 0.5, prod.querySelector('.plus'));
+    cliquer(t);
+    a(prod, [{ borderColor: 'rgba(242,240,232,0.09)', background: '#15160f' }, { borderColor: 'rgba(212,255,63,0.6)', background: '#1a1d10' }], t, 0.2, 'douce');
+    const out = prod.querySelector('output');
+    a(out, [{ transform: 'scale(1)' }, { transform: 'scale(1.6)' }, { transform: 'scale(1)' }], t, 0.3, 'rebond');
+    const ligne = S.creer('div', 'ligne', lignes);
+    ligne.innerHTML = '<span>' + nom + '</span><span>' + prix + ' €</span>';
+    entrer(ligne, t + 0.05, 14, 0.35);
+    a(nbTotal, [{ '--n': avant }, { '--n': avant + prix }], t + 0.05, 0.6, 'douce');
+    a(nbAcompte, [{ '--n': Math.round(avant * 0.3) }, { '--n': Math.round((avant + prix) * 0.3) }], t + 0.05, 0.6, 'douce');
+    S.son('compteur', t + 0.08, { duree: 0.55, n: 8 });
+    // le chiffre 0 devient 1 dans le compteur
+    a(out, [{ color: '#f2f0e8' }, { color: '#d4ff3f' }], t, 0.1, 'lineaire');
+  };
+  choisir(0, td + 1.2, 'Logo animé', 300, 0);
+  choisir(1, td + 2.1, 'Petite pub', 150, 300);
+  // (affichage du "1" dans les compteurs)
+  [0, 1].forEach((i) => {
+    const o = devis.querySelectorAll('output')[i];
+    o.textContent = '';
+    const zero = S.creer('span', '', o, '0'), un = S.creer('span', '', o, '1');
+    a(zero, [{ opacity: 1 }, { opacity: 0 }], td + 1.2 + i * 0.9, 0.05, 'lineaire');
+    a(un, [{ opacity: 0 }, { opacity: 1 }], td + 1.2 + i * 0.9, 0.05, 'lineaire');
+  });
+  camera(td + 2.6, 0.9, 1545, 560, 1.3);
+  S.son('montee', td + 2.4, { duree: 0.9 });
+  bouger(td + 2.9, 0.7, recap.querySelector('.bouton'));
+  cliquer(td + 3.8);
+  S.son('envoi', td + 3.9);
+  const bEnvoyer = recap.querySelector('.bouton');
+  a(bEnvoyer, [{ transform: 'scale(1)' }, { transform: 'scale(0.94)' }, { transform: 'scale(1)' }], td + 3.8, 0.25, 'douce');
+  const envoye = recap.querySelector('.envoye');
+  a(envoye, [{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'none' }], td + 4.1, 0.45, 'rebond');
+  // confettis
+  for (let i = 0; i < 26; i++) {
+    const c = S.creer('i', 'confetti', recap);
+    c.style.left = '300px'; c.style.top = '640px';
+    c.style.background = ['#d4ff3f', '#f2f0e8', '#ff8a73', '#82aaff'][i % 4];
+    const ang = hasard() * Math.PI * 2, dist = 160 + hasard() * 260;
+    a(c, [{ opacity: 0, transform: 'translate(0,0) rotate(0deg)' }, { opacity: 1, transform: 'translate(0,0) rotate(0deg)', offset: 0.03 }, { opacity: 0, transform: 'translate(' + Math.cos(ang) * dist + 'px,' + (Math.sin(ang) * dist - 120) + 'px) rotate(' + (hasard() * 720) + 'deg)' }], td + 4.15, 1.1, 'douce');
+  }
+  S.son('scintille', td + 4.15);
+
+  /* ======================================================
+     5. LE MAIL — la notification glisse, l'e-mail se retourne en 3D
+     ====================================================== */
+  const tm = T.mail;
+  cameraLarge(tm - 0.6, 0.6);
+  const voile = S.creer('div', 'voile', monde);
+  a(voile, [{ opacity: 0 }, { opacity: 0 }], 0, 0.01, 'lineaire');
+  const notif = S.creer('div', 'notif', monde);
+  notif.innerHTML = '<div class="appli">✉</div><div><b>Novimo</b><span>Votre devis ' + R.numeroDevis + '</span><span>📎 Devis-' + R.numeroDevis + '.pdf</span></div><small>maintenant</small>';
+  a(notif, [{ opacity: 0, transform: 'translateX(640px)' }, { opacity: 1, transform: 'none' }], tm, 0.55, 'rebond');
+  S.son('mail', tm + 0.05);
+  bouger(tm + 0.4, 0.8, notif);
+  cliquer(tm + 1.3);
+  a(voile, [{ opacity: 0 }, { opacity: 1 }], tm + 1.4, 0.4, 'douce');
+  a(notif, [{ opacity: 1 }, { opacity: 0, transform: 'scale(0.9)' }], tm + 1.4, 0.25, 'sortie');
+  const email = S.creer('div', 'email', monde);
+  email.innerHTML = '<div class="email-tete"><p>De : <b>Novimo</b> &lt;bouletpro45@gmail.com&gt; · À : marie@chezmila.fr</p><h2>Votre devis Novimo ' + R.numeroDevis + '</h2></div>' +
+    '<div class="email-corps"><h3>Merci pour votre demande, ' + R.prenom + ' !</h3><p>Voici votre devis pour <b>' + R.marqueClient + '</b>. Je reviens vers vous très vite.</p>' +
+    '<div class="email-table"><div><span>Logo animé</span><span>300 €</span></div><div><span>Petite pub</span><span>150 €</span></div><div><span>Acompte à la signature (30 %)</span><span>135 €</span></div><div><span>Total</span><span>450 €</span></div></div>' +
+    '<div class="piece-jointe"><i>PDF</i><span>Devis-' + R.numeroDevis + '.pdf<small>84 Ko · Aperçu</small></span></div></div>';
+  a(email, [{ opacity: 0, transform: 'perspective(1600px) rotateX(-70deg) translateY(200px) scale(0.8)' }, { opacity: 1, transform: 'none' }], tm + 1.5, 0.8, 'douce');
+  S.son('flip', tm + 1.45);
+  bouger(tm + 2.2, 0.8, email.querySelector('.piece-jointe'));
+  camera(tm + 2.3, 1.0, 900, 800, 1.3);
+  a(email.querySelector('.piece-jointe'), [{ transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(212,255,63,0)' }, { transform: 'scale(1.06)', boxShadow: '0 0 0 10px rgba(212,255,63,0.6)' }, { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(212,255,63,0)' }], tm + 3.1, 0.7, 'fluide');
+  S.son('ding', tm + 3.1);
+
+  /* ======================================================
+     6. MESSAGES — transition : l'e-mail est "aspiré", la messagerie monte
+     ====================================================== */
+  const messages = page('messages');
+  const tg = T.messages;
+  messages.innerHTML = '<h2 class="msg-titre maj">Messa<span class="accent">gerie</span></h2>' +
+    '<div class="carte msg-liste"><div class="msg-conv"><b>Nouveau projet</b><span>Logo pour samedi</span></div></div>' +
+    '<div class="carte msg-chat"><span class="badge-rapide">⚡ Réponse en 2 min</span>' +
+    '<div class="msg-cats"><p>De quoi voulez-vous parler ?</p><div class="chips">' +
+    ['Nouveau projet ou devis', 'Personnaliser un modèle', 'Suivi de commande', 'Retouches', 'Paiement'].map((c, i) => '<span class="chip" data-c="' + i + '">' + c + '</span>').join('') +
+    '</div></div><div class="msg-fil"></div><div class="msg-ecrire"><div class="zone"><span class="frappe-msg"></span><span class="caret"></span></div><div class="envoyer">↑</div></div></div>';
+  a(email, [{ transform: 'none', opacity: 1 }, { transform: 'translate(600px, -500px) scale(0.05)', opacity: 0 }], tg - 0.2, 0.45, 'sortie');
+  a(voile, [{ opacity: 1 }, { opacity: 0 }], tg, 0.3, 'douce');
+  cacher(devis, tg, 0.01);
+  cameraLarge(tg - 0.2, 0.4);
+  a(messages, [{ opacity: 1, transform: 'translateY(700px) scale(0.9)' }, { opacity: 1, transform: 'none' }], tg + 0.05, 0.6, 'douce');
+  activer('Messages', tg);
+  S.son('whoosh', tg - 0.25);
+  // Marie choisit la catégorie
+  const chip = messages.querySelector('[data-c="0"]');
+  bouger(tg + 0.5, 0.7, chip);
+  camera(tg + 0.6, 0.8, 1180, 500, 1.25);
+  cliquer(tg + 1.3);
+  a(chip, [{ borderColor: 'rgba(242,240,232,0.12)', background: 'rgba(0,0,0,0)', color: '#d6d4cb' }, { borderColor: '#d4ff3f', background: 'rgba(212,255,63,0.12)', color: '#d4ff3f' }], tg + 1.3, 0.2, 'douce');
+  // elle écrit son message
+  bouger(tg + 1.6, 0.5, messages.querySelector('.zone'));
+  camera(tg + 1.7, 0.8, 1320, 760, 1.3);
+  const zone = messages.querySelector('.frappe-msg');
+  const nm = taper(zone, R.messageClient, tg + 2.0, 1.9);
+  S.son('clavier', tg + 2.0, { duree: 1.9, n: Math.round(nm / 1.5) });
+  bouger(tg + 3.9, 0.4, messages.querySelector('.envoyer'));
+  cliquer(tg + 4.35);
+  a(messages.querySelector('.zone .caret'), [{ opacity: 1 }, { opacity: 0 }], 0, 0.45, 'lineaire', { iterations: Infinity, direction: 'alternate' });
+  a(zone, [{ opacity: 1 }, { opacity: 0 }], tg + 4.4, 0.1, 'sortie');
+  const fil = messages.querySelector('.msg-fil');
+  const bulleMoi = S.creer('div', 'msg-bulle moi', fil);
+  bulleMoi.innerHTML = R.messageClient + '<small>Vous · 14:02</small>';
+  a(bulleMoi, [{ opacity: 0, transform: 'translateY(60px) scale(0.8)' }, { opacity: 1, transform: 'none' }], tg + 4.45, 0.45, 'rebond');
+  S.son('bloup', tg + 4.45);
+  // "Novimo écrit…"
+  const points = S.creer('div', 'points', fil);
+  points.innerHTML = '<i></i><i></i><i></i>';
+  a(points, [{ opacity: 0, transform: 'scale(0.5)' }, { opacity: 1, transform: 'none' }], tg + 5.0, 0.3, 'rebond');
+  points.querySelectorAll('i').forEach((p, i) => a(p, [{ transform: 'translateY(0)' }, { transform: 'translateY(-10px)' }, { transform: 'translateY(0)' }], tg + 5.0 + i * 0.12, 0.45, 'fluide', { iterations: 3 }));
+  S.son('ecrit', tg + 5.0, { n: 6 });
+  a(points, [{ opacity: 1 }, { opacity: 0 }], tg + 6.25, 0.1, 'sortie');
+  // la réponse arrive
+  const reponse = S.creer('div', 'msg-bulle', fil);
+  reponse.innerHTML = R.reponse + '<small>Novimo · 14:04</small>';
+  a(reponse, [{ opacity: 0, transform: 'translateY(60px) scale(0.8)' }, { opacity: 1, transform: 'none' }], tg + 6.3, 0.45, 'rebond');
+  S.son('recu', tg + 6.3);
+  const badgeRapide = messages.querySelector('.badge-rapide');
+  camera(tg + 5.6, 0.9, 1320, 620, 1.12);
+  a(badgeRapide, [{ opacity: 0, transform: 'scale(0.3) rotate(-12deg)' }, { opacity: 1, transform: 'rotate(-3deg)' }], tg + 6.7, 0.5, 'rebond');
+  S.son('badge', tg + 6.75);
+  a(curseur, [{ opacity: 1 }, { opacity: 0 }], tg + 6.7, 0.3, 'sortie');
+  // on laisse le temps de lire la réponse, puis léger recul
+  a(reponse, [{ transform: 'none' }, { transform: 'scale(1.04)' }, { transform: 'none' }], tg + 7.6, 0.7, 'fluide');
+  cameraLarge(tg + 8.2, 1.4);
+
+  /* ======================================================
+     7. FIN — flash blanc, impact, le logo Novimo
+     ====================================================== */
+  const tf = T.fin;
+  const flash = S.creer('div', 'flash', scene);
+  a(flash, [{ opacity: 0 }, { opacity: 0 }], 0, 0.01, 'lineaire');
+  a(flash, [{ opacity: 0 }, { opacity: 1, offset: 0.25 }, { opacity: 0 }], tf - 0.15, 0.6, 'douce');
+  camera(tf - 0.6, 0.5, 1320, 700, 2.2, 'sortie');
+  const fin = S.creer('div', 'fin', scene);
+  a(fin, [{ opacity: 0 }, { opacity: 1 }], tf, 0.05, 'lineaire');
+  const finLogo = S.creer('div', 'fin-logo', fin);
+  const tuile = S.creer('div', 'tuile', finLogo);
+  tuile.innerHTML = LOGO_SVG;
+  const finNom = S.creer('div', 'fin-nom', finLogo);
+  const lettresFin = S.lettres(finNom, 'novimo');
+  const slogan = S.creer('div', 'fin-slogan', fin, R.slogan);
+  const ligne = S.creer('div', 'fin-ligne', fin);
+  ligne.innerHTML = '<span class="plein-accent">Devis gratuit en 1 minute</span><span>Dès 300 €</span><span>Moitié prix d’un freelance</span>';
+  const site = S.creer('div', 'fin-site', fin, R.site);
+  a(tuile, [{ opacity: 0, transform: 'scale(0.2) rotate(-160deg)' }, { opacity: 1, transform: 'none' }], tf + 0.1, 0.9, 'rebond');
+  a(tuile.querySelector('g'), [{ opacity: 0, transform: 'translateX(-30px)' }, { opacity: 1, transform: 'none' }], tf + 0.45, 0.5, 'douce');
+  a(tuile.querySelector('.logo-vitesse'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], tf + 0.65, 0.4, 'douce');
+  lettresFin.forEach((l, i) => a(l, [{ opacity: 0, transform: 'translateX(-60px)' }, { opacity: 1, transform: 'none' }], tf + 0.35 + i * 0.06, 0.6, 'douce'));
+  entrer(slogan, tf + 1.0, 24, 0.6);
+  ligne.querySelectorAll('span').forEach((s, i) => a(s, [{ opacity: 0, transform: 'translateY(30px) scale(0.9)' }, { opacity: 1, transform: 'none' }], tf + 1.6 + i * 0.2, 0.5, 'rebond'));
+  entrer(site, tf + 2.4, 20, 0.6);
+  a(tuile, [{ transform: 'none' }, { transform: 'scale(1.06)' }, { transform: 'none' }], tf + 3.2, 0.8, 'fluide', { iterations: 2 });
+  S.son('impact', tf - 0.1);
+  S.son('succes', tf + 0.7);
+  S.son('caisse', tf + 1.8);
+
+  /* ---------- 🎵 Musique de fond (la batterie arrive avec le site) ---------- */
+  S.son('musique', 0, { duree: FIN, drop: T.accueil });
+
+  S.tenir(FIN);
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>

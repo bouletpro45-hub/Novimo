@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Dashboard — Novimo</title>
+<!-- SEO -->
+<meta name="description" content="Espace d’administration de Novimo.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://www.novimo.fr/site/dashboard.html">
+<meta name="theme-color" content="#0b0c09">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Novimo">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Dashboard — Novimo">
+<meta property="og:description" content="Espace d’administration de Novimo.">
+<meta property="og:url" content="https://www.novimo.fr/site/dashboard.html">
+<meta property="og:image" content="https://www.novimo.fr/site/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Novimo : votre marque, en mouvement. Logos animés, pubs et spots vidéo.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dashboard — Novimo">
+<meta name="twitter:description" content="Espace d’administration de Novimo.">
+<meta name="twitter:image" content="https://www.novimo.fr/site/og-image.jpg">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<!-- /SEO -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
+<link rel="stylesheet" href="style.css?v=10">
+</head>
+<body data-page="dashboard">
+<a class="aller-contenu" href="#contenu">Aller au contenu</a>
+
+<main id="contenu" class="tdb">
+  <header class="tdb-tete">
+    <p class="bulle">Dashboard</p>
+    <h1 class="tdb-titre">Vos <span class="accent">chiffres</span></h1>
+    <p class="tdb-demo" id="bandeau-demo" hidden>Données d'exemple : Supabase n'est pas encore branché (config.js). Les vrais chiffres apparaîtront dès que le site sera en ligne.</p>
+  </header>
+
+  <!-- Accès refusé (pas connecté ou pas admin) -->
+  <section class="carte-compte" id="acces-refuse" hidden>
+    <h2>Accès réservé</h2>
+    <p id="acces-texte">Cette page est réservée à l'administrateur.</p>
+  </section>
+
+  <div id="contenu-tdb" hidden>
+    <!-- Les compteurs -->
+    <section class="tdb-section">
+      <h2 class="tdb-sous-titre">Activité</h2>
+      <div class="tuiles">
+        <div class="tuile"><span>Comptes créés</span><strong id="k-comptes">0</strong></div>
+        <div class="tuile"><span>Devis en cours</span><strong id="k-en-cours">0</strong></div>
+        <div class="tuile"><span>Devis clôturés</span><strong id="k-clotures">0</strong></div>
+        <div class="tuile"><span>Devis au total</span><strong id="k-total">0</strong></div>
+      </div>
+    </section>
+
+    <section class="tdb-section">
+      <h2 class="tdb-sous-titre">Gains <small>(acomptes de <span class="r-pourcent">30</span> % + soldes reçus)</small></h2>
+      <div class="tuiles">
+        <div class="tuile tuile-gain"><span>7 derniers jours</span><strong id="g-7">0 €</strong></div>
+        <div class="tuile tuile-gain"><span>30 derniers jours</span><strong id="g-30">0 €</strong></div>
+        <div class="tuile tuile-gain"><span>6 derniers mois</span><strong id="g-6m">0 €</strong></div>
+        <div class="tuile tuile-gain tuile-total"><span>Au total</span><strong id="g-total">0 €</strong></div>
+      </div>
+    </section>
+
+    <!-- L'audience (mesure avec consentement, voir confiance.js) -->
+    <section class="tdb-section" id="audience">
+      <h2 class="tdb-sous-titre">Audience <small>(30 derniers jours, visiteurs ayant accepté la mesure)</small></h2>
+      <p class="compte-aide" id="audience-vide" hidden></p>
+      <div class="tuiles">
+        <div class="tuile"><span>Pages vues</span><strong id="a-vues">0</strong></div>
+        <div class="tuile"><span>Visiteurs</span><strong id="a-visiteurs">0</strong></div>
+        <div class="tuile"><span>Sur mobile</span><strong id="a-mobile">0 %</strong></div>
+        <div class="tuile"><span>Devis / visiteurs</span><strong id="a-conversion">0 %</strong></div>
+      </div>
+      <div class="audience-listes">
+        <div class="carte-graphique"><h3>Pages les plus vues</h3><ol class="classement" id="a-pages"></ol></div>
+        <div class="carte-graphique"><h3>D'où viennent les visiteurs</h3><ol class="classement" id="a-sources"></ol></div>
+      </div>
+    </section>
+
+    <!-- Les graphiques -->
+    <section class="tdb-graphiques">
+      <figure class="carte-graphique carte-large">
+        <figcaption>
+          <h3>Gains des 30 derniers jours</h3>
+          <p>Par jour. La zone claire marque les 7 derniers jours.</p>
+        </figcaption>
+        <div class="graphique" id="graph-30j"></div>
+        <details class="donnees"><summary>Voir les données</summary><div id="table-30j"></div></details>
+      </figure>
+
+      <figure class="carte-graphique">
+        <figcaption>
+          <h3>Gains des 6 derniers mois</h3>
+          <p>Par mois.</p>
+        </figcaption>
+        <div class="graphique" id="graph-6m"></div>
+        <details class="donnees"><summary>Voir les données</summary><div id="table-6m"></div></details>
+      </figure>
+
+      <figure class="carte-graphique">
+        <figcaption>
+          <h3>Prestations au premier devis</h3>
+          <p>Ce que les nouveaux clients demandent en premier.</p>
+        </figcaption>
+        <div class="graphique" id="graph-presta"></div>
+        <details class="donnees"><summary>Voir les données</summary><div id="table-presta"></div></details>
+      </figure>
+    </section>
+
+    <!-- Tous les devis -->
+    <section class="tdb-section">
+      <h2 class="tdb-sous-titre">Tous les devis</h2>
+      <p class="compte-aide">Changez le statut quand vous recevez un paiement : « Acompte reçu » compte les <span class="r-pourcent">30</span> % dans vos gains, « Clôturé » ajoute le solde.</p>
+      <div class="tableau-defile">
+        <table class="tableau-devis">
+          <thead><tr><th>N°</th><th>Date</th><th>Client</th><th>Prestations</th><th>Total</th><th>Acompte</th><th>Statut</th><th></th></tr></thead>
+          <tbody id="lignes-devis"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="infobulle" id="infobulle" role="tooltip" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js?v=10"></script>
+<script src="reglages.js?v=10"></script>
+<script src="api.js?v=10"></script>
+<script src="commun.js?v=10"></script>
+<script src="confiance.js?v=10"></script>
+<script src="pdf-devis.js?v=10"></script>
+<script src="dashboard.js?v=10"></script>
+</body>
+</html>

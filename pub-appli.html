@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pub appli 3D — Novimo</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  RÉGLAGES : pub verticale "haut de gamme" (9:16, 20 s)
+     Un iPhone posé sur un bureau en bois sombre s'allume, la caméra
+     tourne autour, les statistiques de la pub du client explosent,
+     record à 100 000 vues, puis écran de fin.
+     Les coupes tombent sur le rythme de la musique (120 BPM).
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Pub appli 3D — Novimo',
+  formats: ['vertical'],
+
+  marque: 'novimo',
+  slogan: 'Votre marque, en mouvement.',
+  appel: 'Demander mon devis',   // ← mets 'Télécharger' le jour où tu as une appli
+  site: 'novimo.fr',
+  record: '100 000',             // le record affiché au plan 3
+
+  couleurs: { fond: '#050504', fond2: '#121309', accent: '#d4ff3f', texte: '#f2f0e8', texteDoux: '#a3a59a' },
+  polices: { titre: 'Bricolage Grotesque', texte: 'Bricolage Grotesque' },
+  vitesse: 1
+};
+</script>
+
+<style>
+  /* Compteurs animés (avec l'espace des milliers : 128 450) */
+  @counter-style trois { system: extends decimal; pad: 3 "0"; }
+  @property --v { syntax: '<integer>'; inherits: false; initial-value: 0; }
+  @property --k { syntax: '<integer>'; inherits: false; initial-value: 0; }
+  @property --u { syntax: '<integer>'; inherits: false; initial-value: 0; }
+  @property --n { syntax: '<integer>'; inherits: false; initial-value: 0; }
+  .milliers { --v: 0; --k: calc((var(--v) - 499.5) / 1000); --u: calc(var(--v) - var(--k) * 1000); counter-reset: k var(--k) u var(--u); font-variant-numeric: tabular-nums; }
+  .milliers::before { content: counter(k) "\202F" counter(u, trois); }
+  .nombre { --n: 0; counter-reset: n var(--n); font-variant-numeric: tabular-nums; }
+  .nombre::before { content: counter(n); }
+
+  #scene { background: #050504; font-family: var(--police-titre), system-ui, sans-serif; }
+  .accent { color: var(--accent); }
+
+  /* ---------- Le décor : un bureau en bois sombre, filmé de près ---------- */
+  .vue { position: absolute; inset: 0; perspective: 1500px; perspective-origin: 50% 46%; overflow: hidden; }
+  .bureau {
+    position: absolute; left: -1600px; right: -1600px; top: 820px; height: 3200px;
+    transform-origin: 50% 0;
+    -webkit-mask: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%); mask: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+    background-color: #1c130c;
+    background-image:
+      radial-gradient(ellipse 60% 30% at 50% 20%, rgba(255, 200, 140, 0.10), transparent 70%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.004 0.09' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.10  0 0 0 0 0.06  0 0 0 0.9 0'/></filter><rect width='900' height='900' filter='url(%23b)'/></svg>"),
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.25) 0 2px, transparent 2px 23px, rgba(255,220,180,0.03) 23px 25px, transparent 25px 61px);
+    background-size: 100% 100%, 900px 900px, 100% 100%;
+  }
+  .lueur-bureau { position: absolute; left: 50%; top: 52%; width: 1500px; height: 900px; margin: -450px 0 0 -750px; border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(212, 255, 63, 0.35), rgba(110, 160, 255, 0.12) 40%, transparent 70%); filter: blur(30px); }
+  .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 75% 60% at 50% 45%, transparent 40%, rgba(0,0,0,0.85) 100%); pointer-events: none; }
+
+  /* ---------- L'iPhone en 3D (avec une vraie épaisseur) ---------- */
+  .telephone { position: absolute; left: 240px; top: 310px; width: 600px; height: 1300px; transform-style: preserve-3d; }
+  .tranche { position: absolute; inset: 0; border-radius: 92px;
+    background: linear-gradient(135deg, #9a9ca1 0%, #47484c 30%, #7c7e83 55%, #2b2c30 80%, #6a6c70 100%); }
+  .face { position: absolute; inset: 0; border-radius: 92px; padding: 14px; background: #060606;
+    box-shadow: inset 0 0 0 3px #8e9095, inset 0 0 0 5px #2a2b2e; }
+  .ecran { position: relative; width: 100%; height: 100%; border-radius: 80px; overflow: hidden; background: #0b0c09; }
+  .ile { position: absolute; left: 50%; top: 22px; width: 170px; height: 50px; margin-left: -85px; border-radius: 30px; background: #000; z-index: 6; }
+  .noir { position: absolute; inset: 0; background: #000; z-index: 5; }
+  .eclair-ecran { position: absolute; inset: 0; background: #fff; z-index: 7; mix-blend-mode: screen; }
+  .reflet { position: absolute; inset: 0; z-index: 8; pointer-events: none;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.10) 45%, transparent 55%); }
+
+  /* ---------- L'interface (l'appli Novimo : les stats de la pub du client) ---------- */
+  .ui { position: absolute; inset: 0; padding: 92px 28px 28px; color: #f2f0e8; background: radial-gradient(ellipse at 50% 0%, #1d2112, #0b0c09 60%); }
+  .etat { position: absolute; left: 52px; right: 44px; top: 30px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 700; }
+  .ui-tete { display: flex; align-items: center; gap: 14px; font-size: 34px; font-weight: 800; letter-spacing: -0.04em; }
+  .tuile-mini { width: 54px; height: 54px; border-radius: 15px; background: var(--accent); overflow: hidden; flex: none; }
+  .tuile-mini svg, .tuile svg { width: 100%; height: 100%; overflow: visible; }
+  .logo-n { fill: #0b0c09; stroke: #0b0c09; stroke-width: 3; stroke-linejoin: round; }
+  .logo-vitesse { fill: none; stroke: #0b0c09; stroke-width: 6; stroke-linecap: round; transform-box: fill-box; transform-origin: right center; }
+  .direct { margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: rgba(212,255,63,0.12); color: var(--accent); font-size: 18px; letter-spacing: 0.06em; }
+  .direct i { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+  .rouleau { position: absolute; left: 28px; right: 28px; top: 180px; bottom: 0; overflow: hidden; }
+  .piste { display: grid; gap: 18px; }
+  .carte { padding: 26px; border-radius: 32px; background: rgba(242,240,232,0.06); border: 1px solid rgba(242,240,232,0.08); }
+  .carte h4 { font-size: 22px; color: #a3a59a; font-weight: 700; }
+  .grand { margin-top: 6px; font-size: 92px; font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
+  .hausse { display: inline-block; margin-top: 10px; padding: 6px 12px; border-radius: 10px; background: rgba(212,255,63,0.14); color: var(--accent); font-size: 22px; font-weight: 800; }
+  .barres { display: flex; align-items: flex-end; gap: 10px; height: 200px; margin-top: 18px; }
+  .barres i { flex: 1; border-radius: 8px 8px 3px 3px; background: linear-gradient(#d4ff3f, rgba(212,255,63,0.25)); transform-origin: bottom; box-shadow: 0 0 18px rgba(212,255,63,0.25); }
+  .ligne { display: flex; align-items: center; gap: 16px; padding: 14px 0; font-size: 25px; font-weight: 700; }
+  .ligne + .ligne { border-top: 1px solid rgba(242,240,232,0.07); }
+  .valide { width: 44px; height: 44px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #0b0c09; font-size: 26px; font-weight: 900; box-shadow: 0 0 22px rgba(212,255,63,0.6); }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .duo .grand { font-size: 60px; }
+
+  /* Plan 3 : la notification de record */
+  .record { position: absolute; left: 18px; right: 18px; top: 86px; z-index: 4; display: flex; gap: 18px; align-items: center; padding: 22px 24px; border-radius: 34px;
+    background: rgba(32, 34, 26, 0.96); border: 1px solid rgba(212,255,63,0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 60px rgba(212,255,63,0.25); }
+  .record .trophee { width: 76px; height: 76px; flex: none; border-radius: 22px; background: var(--accent); display: grid; place-items: center; font-size: 42px; }
+  .record b { display: block; font-size: 30px; letter-spacing: -0.02em; }
+  .record span { display: block; margin-top: 2px; font-size: 22px; color: #c9c7bd; }
+
+  /* La lumière "éclatante" du record */
+  .eclat { position: absolute; left: 50%; top: 46%; width: 1800px; height: 1800px; margin: -900px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(212,255,63,0.55) 12%, rgba(212,255,63,0.12) 35%, transparent 62%); mix-blend-mode: screen; }
+  .rayons { position: absolute; left: 50%; top: 46%; width: 2400px; height: 2400px; margin: -1200px; mix-blend-mode: screen;
+    background: repeating-conic-gradient(from 0deg, rgba(212,255,63,0.16) 0deg 4deg, transparent 4deg 18deg); -webkit-mask: radial-gradient(circle, #000 10%, transparent 60%); mask: radial-gradient(circle, #000 10%, transparent 60%); }
+  .trait-lumiere { position: absolute; left: -200px; right: -200px; top: 46%; height: 6px; margin-top: -3px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9) 45%, #fff 50%, rgba(255,255,255,0.9) 55%, transparent); filter: blur(2px); mix-blend-mode: screen; }
+  .etincelle { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #fff; box-shadow: 0 0 16px #d4ff3f, 0 0 4px #fff; }
+
+  /* ---------- Fin ---------- */
+  .fin { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; text-align: center; background: radial-gradient(ellipse at 50% 42%, #1a1d10, #050504 60%); }
+  .tuile { width: 230px; height: 230px; border-radius: 64px; background: var(--accent); overflow: hidden; box-shadow: 0 0 140px rgba(212,255,63,0.5); }
+  .fin-nom { margin-top: 44px; font-size: 150px; font-weight: 800; letter-spacing: -0.06em; line-height: 1; }
+  .fin-slogan { margin-top: 26px; font-size: 42px; color: #a3a59a; }
+  .appel { margin-top: 110px; display: inline-flex; align-items: center; gap: 22px; padding: 18px 46px 18px 18px; border-radius: 999px; background: var(--accent); color: #0b0c09; font-size: 46px; font-weight: 800; box-shadow: 0 0 80px rgba(212,255,63,0.45); }
+  .appel .rond { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; background: #0b0c09; color: var(--accent); font-size: 40px; }
+  .fin-site { margin-top: 34px; font-size: 34px; color: #a3a59a; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+
+<script src="commun/son.js"></script>
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+const LOGO_SVG = '<svg viewBox="0 0 100 100"><g><path class="logo-n" transform="translate(6 0) skewX(-12) translate(10.6 0)" d="M30 76V24h13l15 27V24h13v52H58L43 49v27z"/></g><path class="logo-vitesse" d="M13 41h11M17 55h8"/></svg>';
+
+/* =======================================================
+   🎬  4 PLANS, calés sur la musique (1 temps = 0,5 s)
+   ======================================================= */
+function construire(scene, R, S) {
+  const P = { allumage: 1.75, plan2: 3, plan3: 9, plan4: 15, fin: 16 };
+  const FIN = 20;
+  const a = S.anim;
+  const hasard = S.hasard(5);
+
+  const vue = S.creer('div', 'vue', scene);
+  const bureau = S.creer('div', 'bureau', vue);
+  const lueur = S.creer('div', 'lueur-bureau', vue);
+  const tel = S.creer('div', 'telephone', vue);
+  // l'épaisseur : 14 couches de "titane" empilées derrière l'écran
+  for (let i = 1; i <= 14; i++) {
+    const c = S.creer('div', 'tranche', tel);
+    c.style.transform = 'translateZ(' + (-i * 2.2) + 'px)';
+    if (i === 14) c.style.background = '#1a1b1d';
+  }
+  const face = S.creer('div', 'face', tel);
+  const ecran = S.creer('div', 'ecran', face);
+  S.creer('div', 'ile', ecran);
+  S.creer('div', 'vignette', scene);
+
+  /* ---------- L'interface ---------- */
+  const ui = S.creer('div', 'ui', ecran);
+  ui.innerHTML =
+    '<div class="etat"><span>9:41</span><span>●●● ◔</span></div>' +
+    '<div class="ui-tete"><span class="tuile-mini">' + LOGO_SVG + '</span>novimo<span class="direct"><i></i>EN DIRECT</span></div>' +
+    '<div class="rouleau"><div class="piste">' +
+      '<div class="carte" id="c-vues"><h4>Vues de votre pub</h4><div class="grand milliers" id="vues"></div><span class="hausse">▲ +312 % cette semaine</span></div>' +
+      '<div class="carte"><h4>Vues par jour</h4><div class="barres">' + '<i></i>'.repeat(12) + '</div></div>' +
+      '<div class="carte" id="c-etapes"><h4>Votre campagne</h4>' +
+        ['Logo animé livré', 'Pub publiée sur Instagram', 'Pub publiée sur TikTok', 'Spot diffusé en vitrine'].map((t) => '<div class="ligne"><span class="valide">✓</span>' + t + '</div>').join('') + '</div>' +
+      '<div class="duo"><div class="carte"><h4>Clics</h4><div class="grand milliers" id="clics"></div></div><div class="carte"><h4>Clients</h4><div class="grand"><span class="nombre" id="clients"></span></div></div></div>' +
+      '<div class="carte"><h4>Partages</h4><div class="grand milliers" id="partages"></div><span class="hausse">▲ record personnel</span></div>' +
+    '</div></div>';
+  const noir = S.creer('div', 'noir', ecran);
+  const eclairEcran = S.creer('div', 'eclair-ecran', ecran);
+  a(eclairEcran, [{ opacity: 0 }, { opacity: 0 }], 0, 0.01, 'lineaire');
+  S.creer('div', 'reflet', ecran);
+  const record = S.creer('div', 'record', ecran);
+  record.innerHTML = '<span class="trophee">🏆</span><div><b>Record battu !</b><span>Votre pub a dépassé ' + R.record + ' vues</span></div>';
+  a(record, [{ opacity: 0, transform: 'translateY(-160px)' }, { opacity: 0, transform: 'translateY(-160px)' }], 0, 0.01, 'lineaire');
+
+  /* ======================================================
+     PLAN 1 (0 → 3 s) : macro le long de la tranche, l'écran s'allume
+     ====================================================== */
+  const couche = 'rotateX(72deg) rotateZ(-30deg)';
+  a(tel, [{ transform: 'translate3d(-280px, 60px, 360px) ' + couche }, { transform: 'translate3d(120px, 20px, 330px) rotateX(70deg) rotateZ(-24deg)' }], 0, 2.9, 'lineaire');
+  a(bureau, [{ transform: 'rotateX(80deg) translateY(-200px)', backgroundPosition: '0 0, 0 0, 0 0' }, { transform: 'rotateX(80deg) translateY(-200px)', backgroundPosition: '0 0, -500px 0, -500px 0' }], 0, 2.9, 'lineaire');
+  a(lueur, [{ opacity: 0 }, { opacity: 0 }], 0, 0.01, 'lineaire');
+  // l'écran s'allume d'un coup
+  a(noir, [{ opacity: 1 }, { opacity: 0 }], P.allumage, 0.12, 'douce');
+  a(eclairEcran, [{ opacity: 0 }, { opacity: 0.8, offset: 0.15 }, { opacity: 0 }], P.allumage, 0.5, 'douce');
+  a(lueur, [{ opacity: 0 }, { opacity: 1 }], P.allumage, 0.4, 'douce');
+  S.son('montee', 0.6, { duree: 1.15 });
+  S.son('impact', P.allumage);
+
+  /* ======================================================
+     PLAN 2 (3 → 9 s) : rotation 3D face à l'écran, les données s'emballent
+     ====================================================== */
+  const p2 = P.plan2;
+  a(tel, [{ transform: 'translate3d(120px, 20px, 330px) rotateX(70deg) rotateZ(-24deg)' }, { transform: 'translate3d(0, 0, 60px) rotateX(10deg) rotateY(-26deg) rotateZ(0deg)' }], p2, 0.65, 'douce');
+  a(tel, [{ transform: 'translate3d(0, 0, 60px) rotateX(10deg) rotateY(-26deg) rotateZ(0deg)' }, { transform: 'translate3d(0, -20px, 120px) rotateX(-6deg) rotateY(20deg) rotateZ(0deg)' }], p2 + 0.65, 2.85, 'fluide');
+  a(tel, [{ transform: 'translate3d(0, -20px, 120px) rotateX(-6deg) rotateY(20deg) rotateZ(0deg)' }, { transform: 'translate3d(0, 0, 260px) rotateX(4deg) rotateY(-10deg) rotateZ(0deg)' }], p2 + 3.5, 2.5, 'fluide');
+  a(bureau, [{ transform: 'rotateX(80deg) translateY(-200px)', filter: 'blur(0px) brightness(1)' }, { transform: 'rotateX(80deg) translateY(-200px)', filter: 'blur(8px) brightness(0.35)' }], p2, 0.65, 'douce');
+  S.son('zoom', p2 - 0.3);
+
+  // les vues montent en flèche
+  const vues = ui.querySelector('#vues');
+  a(vues, [{ '--v': 1240 }, { '--v': 98760 }], p2 + 0.5, 5.0, 'douce');
+  S.son('compteur', p2 + 0.5, { duree: 1.6, n: 16 });
+  // les barres poussent une à une
+  ui.querySelectorAll('.barres i').forEach((b, i) => {
+    const h = [28, 36, 30, 44, 52, 48, 61, 58, 72, 80, 88, 100][i];
+    b.style.height = h + '%';
+    a(b, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], p2 + 1.0 + i * 0.06, 0.5, 'rebond');
+  });
+  S.son('chargement', p2 + 1.0, { duree: 0.8 });
+  // ça défile vite, sur le rythme
+  const piste = ui.querySelector('.piste');
+  a(piste, [{ transform: 'translateY(0)' }, { transform: 'translateY(-330px)' }], p2 + 2.0, 0.45, 'douce');
+  a(piste, [{ transform: 'translateY(-330px)' }, { transform: 'translateY(-690px)' }], p2 + 4.5, 0.45, 'douce');
+  a(piste, [{ transform: 'translateY(-690px)' }, { transform: 'translateY(-760px)' }], p2 + 5.0, 0.45, 'douce');
+  S.son('glisse', p2 + 2.0);
+  // les validations s'allument une à une (une note différente pour chacune)
+  const sons = ['tick', 'pop', 'bloup', 'badge'];
+  ui.querySelectorAll('#c-etapes .valide').forEach((v, i) => {
+    const t = p2 + 2.5 + i * 0.5;
+    a(v, [{ transform: 'scale(0)', background: 'rgba(242,240,232,0.1)' }, { transform: 'scale(1.25)', background: '#d4ff3f', offset: 0.6 }, { transform: 'scale(1)', background: '#d4ff3f' }], t, 0.35, 'rebond');
+    S.son(sons[i], t);
+  });
+  a(ui.querySelector('#clics'), [{ '--v': 1020 }, { '--v': 8920 }], p2 + 4.6, 1.2, 'douce');
+  a(ui.querySelector('#clients'), [{ '--n': 0 }, { '--n': 47 }], p2 + 4.6, 1.2, 'douce');
+  a(ui.querySelector('#partages'), [{ '--v': 1100 }, { '--v': 12480 }], p2 + 5.1, 0.9, 'douce');
+  S.son('envoi', p2 + 4.5);
+
+  /* ======================================================
+     PLAN 3 (9 → 15 s) : zoom arrière rapide, record, lumière éclatante
+     ====================================================== */
+  const p3 = P.plan3;
+  a(tel, [{ transform: 'translate3d(0, 0, 260px) rotateX(4deg) rotateY(-10deg) rotateZ(0deg)' }, { transform: 'translate3d(0, 30px, -170px) rotateX(0deg) rotateY(0deg) rotateZ(0deg)' }], p3, 0.45, 'sortie');
+  a(piste, [{ transform: 'translateY(-760px)' }, { transform: 'translateY(0)' }], p3, 0.45, 'douce');
+  S.son('aspire', p3 - 0.4);
+  // la notification de record tombe, le compteur passe le cap
+  a(record, [{ opacity: 0, transform: 'translateY(-160px)' }, { opacity: 1, transform: 'none' }], p3 + 0.5, 0.5, 'rebond');
+  a(vues, [{ '--v': 98760 }, { '--v': 100000 }], p3 + 0.5, 0.6, 'douce');
+  S.son('carillon', p3 + 0.5);
+  // l'éclat de lumière
+  const eclat = S.creer('div', 'eclat', vue);
+  const rayons = S.creer('div', 'rayons', vue);
+  const trait = S.creer('div', 'trait-lumiere', vue);
+  vue.insertBefore(eclat, tel); vue.insertBefore(rayons, tel);
+  a(eclat, [{ opacity: 0, transform: 'scale(0.2)' }, { opacity: 1, transform: 'scale(1)', offset: 0.18 }, { opacity: 0.35, transform: 'scale(1.1)' }], p3 + 1.0, 1.6, 'douce');
+  a(eclat, [{ opacity: 0.35 }, { opacity: 0.25 }], p3 + 2.6, 3.0, 'fluide');
+  a(rayons, [{ opacity: 0, transform: 'rotate(0deg) scale(0.6)' }, { opacity: 1, transform: 'rotate(40deg) scale(1)' }], p3 + 1.0, 1.2, 'douce');
+  a(rayons, [{ opacity: 1, transform: 'rotate(40deg) scale(1)' }, { opacity: 0.5, transform: 'rotate(110deg) scale(1.05)' }], p3 + 2.2, 3.6, 'lineaire');
+  a(trait, [{ opacity: 0, transform: 'scaleX(0)' }, { opacity: 1, transform: 'scaleX(1)', offset: 0.3 }, { opacity: 0, transform: 'scaleX(1.2)' }], p3 + 1.0, 0.9, 'douce');
+  a(eclairEcran, [{ opacity: 0 }, { opacity: 0.55, offset: 0.2 }, { opacity: 0 }], p3 + 1.0, 0.7, 'douce');
+  a(tel, [{ transform: 'translate3d(0, 30px, -170px)' }, { transform: 'translate3d(0, 30px, -120px)' }, { transform: 'translate3d(0, 30px, -170px)' }], p3 + 1.0, 0.5, 'rebond');
+  for (let i = 0; i < 22; i++) {
+    const e = S.creer('i', 'etincelle', vue);
+    const ang = hasard() * Math.PI * 2, dist = 300 + hasard() * 420;
+    e.style.left = '540px'; e.style.top = (1920 * 0.46) + 'px';
+    a(e, [{ opacity: 0, transform: 'translate(0,0) scale(1)' }, { opacity: 1, transform: 'translate(0,0) scale(1)', offset: 0.05 },
+      { opacity: 0, transform: 'translate(' + Math.cos(ang) * dist + 'px,' + Math.sin(ang) * dist + 'px) scale(0.3)' }], p3 + 1.05 + hasard() * 0.15, 1.3 + hasard() * 0.6, 'douce');
+  }
+  S.son('scintille', p3 + 1.0);
+  S.son('caisse', p3 + 1.15);
+  a(record, [{ transform: 'none' }, { transform: 'scale(1.04)' }, { transform: 'none' }], p3 + 3.0, 0.5, 'fluide', { iterations: 2 });
+  S.son('succes', p3 + 3.0);
+
+  /* ======================================================
+     PLAN 4 (15 → 20 s) : la caméra recule, l'interface s'efface, fin
+     ====================================================== */
+  const p4 = P.plan4;
+  a(tel, [{ transform: 'translate3d(0, 30px, -170px)' }, { transform: 'translate3d(0, 0, -620px)' }], p4, 0.8, 'douce');
+  a(eclat, [{ opacity: 0.25 }, { opacity: 0 }], p4, 0.6, 'sortie');
+  a(rayons, [{ opacity: 0.5 }, { opacity: 0 }], p4, 0.6, 'sortie');
+  a(lueur, [{ opacity: 1 }, { opacity: 0.3 }], p4, 0.8, 'douce');
+  a(bureau, [{ filter: 'blur(8px) brightness(0.35)' }, { filter: 'blur(12px) brightness(0.15)' }], p4, 0.8, 'douce');
+  S.son('whoosh', p4 - 0.1);
+  // l'interface s'efface
+  a(ui, [{ opacity: 1, filter: 'blur(0)' }, { opacity: 0, filter: 'blur(12px)' }], p4 + 0.5, 0.5, 'sortie');
+  a(record, [{ opacity: 1 }, { opacity: 0 }], p4 + 0.5, 0.3, 'sortie');
+  S.son('flip', p4 + 0.5);
+  // écran de fin
+  const fin = S.creer('div', 'fin', scene);
+  a(fin, [{ opacity: 0 }, { opacity: 1 }], P.fin, 0.45, 'douce');
+  const tuile = S.creer('div', 'tuile', fin);
+  tuile.innerHTML = LOGO_SVG;
+  const nom = S.creer('div', 'fin-nom', fin);
+  const lettres = S.lettres(nom, R.marque);
+  const slogan = S.creer('div', 'fin-slogan', fin, R.slogan);
+  const appel = S.creer('div', 'appel', fin);
+  appel.innerHTML = '<span class="rond">↓</span>' + R.appel;
+  if (!/t[ée]l[ée]charger/i.test(R.appel)) appel.querySelector('.rond').textContent = '→';
+  const site = S.creer('div', 'fin-site', fin, R.site);
+  a(tuile, [{ opacity: 0, transform: 'scale(0.3) rotate(-120deg)' }, { opacity: 1, transform: 'none' }], P.fin + 0.2, 0.8, 'rebond');
+  a(tuile.querySelector('g'), [{ opacity: 0, transform: 'translateX(-30px)' }, { opacity: 1, transform: 'none' }], P.fin + 0.55, 0.5, 'douce');
+  a(tuile.querySelector('.logo-vitesse'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], P.fin + 0.7, 0.4, 'douce');
+  lettres.forEach((l, i) => a(l, [{ opacity: 0, transform: 'translateY(50px)' }, { opacity: 1, transform: 'none' }], P.fin + 0.5 + i * 0.05, 0.5, 'douce'));
+  a(slogan, [{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'none' }], P.fin + 1.0, 0.5, 'douce');
+  a(appel, [{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'none' }], P.fin + 1.5, 0.6, 'rebond');
+  a(appel, [{ transform: 'none' }, { transform: 'scale(1.05)' }, { transform: 'none' }], P.fin + 2.5, 0.5, 'fluide', { iterations: 2 });
+  a(site, [{ opacity: 0 }, { opacity: 1 }], P.fin + 2.0, 0.5, 'douce');
+  S.son('boum', P.fin + 0.2);
+  S.son('notif', P.fin + 1.5, { ton: 3 });
+
+  /* ---------- 🎵 Le beat : nappe calme, puis la batterie tombe pile à l'allumage du plan 2 ---------- */
+  S.son('musique', 0, { duree: FIN, drop: P.plan2 });
+
+  S.tenir(FIN);
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>

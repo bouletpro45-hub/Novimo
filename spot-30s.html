@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spot 30 secondes</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  RÉGLAGES — spot de 30 secondes, format paysage 16:9
+     (YouTube, écran en vitrine, TV). 6 scènes enchaînées.
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Spot 30 s — Novimo',
+  formats: ['paysage'],            // ce modèle n'existe qu'en 16:9 (1920 × 1080)
+
+  marque: 'Novimo',
+  slogan: 'Votre marque, en mouvement.',
+
+  // Scène 2 : l'accroche
+  accroche1: 'Vos clients|scrollent.',     // | = retour à la ligne
+  accroche2: 'Arrêtez|leur pouce.',
+  carteFil: 'Votre pub ici',
+
+  // Scène 3 : les offres (prix en euros, nombres entiers)
+  titreOffres: 'Trois formats, un seul studio',
+  offres: [
+    { icone: 'etoile',  nom: 'Logo animé', detail: '4 secondes',      prix: 300, avant: '' },
+    { icone: 'eclair',  nom: 'Petite pub', detail: '8 secondes',      prix: 150, avant: '' },
+    { icone: 'ecran',   nom: 'Spot vidéo', detail: '30 ou 60 secondes', prix: 750, avant: 'dès ' }
+  ],
+
+  // Scène 4 : la comparaison
+  titreComparaison: 'Moitié prix d\'un freelance',
+  comparaison: { labelPro: 'Freelance, dès', prixPro: 600, labelNous: 'Novimo', prixNous: 300, objet: 'Logo animé' },
+  sourceComparaison: 'Source : baromètre Malt, repris par Le Freelance',
+
+  // Scène 5 : les étapes
+  titreEtapes: 'Simple comme bonjour',
+  etapes: [
+    { icone: 'lettre',  texte: 'Vous écrivez' },
+    { icone: 'horloge', texte: 'Aperçu en 48 h' },
+    { icone: 'check',   texte: 'Vous postez' }
+  ],
+
+  // Scène 6 : l'appel à l'action
+  appel: 'Demandez votre devis',
+  reseau: '@novimo_md',
+
+  couleurs: {
+    fond:      '#0b0c09',
+    fond2:     '#1a1c14',
+    accent:    '#d4ff3f',
+    texte:     '#f2f0e8',
+    texteDoux: '#a3a59a'
+  },
+  polices: { titre: 'Bricolage Grotesque', texte: 'Inter' },
+  vitesse: 1
+};
+</script>
+
+<style>
+  @property --n { syntax: '<integer>'; inherits: false; initial-value: 0; }
+  .nombre { --n: 0; counter-reset: n var(--n); font-variant-numeric: tabular-nums; }
+  .nombre::before { content: counter(n); }
+
+  .halo-fond {
+    position: absolute; left: 50%; top: -30%;
+    width: 1600px; height: 1000px; margin-left: -800px;
+    background: radial-gradient(ellipse at center, rgba(212, 255, 63, 0.13), transparent 65%);
+  }
+  /* Chaque scène occupe tout l'écran, avec les marges de sécurité TV (~10 %) */
+  .plan { position: absolute; inset: 0; padding: 108px 192px; display: flex; flex-direction: column; justify-content: center; }
+  .titre {
+    font-family: var(--police-titre), system-ui, sans-serif;
+    font-weight: 700; letter-spacing: -0.035em; line-height: 0.95;
+    text-transform: uppercase;
+  }
+  .accent { color: var(--accent); }
+  .masque-ligne { display: block; overflow: hidden; padding-bottom: 0.08em; }
+  .masque-ligne > span { display: block; white-space: nowrap; }  /* une ligne = une ligne (utilise | pour couper) */
+
+  /* Scène 1 : logo */
+  .logo { display: flex; align-items: center; justify-content: center; gap: 40px; }
+  .logo-carre {
+    width: 200px; height: 200px; border-radius: 56px;
+    display: grid; place-items: center;
+    background: var(--accent);
+    box-shadow: 0 0 120px rgba(212, 255, 63, 0.45);
+  }
+  .logo-carre { overflow: hidden; }
+  .logo-carre svg { width: 100%; height: 100%; overflow: visible; }
+  /* le N penché du logo Novimo, et ses deux traits de vitesse */
+  .logo-carre .logo-n { fill: #0b0c09; stroke: #0b0c09; stroke-width: 3; stroke-linejoin: round; }
+  .logo-carre .logo-vitesse { fill: none; stroke: #0b0c09; stroke-width: 6; stroke-linecap: round; transform-box: fill-box; transform-origin: right center; }
+  .logo-nom { text-transform: lowercase; font-family: var(--police-titre), system-ui, sans-serif; font-weight: 700; font-size: 190px; letter-spacing: -0.05em; }
+  .logo-slogan { margin-top: 40px; text-align: center; font-size: 44px; color: var(--texte-doux); }
+
+  /* Scène 2 : fil qui défile */
+  .plan-fil { flex-direction: row; align-items: center; justify-content: space-between; }
+  .plan-fil .titre { font-size: 130px; }
+  .plan-fil > div:first-child { flex: 1; min-width: 0; }
+  .tel {
+    flex: none; width: 380px; height: 760px; border-radius: 56px;
+    padding: 16px; background: #1d1f17; border: 3px solid #3a3c32;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+  }
+  .tel-ecran { position: relative; width: 100%; height: 100%; border-radius: 42px; overflow: hidden; background: #0f100d; }
+  .fil { position: absolute; left: 18px; right: 18px; top: 18px; display: flex; flex-direction: column; gap: 16px; }
+  .publication { height: 200px; border-radius: 22px; background: #22241c; padding: 20px; }
+  .publication i { display: block; height: 14px; border-radius: 8px; background: #33362b; margin-bottom: 12px; }
+  .publication i:nth-child(1) { width: 60%; } .publication i:nth-child(2) { width: 85%; } .publication i:nth-child(3) { width: 40%; }
+  .publication.vedette { display: grid; place-items: center; background: var(--accent); color: #0b0c09; font-size: 34px; font-weight: 800; }
+
+  /* Scène 3 : offres */
+  .plan-offres .titre { font-size: 92px; margin-bottom: 70px; }
+  .offres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; }
+  .offre { padding: 44px; border-radius: 40px; background: var(--fond2); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.06); }
+  .offre-icone { width: 92px; height: 92px; border-radius: 28px; display: grid; place-items: center; background: rgba(212,255,63,0.12); color: var(--accent); }
+  .offre-icone svg { width: 52px; height: 52px; }
+  .offre h3 { margin-top: 34px; font-family: var(--police-titre), system-ui, sans-serif; font-size: 56px; letter-spacing: -0.03em; }
+  .offre p { margin-top: 8px; font-size: 32px; color: var(--texte-doux); }
+  .offre-prix { margin-top: 30px; font-family: var(--police-titre), system-ui, sans-serif; font-size: 96px; font-weight: 700; color: var(--accent); letter-spacing: -0.04em; }
+  .offre-prix small { font-size: 40px; color: var(--texte-doux); margin-right: 8px; }
+
+  /* Scène 4 : comparaison */
+  .plan-comp .titre { font-size: 110px; margin-bottom: 80px; }
+  .comp { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 70px; }
+  .barres { display: flex; flex-direction: column; gap: 46px; }
+  .barre-ligne { display: grid; grid-template-columns: 330px 1fr; align-items: center; gap: 30px; font-size: 38px; }
+  .barre { height: 90px; border-radius: 26px; display: flex; align-items: center; justify-content: flex-end; padding: 0 30px; font-size: 44px; font-weight: 800; transform-origin: left center; }
+  .barre.pro { width: 100%; background: #3a3c32; color: var(--texte); }
+  .barre.nous { width: 50%; background: var(--accent); color: #0b0c09; box-shadow: 0 0 60px rgba(212,255,63,0.35); }
+  .gros-chiffre { font-family: var(--police-titre), system-ui, sans-serif; font-size: 260px; font-weight: 700; color: var(--accent); letter-spacing: -0.06em; line-height: 1; }
+  .source { margin-top: 50px; font-size: 26px; color: var(--texte-doux); }
+
+  /* Scène 5 : étapes */
+  .plan-etapes .titre { font-size: 110px; margin-bottom: 90px; text-align: center; }
+  .etapes { position: relative; display: flex; justify-content: space-between; }
+  .etapes svg.liaison { position: absolute; left: 120px; right: 120px; top: 90px; width: calc(100% - 240px); height: 6px; overflow: visible; }
+  .etape { position: relative; width: 360px; text-align: center; white-space: nowrap; }
+  .etape-rond { width: 180px; height: 180px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; background: var(--fond2); box-shadow: inset 0 0 0 3px var(--accent), 0 0 60px rgba(212,255,63,0.25); color: var(--accent); }
+  .etape-rond svg { width: 80px; height: 80px; }
+  .etape p { margin-top: 30px; font-size: 44px; font-weight: 700; }
+
+  /* Scène 6 : appel à l'action */
+  .plan-fin { align-items: center; text-align: center; }
+  .plan-fin .titre { font-size: 140px; }
+  .bouton-fin {
+    display: inline-flex; align-items: center; gap: 24px;
+    margin-top: 70px; padding: 18px 56px 18px 18px; border-radius: 999px;
+    background: var(--accent); color: #0b0c09;
+    font-size: 52px; font-weight: 800;
+    box-shadow: 0 0 80px rgba(212,255,63,0.4);
+  }
+  .bouton-fin .rond { width: 96px; height: 96px; border-radius: 50%; background: #0b0c09; color: var(--accent); display: grid; place-items: center; }
+  .bouton-fin .rond svg { width: 46px; height: 46px; }
+  .reseau-fin { margin-top: 44px; font-size: 48px; color: var(--texte-doux); }
+
+  /* Bande de transition */
+  .bande { position: absolute; top: -30%; left: 0; width: 60%; height: 160%; background: var(--accent); }
+</style>
+</head>
+<body>
+
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+const ICONES = {
+  etoile:  'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z',
+  eclair:  'M13 2L4 14h7l-1 8 9-12h-7z',
+  ecran:   'M3 5h18v12H3zM8 21h8M12 17v4M10 9l4 2-4 2z',
+  lettre:  'M3 5h18v14H3zM3 6l9 7 9-7',
+  horloge: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7v5l3 2',
+  check:   'M5 12l4 4L19 6',
+  fleche:  'M5 12h14M13 6l6 6-6 6'
+};
+const icone = (nom) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + (ICONES[nom] || ICONES.etoile) + '"/></svg>';
+
+/* =======================================================
+   🎬  L'ANIMATION — 6 scènes, 30 secondes
+   ======================================================= */
+function construire(scene, R, S) {
+  // Les moments où chaque scène commence (en secondes)
+  const T = { logo: 0, fil: 4.2, offres: 9.4, comp: 15.4, etapes: 21.2, fin: 26 };
+
+  S.creer('div', 'halo-fond', scene);
+  const entrer = (el, t, dy) => S.anim(el, [{ opacity: 0, transform: 'translateY(' + (dy || 40) + 'px)' }, { opacity: 1, transform: 'none' }], t, 0.8, 'douce');
+  const sortirPlan = (plan, t) => S.anim(plan, [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(0.96)' }], t, 0.35, 'sortie');
+  const balayer = (t) => {
+    const b = S.creer('div', 'bande', scene);
+    S.anim(b, [{ transform: 'translateX(-160%) skewX(-14deg)' }, { transform: 'translateX(260%) skewX(-14deg)' }], t, 0.85, 'fluide');
+  };
+  // Un titre dont les lignes montent depuis un masque ( | = retour à la ligne )
+  const titreMasque = (parent, texte, classe, t) => {
+    const titre = S.creer('div', 'titre ' + (classe || ''), parent);
+    texte.split('|').forEach((ligne, i) => {
+      const m = S.creer('span', 'masque-ligne', titre);
+      const sp = S.creer('span', '', m);
+      sp.innerHTML = ligne.trim();
+      S.anim(sp, [{ transform: 'translateY(140%)' }, { transform: 'none' }], t + i * 0.12, 0.8, 'douce');
+    });
+    return titre;
+  };
+
+  /* ---------- Scène 1 : le logo Novimo ---------- */
+  const p1 = S.creer('div', 'plan', scene);
+  const logo = S.creer('div', 'logo', p1);
+  const carre = S.creer('div', 'logo-carre', logo);
+  carre.innerHTML = '<svg viewBox="0 0 100 100"><g><path class="logo-n" transform="translate(6 0) skewX(-12) translate(10.6 0)" d="M30 76V24h13l15 27V24h13v52H58L43 49v27z"/></g>' +
+    '<path class="logo-vitesse" d="M13 41h11M17 55h8"/></svg>';
+  const nom = S.creer('div', 'logo-nom', logo);
+  const lettres = S.lettres(nom, R.marque);
+  const slogan = S.creer('div', 'logo-slogan', p1, R.slogan);
+  S.anim(carre, [{ opacity: 0, transform: 'scale(0.2) rotate(-140deg)' }, { opacity: 1, transform: 'none' }], 0.2, 1, 'rebond');
+  S.anim(carre.querySelector('g'), [{ opacity: 0, transform: 'translateX(-30px)' }, { opacity: 1, transform: 'none' }], 0.6, 0.7, 'douce');
+  S.anim(carre.querySelector('.logo-vitesse'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], 0.85, 0.6, 'douce');
+  lettres.forEach((l, i) => S.anim(l, [{ opacity: 0, transform: 'translateX(-60px) rotate(-10deg)' }, { opacity: 1, transform: 'none' }], 1.0 + i * 0.07, 0.8, 'douce'));
+  entrer(slogan, 1.8);
+  sortirPlan(p1, T.fil - 0.4);
+  balayer(T.fil - 0.5);
+
+  /* ---------- Scène 2 : le fil qui défile puis s'arrête sur votre pub ---------- */
+  const p2 = S.creer('div', 'plan plan-fil', scene);
+  const textes = S.creer('div', '', p2);
+  titreMasque(textes, R.accroche1, '', T.fil + 0.2);
+  const t2 = titreMasque(textes, R.accroche2, 'accent', T.fil + 2.6);
+  t2.style.marginTop = '40px';
+  const tel = S.creer('div', 'tel', p2);
+  const ecranTel = S.creer('div', 'tel-ecran', tel);
+  const fil = S.creer('div', 'fil', ecranTel);
+  for (let i = 0; i < 9; i++) {
+    const pub = S.creer('div', 'publication' + (i === 7 ? ' vedette' : ''), fil);
+    if (i === 7) pub.textContent = R.carteFil; else pub.innerHTML = '<i></i><i></i><i></i>';
+  }
+  S.anim(tel, [{ opacity: 0, transform: 'translateY(120px) rotate(6deg)' }, { opacity: 1, transform: 'rotate(3deg)' }], T.fil + 0.3, 0.9, 'douce');
+  // le fil défile vite... puis freine et s'arrête sur la publication "vedette"
+  S.anim(fil, [{ transform: 'translateY(0)' }, { transform: 'translateY(-1500px)' }], T.fil + 0.6, 2.4, 'douce');
+  const vedette = fil.querySelector('.vedette');
+  S.anim(vedette, [{ transform: 'scale(1)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }], T.fil + 2.9, 0.6, 'rebond');
+  sortirPlan(p2, T.offres - 0.4);
+  balayer(T.offres - 0.5);
+
+  /* ---------- Scène 3 : les offres ---------- */
+  const p3 = S.creer('div', 'plan plan-offres', scene);
+  titreMasque(p3, R.titreOffres, '', T.offres + 0.1);
+  const grille = S.creer('div', 'offres', p3);
+  R.offres.forEach((o, i) => {
+    const carte = S.creer('div', 'offre', grille);
+    carte.innerHTML = '<div class="offre-icone">' + icone(o.icone) + '</div><h3>' + o.nom + '</h3><p>' + o.detail + '</p>' +
+      '<div class="offre-prix">' + (o.avant ? '<small>' + o.avant + '</small>' : '') + '<span class="nombre"></span>&nbsp;€</div>';
+    const t = T.offres + 0.5 + i * 0.25;
+    S.anim(carte, [{ opacity: 0, transform: 'translateY(160px) rotate(' + (i - 1) * 4 + 'deg)' }, { opacity: 1, transform: 'none' }], t, 0.9, 'rebond');
+    S.anim(carte.querySelector('.nombre'), [{ '--n': 0 }, { '--n': o.prix }], t + 0.4, 1.4, 'douce');
+  });
+  sortirPlan(p3, T.comp - 0.4);
+  balayer(T.comp - 0.5);
+
+  /* ---------- Scène 4 : la comparaison avec un freelance ---------- */
+  const C = R.comparaison;
+  const p4 = S.creer('div', 'plan plan-comp', scene);
+  titreMasque(p4, R.titreComparaison.replace('freelance', '<span class="accent">freelance</span>'), '', T.comp + 0.1);
+  const comp = S.creer('div', 'comp', p4);
+  const barres = S.creer('div', 'barres', comp);
+  [[C.labelPro, C.prixPro, 'pro'], [C.labelNous, C.prixNous, 'nous']].forEach(([label, prix, classe], i) => {
+    const ligne = S.creer('div', 'barre-ligne', barres);
+    S.creer('span', '', ligne, label);
+    const barre = S.creer('div', 'barre ' + classe, ligne);
+    barre.innerHTML = '<span class="nombre"></span>&nbsp;€';
+    const t = T.comp + 0.6 + i * 0.5;
+    entrer(ligne, t, 20);
+    S.anim(barre, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], t + 0.2, 1.2, 'douce');
+    S.anim(barre.querySelector('.nombre'), [{ '--n': 0 }, { '--n': prix }], t + 0.2, 1.2, 'douce');
+  });
+  const pourcent = Math.round((1 - C.prixNous / C.prixPro) * 100);
+  const gros = S.creer('div', 'gros-chiffre', comp);
+  gros.innerHTML = '−<span class="nombre"></span>%';
+  S.anim(gros, [{ opacity: 0, transform: 'scale(0.4)' }, { opacity: 1, transform: 'scale(1)' }], T.comp + 1.8, 0.8, 'rebond');
+  S.anim(gros.querySelector('.nombre'), [{ '--n': 0 }, { '--n': pourcent }], T.comp + 1.8, 1.2, 'douce');
+  const source = S.creer('div', 'source', p4, C.objet + ' · ' + R.sourceComparaison);
+  entrer(source, T.comp + 2.6, 10);
+  sortirPlan(p4, T.etapes - 0.4);
+  balayer(T.etapes - 0.5);
+
+  /* ---------- Scène 5 : les étapes ---------- */
+  const p5 = S.creer('div', 'plan plan-etapes', scene);
+  titreMasque(p5, R.titreEtapes, '', T.etapes + 0.1).style.textAlign = 'center';
+  const etapes = S.creer('div', 'etapes', p5);
+  etapes.innerHTML = '<svg class="liaison" viewBox="0 0 100 6" preserveAspectRatio="none"><path pathLength="1" d="M0 3 H100" stroke="var(--accent)" stroke-width="6" stroke-dasharray="1"/></svg>';
+  S.anim(etapes.querySelector('.liaison path'), [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], T.etapes + 0.7, 2.2, 'fluide');
+  R.etapes.forEach((e, i) => {
+    const bloc = S.creer('div', 'etape', etapes);
+    bloc.innerHTML = '<div class="etape-rond">' + icone(e.icone) + '</div><p>' + e.texte + '</p>';
+    const t = T.etapes + 0.6 + i * 0.85;
+    S.anim(bloc.querySelector('.etape-rond'), [{ opacity: 0, transform: 'scale(0)' }, { opacity: 1, transform: 'scale(1)' }], t, 0.8, 'rebond');
+    entrer(bloc.querySelector('p'), t + 0.25, 24);
+  });
+  sortirPlan(p5, T.fin - 0.4);
+  balayer(T.fin - 0.5);
+
+  /* ---------- Scène 6 : l'appel à l'action ---------- */
+  const p6 = S.creer('div', 'plan plan-fin', scene);
+  // le slogan sur deux lignes (coupé après la virgule)
+  titreMasque(p6, R.slogan.replace(', ', ',|').replace('mouvement', '<span class="accent">mouvement</span>'), '', T.fin + 0.1);
+  const bouton = S.creer('div', 'bouton-fin', p6);
+  bouton.innerHTML = '<span class="rond">' + icone('fleche') + '</span>' + R.appel;
+  S.anim(bouton, [{ opacity: 0, transform: 'scale(0.5)' }, { opacity: 1, transform: 'scale(1)' }], T.fin + 0.8, 0.8, 'rebond');
+  S.anim(bouton, [{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], T.fin + 2.0, 0.8, 'fluide');
+  const reseau = S.creer('div', 'reseau-fin', p6, R.reseau);
+  entrer(reseau, T.fin + 1.3, 20);
+
+  S.tenir(30);
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Devis gratuit en 1 minute — Novimo</title>
+<!-- SEO -->
+<meta name="description" content="Calculez en direct le prix de votre logo animé, pub ou spot vidéo et recevez votre devis en PDF par e-mail. Gratuit et sans engagement.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.novimo.fr/site/devis.html">
+<meta name="theme-color" content="#0b0c09">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Novimo">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Devis gratuit en 1 minute — Novimo">
+<meta property="og:description" content="Calculez en direct le prix de votre logo animé, pub ou spot vidéo et recevez votre devis en PDF par e-mail. Gratuit et sans engagement.">
+<meta property="og:url" content="https://www.novimo.fr/site/devis.html">
+<meta property="og:image" content="https://www.novimo.fr/site/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Novimo : votre marque, en mouvement. Logos animés, pubs et spots vidéo.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Devis gratuit en 1 minute — Novimo">
+<meta name="twitter:description" content="Calculez en direct le prix de votre logo animé, pub ou spot vidéo et recevez votre devis en PDF par e-mail. Gratuit et sans engagement.">
+<meta name="twitter:image" content="https://www.novimo.fr/site/og-image.jpg">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<!-- /SEO -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
+<link rel="stylesheet" href="style.css?v=10">
+<!-- Les prix et les options se règlent dans reglages.js -->
+</head>
+<body data-page="devis">
+<a class="aller-contenu" href="#contenu">Aller au contenu</a>
+
+<main id="contenu" class="devis">
+
+  <header class="devis-tete">
+    <p class="bulle" data-entree>Devis gratuit</p>
+    <h1 class="devis-titre" data-entree>Votre devis <span class="accent">en une minute</span></h1>
+    <p class="texte-section" data-entree>Choisissez vos animations, le prix se calcule en direct. Envoyez votre demande : je vous réponds avec une première idée.</p>
+  </header>
+
+  <div class="devis-grille">
+
+    <!-- ============ LE FORMULAIRE ============ -->
+    <form class="devis-formulaire" id="devis" novalidate>
+
+      <!-- Étape : les animations (remplies depuis reglages.js) -->
+      <fieldset class="bloc-devis" data-entree>
+        <legend><h2>Vos animations</h2></legend>
+        <ul class="lignes-produits" id="produits"></ul>
+        <p class="astuce" id="astuce-pack" hidden></p>
+      </fieldset>
+
+      <!-- Étape : les options (remplies depuis reglages.js) -->
+      <fieldset class="bloc-devis" data-entree>
+        <legend><h2>Options</h2></legend>
+        <div class="lignes-options" id="options"></div>
+      </fieldset>
+
+      <!-- Étape : le client -->
+      <fieldset class="bloc-devis" data-entree>
+        <legend><h2>Votre entreprise</h2></legend>
+        <div class="champs-devis">
+          <label class="champ">
+            <span>Nom de l'entreprise ou de la marque</span>
+            <input id="d-commerce" name="commerce" type="text" minlength="2" maxlength="40" autocomplete="organization" required aria-describedby="err-commerce">
+            <span class="champ-erreur" id="err-commerce" hidden></span>
+          </label>
+          <label class="champ">
+            <span>Secteur d'activité</span>
+            <select id="d-type" name="type">
+              <option>Entreprise, PME</option>
+              <option>Start-up, appli, tech</option>
+              <option>Commerce, boutique, restaurant</option>
+              <option>Artisan, indépendant</option>
+              <option>Créateur de contenu, influenceur</option>
+              <option>Association, événement</option>
+              <option>Autre</option>
+            </select>
+          </label>
+          <label class="champ">
+            <span>Votre prénom</span>
+            <input id="d-prenom" name="prenom" type="text" maxlength="40" autocomplete="given-name" aria-describedby="err-prenom">
+            <span class="champ-erreur" id="err-prenom" hidden></span>
+          </label>
+          <label class="champ">
+            <span>Votre e-mail (pour recevoir le devis)</span>
+            <input id="d-email" name="email" type="email" maxlength="120" autocomplete="email" inputmode="email" required aria-describedby="err-email">
+            <span class="champ-erreur" id="err-email" hidden></span>
+          </label>
+          <label class="champ">
+            <span>Téléphone (facultatif)</span>
+            <input id="d-tel" name="tel" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" pattern="[+0-9 ().\-]{6,20}" aria-describedby="err-tel">
+            <span class="champ-erreur" id="err-tel" hidden></span>
+          </label>
+          <label class="champ champ-large">
+            <span>Votre idée, vos couleurs, votre offre du moment</span>
+            <textarea id="d-message" name="message" rows="5" maxlength="800"></textarea>
+          </label>
+          <label class="consentement champ-large">
+            <input id="d-accord" type="checkbox" required aria-describedby="err-accord">
+            <span>J'accepte que ces informations soient utilisées pour traiter ma demande de devis (voir la <a href="confidentialite.html">politique de confidentialité</a> et les <a href="cgu.html">conditions générales</a>).</span>
+          </label>
+          <span class="champ-erreur champ-large" id="err-accord" hidden></span>
+          <!-- Piège à robots (anti-spam) : invisible et ignoré par les humains -->
+          <label class="piege" aria-hidden="true">Votre site web
+            <input id="d-site-web" name="site_web" type="text" tabindex="-1" autocomplete="off">
+          </label>
+        </div>
+      </fieldset>
+    </form>
+
+    <!-- ============ LE RÉCAPITULATIF (et ce qui s'imprime) ============ -->
+    <aside class="recap" id="recap" aria-live="polite" data-entree>
+      <div class="recap-impression">
+        <p class="recap-marque">Novimo</p>
+        <p>Devis n° <span id="r-numero"></span> · <span id="r-date"></span></p>
+        <p>Pour : <strong id="r-client">votre entreprise</strong> · <span id="r-email"></span></p>
+      </div>
+
+      <h2 class="recap-titre">Récapitulatif</h2>
+      <ul class="recap-lignes" id="r-lignes"></ul>
+      <p class="recap-vide" id="r-vide">Ajoutez une animation pour voir le prix.</p>
+
+      <div class="recap-total">
+        <span>Total</span>
+        <strong id="r-total">0 €</strong>
+      </div>
+      <!-- Acompte à la signature (le pourcentage se règle dans reglages.js) -->
+      <div class="recap-acompte">
+        <span>Acompte à la signature (<span class="r-pourcent">30</span> %)</span>
+        <strong id="r-acompte">0 €</strong>
+      </div>
+      <p class="recap-mention"><span class="r-pourcent">30</span> % du prix total devront être versés à la signature du devis.</p>
+      <p class="recap-eco" id="r-eco" hidden></p>
+      <p class="recap-note">Prix indicatif, confirmé par e-mail avant de commencer. Inclus : deux séries de retouches, MP4 Full HD. Formats courts en carré et vertical, spots en 16:9. Devis valable 30 jours.</p>
+      <p class="recap-note">Prix freelance : <span data-source></span>.</p>
+
+      <div class="recap-actions">
+        <button class="bouton" type="button" id="envoyer">Envoyer mon devis</button>
+        <button class="bouton bouton-discret" type="button" id="imprimer">Télécharger le PDF</button>
+      </div>
+      <p class="recap-erreur" id="erreur" role="alert"></p>
+      <p class="recap-succes" id="succes" role="status" hidden></p>
+    </aside>
+
+  </div>
+</main>
+
+<!-- Proposition de compte gratuit (jamais obligatoire) -->
+<dialog class="fenetre-compte" id="proposer-compte" aria-labelledby="titre-proposer-compte">
+  <span class="fenetre-icone" aria-hidden="true"><img src="logo.svg" alt=""></span>
+  <h2 id="titre-proposer-compte">Créez votre compte, <span class="accent">c'est gratuit</span></h2>
+  <p>Ça prend 10 secondes avec Google, et c'est plus simple pour la suite :</p>
+  <ul class="fenetre-liste">
+    <li>Retrouvez <strong>tous vos devis</strong> et leurs PDF au même endroit</li>
+    <li>Suivez leur <strong>avancement</strong> : en cours, acompte reçu, terminé</li>
+    <li>Votre e-mail et votre prénom sont <strong>déjà remplis</strong> la prochaine fois</li>
+  </ul>
+  <div class="fenetre-actions">
+    <a class="bouton bouton-icone" id="creer-compte" href="compte.html"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>Créer mon compte gratuit</a>
+    <button class="fenetre-ignorer" id="ignorer-compte" type="button">Continuer sans compte</button>
+  </div>
+</dialog>
+
+<footer class="pied">
+  <p class="pied-nom" aria-hidden="true">Novimo</p>
+  <div class="pied-ligne">
+    <span>Motion design pour les marques, les entreprises et les créateurs.</span>
+    <nav class="pied-legal" aria-label="Informations légales">
+      <a href="cgu.html#mentions">Mentions légales</a>
+      <a href="confidentialite.html">Confidentialité (RGPD)</a>
+      <a href="cgu.html">CGU / CGV</a>
+      <a href="#" data-cookies>Gérer les cookies</a>
+    </nav>
+    <nav class="pied-reseaux" aria-label="Novimo sur les réseaux sociaux">
+      <a data-reseau="instagram" href="https://www.instagram.com/novimo_md/" target="_blank" rel="noopener me" aria-label="Instagram de Novimo (@novimo_md)"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+      <a data-reseau="tiktok" href="https://www.tiktok.com/@novimo.com" target="_blank" rel="noopener me" aria-label="TikTok de Novimo (@novimo.com)"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M16.6 3c.4 2.2 1.8 3.7 4 3.9v3.2c-1.5 0-2.9-.4-4-1.2v6.4a5.7 5.7 0 1 1-5.7-5.7c.3 0 .6 0 .9.1v3.3a2.5 2.5 0 1 0 1.7 2.3V3h3.1z"/></svg></a>
+    </nav>
+    <span>© <span class="annee">2026</span> Novimo</span>
+  </div>
+</footer>
+
+<!-- Outils externes : création du PDF (jsPDF) et service en ligne (Supabase) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js?v=10"></script>
+<script src="reglages.js?v=10"></script>
+<script src="api.js?v=10"></script>
+<script src="commun.js?v=10"></script>
+<script src="confiance.js?v=10"></script>
+<script src="pdf-devis.js?v=10"></script>
+<script src="devis.js?v=10"></script>
+</body>
+</html>

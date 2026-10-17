@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vitrine UI</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  RÉGLAGES — style "interface d'appli" sur fond noir
+     Une forme lumineuse se transforme : pilule -> carte de score
+     -> icône -> bouton cliqué -> logo du commerce. (~14 s)
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Vitrine UI',
+  formats: ['carre', 'vertical', 'paysage'],   // aussi en 16:9 (YouTube, TV)
+
+  // Quelle démo jouer ? 'novimo', 'garage', 'coiffeur' ou 'cafe'
+  // (on peut aussi l'écrire dans l'adresse : vitrine-ui.html?demo=cafe)
+  demo: 'novimo',
+
+  // ---------- Les démos (commerces imaginaires) ----------
+  // Pour un client : copie une démo, change les textes et la couleur.
+  // icone : 'voiture', 'cle', 'ciseaux', 'calendrier', 'horloge', 'tasse', 'coeur', 'etoile', 'cadenas', 'check'
+  demos: {
+    // La démo de ton activité (utilisée sur le site)
+    novimo: {
+      marque: 'Novimo',
+      slogan: 'Votre marque, en mouvement',
+      accent: '#d4ff3f',
+      pilule: { icone: 'check', label: 'Votre logo animé', valeur: 'Prêt' },
+      carte:  { titre: 'Moins cher qu’un freelance', valeur: 50, max: 100, unite: '%',
+                mini: [ { label: 'Formats', valeur: 3, max: 3 }, { label: 'Retouches', valeur: 2, max: 2 }, { label: 'Aperçu (h)', valeur: 48, max: 48 } ] },
+      icone:  { icone: 'etoile', texte: 'Pour toutes les marques' },
+      bouton: 'Demander un devis'
+    },
+    garage: {
+      marque: 'Garage Rivet',
+      slogan: 'Mécanique de confiance',
+      accent: '#ff7a1a',
+      pilule: { icone: 'voiture', label: 'Votre voiture', valeur: 'Prête' },
+      carte:  { titre: 'Révision complète', valeur: 98, max: 100, unite: '%',
+                mini: [ { label: 'Freins', valeur: 100 }, { label: 'Pneus', valeur: 92 }, { label: 'Huile', valeur: 100 } ] },
+      icone:  { icone: 'cle', texte: 'Entretien en 24 h' },
+      bouton: 'Prendre rendez-vous'
+    },
+    coiffeur: {
+      marque: 'Studio Mila',
+      slogan: 'Coiffure & barbier',
+      accent: '#ff5fa2',
+      pilule: { icone: 'calendrier', label: 'Prochain créneau', valeur: '14h30' },
+      carte:  { titre: 'Créneaux libres cette semaine', valeur: 12, max: 20, unite: '',
+                mini: [ { label: 'Mardi', valeur: 3, max: 8 }, { label: 'Jeudi', valeur: 5, max: 8 }, { label: 'Samedi', valeur: 4, max: 8 } ] },
+      icone:  { icone: 'ciseaux', texte: 'Sans rendez-vous le matin' },
+      bouton: 'Réserver ma coupe'
+    },
+    cafe: {
+      marque: 'Café Bruma',
+      slogan: 'Torréfié dans le quartier',
+      accent: '#e3a15a',
+      pilule: { icone: 'tasse', label: 'Café du jour', valeur: 'Éthiopie' },
+      carte:  { titre: 'Tasses servies ce matin', valeur: 128, max: 150, unite: '',
+                mini: [ { label: 'Expresso', valeur: 64, max: 80 }, { label: 'Latte', valeur: 41, max: 80 }, { label: 'Filtre', valeur: 23, max: 80 } ] },
+      icone:  { icone: 'coeur', texte: 'Pâtisseries maison' },
+      bouton: 'Commander à emporter'
+    }
+  },
+
+  couleurs: {
+    fond:      '#060708',
+    fond2:     '#121418',
+    accent:    '#d4ff3f',   // remplacé par la couleur de la démo
+    texte:     '#f5f5f7',
+    texteDoux: '#8e9099'
+  },
+
+  polices: { titre: 'Inter', texte: 'Inter' },
+  vitesse: 1
+};
+</script>
+
+<style>
+  /* Le compteur de chiffres : la variable --n est animée de 0 à la valeur */
+  @property --n { syntax: '<integer>'; inherits: false; initial-value: 0; }
+  .nombre { --n: 0; counter-reset: n var(--n); font-variant-numeric: tabular-nums; }
+  .nombre::before { content: counter(n); }
+
+  .vignette {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 45%, var(--fond2) 0%, var(--fond) 70%);
+  }
+  .bloom {
+    position: absolute; left: 50%; top: 50%;
+    width: 900px; height: 900px; margin: -450px 0 0 -450px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 62%);
+    opacity: 0.18;
+    filter: blur(40px);
+  }
+
+  /* Tout est centré dans une grille : la forme grandit/rétrécit autour du centre */
+  .centre { position: absolute; inset: 0; display: grid; place-items: center; }
+  .centre > * { grid-area: 1 / 1; }
+
+  /* La forme qui se transforme */
+  .forme {
+    position: relative;
+    width: 72px; height: 72px; border-radius: 36px;
+    background: linear-gradient(180deg, #1a1c21, #0f1013);
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.07), 0 0 90px -10px var(--accent), 0 30px 80px rgba(0,0,0,0.6);
+    overflow: hidden;
+  }
+  .orbe-coeur {
+    position: absolute; inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 40%, #fff 0%, var(--accent) 35%, transparent 72%);
+  }
+  .couche { position: absolute; inset: 0; display: flex; align-items: center; }
+
+  /* Couche 1 : pilule */
+  .pilule { padding: 0 34px; gap: 26px; }
+  .pastille-icone {
+    flex: none; width: 92px; height: 92px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent);
+  }
+  .pastille-icone svg { width: 50px; height: 50px; }
+  .pilule-texte { flex: 1; font-size: 34px; color: var(--texte-doux); }
+  .pilule-valeur { font-size: 52px; font-weight: 700; color: var(--texte); letter-spacing: -0.02em; }
+
+  /* Couche 2 : carte de score */
+  .carte { flex-direction: column; justify-content: center; gap: 10px; padding: 50px; }
+  .carte-titre { font-size: 34px; color: var(--texte-doux); }
+  .jauge { position: relative; width: 520px; height: 280px; }
+  .jauge svg { width: 100%; height: 100%; overflow: visible; }
+  .jauge-chiffre {
+    position: absolute; left: 0; right: 0; bottom: 6px;
+    text-align: center; font-size: 150px; font-weight: 700; letter-spacing: -0.04em; line-height: 1;
+  }
+  .jauge-chiffre small { font-size: 56px; color: var(--accent); margin-left: 4px; }
+  .minis { display: flex; gap: 28px; margin-top: 18px; width: max-content; }
+  .mini {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 26px 16px 16px; border-radius: 999px;
+    background: rgba(255,255,255,0.05);
+    font-size: 26px; color: var(--texte-doux);
+  }
+  .mini svg { width: 58px; height: 58px; transform: rotate(-90deg); }
+  .mini b { display: block; color: var(--texte); font-size: 30px; }
+
+  /* Couche 3 : grosse icône */
+  .grande-icone { justify-content: center; color: var(--accent); }
+  .grande-icone svg { width: 150px; height: 150px; filter: drop-shadow(0 0 24px var(--accent)); }
+  .legende { font-size: 40px; color: var(--texte); font-weight: 700; margin-top: 540px; } /* sous l'icône */
+  .onde { width: 300px; height: 300px; border-radius: 90px; border: 3px solid var(--accent); }
+
+  /* Couche 4 : bouton */
+  .bouton { justify-content: center; font-size: 42px; font-weight: 700; color: #0b0b0c; }
+  .fond-bouton { position: absolute; inset: 0; background: var(--accent); }
+  .doigt {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 0 0 10px rgba(255,255,255,0.18);
+    transform: translate(180px, 120px);
+  }
+
+  /* Fin : logo du commerce */
+  .fin { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .fin-marque {
+    width: 150px; height: 150px; border-radius: 46px;
+    display: grid; place-items: center;
+    background: var(--accent); color: #0b0b0c;
+    font-size: 84px; font-weight: 700;
+    box-shadow: 0 0 120px -10px var(--accent);
+  }
+  .fin-nom { margin-top: 44px; font-size: 104px; font-weight: 700; letter-spacing: -0.035em; white-space: nowrap; width: max-content; }
+  .fin-slogan { margin-top: 14px; font-size: 36px; color: var(--texte-doux); }
+</style>
+</head>
+<body>
+
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+/* Petites icônes "interface" (traits sur une grille de 24) */
+const ICONES_UI = {
+  voiture:    'M3 13l2-5h14l2 5v5H3zM6 18v2M18 18v2M7 14.5h.01M17 14.5h.01',
+  cle:        'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z',
+  ciseaux:    'M6 9a3 3 0 1 0 0-6a3 3 0 1 0 0 6zM6 21a3 3 0 1 0 0-6a3 3 0 1 0 0 6zM20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12',
+  calendrier: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',
+  horloge:    'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7v5l3 2',
+  tasse:      'M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 10h2a2 2 0 0 1 0 4h-2M8 2v3M12 2v3',
+  coeur:      'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z',
+  etoile:     'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z',
+  cadenas:    'M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4',
+  check:      'M5 12l4 4L19 6'
+};
+const svgIcone = (nom) =>
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="' + (ICONES_UI[nom] || ICONES_UI.etoile) + '"/></svg>';
+
+/* =======================================================
+   🎬  L'ANIMATION
+   ======================================================= */
+function construire(scene, R, S) {
+  const D = R.demos[R.demo] || R.demos[Object.keys(R.demos)[0]];
+  // La couleur de la démo (sauf si une couleur est donnée dans l'adresse)
+  if (D.accent && !new URLSearchParams(location.search).has('accent')) scene.style.setProperty('--accent', D.accent);
+
+  S.creer('div', 'vignette', scene);
+  const bloom = S.creer('div', 'bloom', scene);
+  const centre = S.creer('div', 'centre', scene);
+  const forme = S.creer('div', 'forme', centre);
+  const orbe = S.creer('div', 'orbe-coeur', forme);
+
+  // --- La forme change de taille : on garde en mémoire sa taille actuelle ---
+  let taille = { w: 72, h: 72, r: 36 };
+  function transformer(vers, t, duree) {
+    S.anim(forme, [
+      { width: taille.w + 'px', height: taille.h + 'px', borderRadius: taille.r + 'px' },
+      { width: vers.w + 'px',  height: vers.h + 'px',  borderRadius: vers.r + 'px' }
+    ], t, duree || 0.8, 'fluide');
+    taille = vers;
+  }
+  const entrer = (el, t, dy) => S.anim(el, [{ opacity: 0, transform: 'translateY(' + (dy || 24) + 'px)' }, { opacity: 1, transform: 'none' }], t, 0.7, 'douce');
+  const sortir = (el, t) => S.anim(el, [{ opacity: 1 }, { opacity: 0 }], t, 0.25, 'sortie');
+  // Un chiffre qui défile de 0 à sa valeur
+  const compter = (el, valeur, t, duree) => S.anim(el, [{ '--n': 0 }, { '--n': valeur }], t, duree, 'douce');
+
+  /* ---------- 0. L'orbe s'allume ---------- */
+  S.anim(forme, [{ opacity: 0, transform: 'scale(0)' }, { opacity: 1, transform: 'scale(1)' }], 0.2, 0.8, 'rebond');
+  S.anim(bloom, [{ opacity: 0, transform: 'scale(0.3)' }, { opacity: 0.18, transform: 'scale(1)' }], 0.2, 1.4, 'douce');
+  S.anim(forme, [{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }], 1.0, 0.6, 'fluide');
+  S.anim(orbe, [{ opacity: 1 }, { opacity: 0 }], 1.5, 0.5, 'fluide');
+
+  /* ---------- 1. Pilule ---------- */
+  const pil = S.creer('div', 'couche pilule', forme);
+  pil.innerHTML = '<span class="pastille-icone">' + svgIcone(D.pilule.icone) + '</span>' +
+    '<span class="pilule-texte">' + D.pilule.label + '</span>' +
+    '<span class="pilule-valeur">' + D.pilule.valeur + '</span>';
+  transformer({ w: 820, h: 150, r: 75 }, 1.5);
+  Array.from(pil.children).forEach((c, i) => entrer(c, 2.0 + i * 0.12));
+  S.anim(pil.querySelector('path'), [{ strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDasharray: 1, strokeDashoffset: 0 }], 2.0, 0.9, 'fluide');
+  sortir(pil, 3.8);
+
+  /* ---------- 2. Carte de score ---------- */
+  const carte = S.creer('div', 'couche carte', forme);
+  const C = D.carte;
+  carte.innerHTML =
+    '<div class="carte-titre">' + C.titre + '</div>' +
+    '<div class="jauge"><svg viewBox="0 0 200 110">' +
+      '<path d="M16 100 A84 84 0 0 1 184 100" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12" stroke-linecap="round"/>' +
+      '<path class="arc" pathLength="1" d="M16 100 A84 84 0 0 1 184 100" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" style="stroke-dasharray:1;filter:drop-shadow(0 0 6px var(--accent))"/>' +
+    '</svg><div class="jauge-chiffre"><span class="nombre"></span><small>' + (C.unite || '') + '</small></div></div>' +
+    '<div class="minis">' + (C.mini || []).map((m) =>
+      '<div class="mini"><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>' +
+      '<circle class="anneau" pathLength="1" cx="30" cy="30" r="24" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" style="stroke-dasharray:1"/></svg>' +
+      '<span>' + m.label + '<b class="nombre"></b></span></div>').join('') + '</div>';
+  S.ajuster(carte.querySelector('.minis'), 860);
+  transformer({ w: 960, h: 680, r: 64 }, 3.9, 0.9);
+  entrer(carte.querySelector('.carte-titre'), 4.5);
+  entrer(carte.querySelector('.jauge'), 4.6);
+  const max = C.max || 100;
+  S.anim(carte.querySelector('.arc'), [{ strokeDashoffset: 1 }, { strokeDashoffset: 1 - C.valeur / max }], 4.7, 1.6, 'douce');
+  compter(carte.querySelector('.jauge-chiffre .nombre'), C.valeur, 4.7, 1.6);
+  carte.querySelectorAll('.mini').forEach((el, i) => {
+    const m = C.mini[i];
+    entrer(el, 5.1 + i * 0.15, 30);
+    S.anim(el.querySelector('.anneau'), [{ strokeDashoffset: 1 }, { strokeDashoffset: 1 - m.valeur / (m.max || 100) }], 5.3 + i * 0.15, 1.2, 'douce');
+    compter(el.querySelector('.nombre'), m.valeur, 5.3 + i * 0.15, 1.2);
+  });
+  sortir(carte, 7.4);
+
+  /* ---------- 3. Grande icône + ondes ---------- */
+  const ico = S.creer('div', 'couche grande-icone', forme);
+  ico.innerHTML = svgIcone(D.icone.icone);
+  transformer({ w: 300, h: 300, r: 90 }, 7.5, 0.8);
+  S.anim(ico.querySelector('path'), [{ strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDasharray: 1, strokeDashoffset: 0 }], 8.0, 1.0, 'fluide');
+  S.anim(ico, [{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'scale(1)' }], 8.0, 0.7, 'rebond');
+  [0, 1].forEach((i) => {
+    const onde = S.creer('div', 'onde', centre);
+    S.anim(onde, [
+      { opacity: 0, transform: 'scale(1)' },
+      { opacity: 0.7, transform: 'scale(1.02)', offset: 0.05 },
+      { opacity: 0, transform: 'scale(1.9)' }
+    ], 8.4 + i * 0.45, 1.2, 'douce');
+  });
+  const legende = S.creer('div', 'legende', centre, D.icone.texte);
+  entrer(legende, 8.5);
+  sortir(legende, 9.9);
+  sortir(ico, 10.0);
+
+  /* ---------- 4. Bouton qu'on "touche" ---------- */
+  const fondBouton = S.creer('div', 'fond-bouton', forme);   // la forme devient de la couleur accent
+  const bou = S.creer('div', 'couche bouton', forme, D.bouton);
+  transformer({ w: 680, h: 140, r: 70 }, 10.1, 0.7);
+  S.anim(fondBouton, [{ opacity: 0 }, { opacity: 1 }], 10.2, 0.5, 'fluide');
+  S.anim(fondBouton, [{ opacity: 1 }, { opacity: 0 }], 12.4, 0.4, 'fluide');
+  entrer(bou, 10.5, 16);
+  const doigt = S.creer('div', 'doigt', centre);
+  S.anim(doigt, [
+    { opacity: 0, transform: 'translate(260px, 220px) scale(1)' },
+    { opacity: 1, transform: 'translate(180px, 30px) scale(1)', offset: 0.6 },
+    { opacity: 1, transform: 'translate(180px, 30px) scale(0.75)', offset: 0.85 },
+    { opacity: 0, transform: 'translate(180px, 30px) scale(1.4)' }
+  ], 11.0, 1.2, 'fluide');
+  S.anim(forme, [{ transform: 'scale(1)' }, { transform: 'scale(0.94)' }, { transform: 'scale(1)' }], 11.75, 0.4, 'fluide');
+  sortir(bou, 12.4);
+
+  /* ---------- 5. Fin : logo du commerce ---------- */
+  transformer({ w: 72, h: 72, r: 36 }, 12.4, 0.6);
+  S.anim(forme, [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(2.5)' }], 13.0, 0.5, 'douce');
+  const fin = S.creer('div', 'fin', centre);
+  const logo = S.creer('div', 'fin-marque', fin, D.marque.trim().charAt(0).toUpperCase());
+  const nom = S.creer('div', 'fin-nom', fin);
+  const lettres = S.lettres(nom, D.marque);
+  const slogan = S.creer('div', 'fin-slogan', fin, D.slogan);
+  S.ajuster(nom, 940);
+  S.anim(logo, [{ opacity: 0, transform: 'scale(0.4) rotate(-12deg)' }, { opacity: 1, transform: 'scale(1) rotate(0)' }], 13.1, 0.9, 'rebond');
+  lettres.forEach((l, i) => S.anim(l, [{ opacity: 0, transform: 'translateY(50px)', filter: 'blur(10px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], 13.4 + i * 0.04, 0.8, 'douce'));
+  entrer(slogan, 13.9 + lettres.length * 0.03);
+
+  S.tenir(16.2);
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TikTok code — Novimo</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  RÉGLAGES : TikTok "coulisses" (9:16, ~16 s)
+     Le principe : on filme l'écran de l'ordi pendant que le code
+     s'écrit tout seul… et l'animation Novimo sort du code.
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'TikTok code — Novimo',
+  formats: ['vertical'],
+
+  // Le texte façon TikTok en haut de la vidéo
+  legende: 'Quand tu fais des pubs animées… avec juste du code 👀',
+  // Le nom animé à la fin du code
+  marque: 'novimo',
+  slogan: 'Votre marque, en mouvement.',
+  // La fin
+  offre: 'Ton logo animé',
+  prix: 'dès 300 €',
+  argument: 'Moitié prix d’un freelance',
+  appel: 'Lien en bio',
+  reseau: '@novimo.com',
+
+  couleurs: {
+    fond:      '#0b0c09',
+    fond2:     '#1a1c14',
+    accent:    '#d4ff3f',
+    texte:     '#f2f0e8',
+    texteDoux: '#a3a59a'
+  },
+  polices: { titre: 'Bricolage Grotesque', texte: 'Inter', code: 'JetBrains Mono' },
+  vitesse: 1
+};
+</script>
+
+<style>
+  .piece { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 55%, #23261b 0%, #0b0c09 70%); }
+  .lueur { position: absolute; left: 50%; top: 52%; width: 1200px; height: 1000px; margin: -500px 0 0 -600px; background: radial-gradient(circle, rgba(212, 255, 63, 0.18), transparent 60%); }
+
+  /* La "caméra" : tenue à la main (léger tremblement) */
+  .camera { position: absolute; inset: 0; }
+  /* L'écran de l'ordinateur, filmé un peu de biais */
+  .moniteur {
+    position: absolute; left: 40px; top: 700px; width: 1000px; height: 640px;
+    border-radius: 26px; padding: 14px; background: #050505;
+    box-shadow: 0 0 0 3px #2c2d30, 0 60px 120px rgba(0, 0, 0, 0.7), 0 0 120px rgba(212, 255, 63, 0.15);
+    transform-origin: 800px 356px;
+  }
+  .vitre { position: relative; width: 100%; height: 100%; border-radius: 14px; overflow: hidden; background: #0f100d; display: grid; grid-template-rows: 44px 1fr; }
+  .barre-fenetre { display: flex; align-items: center; gap: 10px; padding: 0 18px; background: #1a1b17; font: 600 17px var(--police-texte), sans-serif; color: #8d8f84; }
+  .barre-fenetre i { width: 13px; height: 13px; border-radius: 50%; background: #3a3c32; }
+  .barre-fenetre i:nth-child(1) { background: #ff5f57; } .barre-fenetre i:nth-child(2) { background: #febc2e; } .barre-fenetre i:nth-child(3) { background: #28c840; }
+  .barre-fenetre span { margin-left: 14px; }
+  .lancer { margin-left: auto; padding: 5px 14px; border-radius: 8px; background: var(--accent); color: #0b0c09; font-weight: 800; }
+  .contenu-ecran { display: grid; grid-template-columns: 600px 1fr; min-height: 0; }
+
+  /* L'éditeur de code */
+  .code { position: relative; padding: 22px 0 0 0; font: 500 20.5px/1.62 "JetBrains Mono", ui-monospace, Consolas, monospace; color: #e6e4da; border-right: 1px solid #23251d; }
+  .ligne { display: flex; white-space: nowrap; }
+  .num { flex: none; width: 52px; padding-right: 16px; text-align: right; color: #4b4d43; }
+  .tape { display: inline-block; overflow: hidden; vertical-align: top; width: 0; white-space: pre; }
+  .k { color: #c792ea; } .f { color: #82aaff; } .s { color: var(--accent); } .n { color: #f78c6c; } .c { color: #676a5d; font-style: italic; } .p { color: #89ddff; }
+  .curseur { display: inline-block; width: 11px; height: 26px; margin-top: 5px; background: var(--accent); }
+
+  /* L'aperçu (là où l'animation sort du code) */
+  .apercu { position: relative; display: grid; place-items: center; align-content: center; gap: 18px; background: #0b0c09; overflow: hidden; }
+  .apercu-vide { position: absolute; inset: 0; display: grid; place-items: center; color: #3d3f36; font: 600 18px var(--police-texte), sans-serif; }
+  .tuile { width: 130px; height: 130px; border-radius: 36px; background: var(--accent); overflow: hidden; box-shadow: 0 0 60px rgba(212, 255, 63, 0.45); }
+  .tuile svg { width: 100%; height: 100%; overflow: visible; }
+  .tuile .logo-n { fill: #0b0c09; stroke: #0b0c09; stroke-width: 3; stroke-linejoin: round; }
+  .tuile .logo-vitesse { fill: none; stroke: #0b0c09; stroke-width: 6; stroke-linecap: round; transform-box: fill-box; transform-origin: right center; }
+  .apercu-nom { font: 800 64px/1 var(--police-titre), sans-serif; letter-spacing: -0.05em; }
+  .apercu-slogan { font: 500 19px var(--police-texte), sans-serif; color: var(--texte-doux); }
+  .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+
+  /* Le texte façon TikTok (blanc, fond sombre arrondi) */
+  .legende { position: absolute; left: 80px; right: 150px; top: 250px; text-align: center; }
+  .legende span { display: inline; padding: 6px 14px; border-radius: 14px; background: rgba(0, 0, 0, 0.72); box-decoration-break: clone; -webkit-box-decoration-break: clone;
+    font: 800 52px/1.5 var(--police-titre), sans-serif; letter-spacing: -0.02em; color: #fff; }
+
+  /* La fin : l'offre */
+  .fin { position: absolute; left: 80px; right: 150px; top: 230px; bottom: 420px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .fin-offre { font: 800 96px/0.95 var(--police-titre), sans-serif; letter-spacing: -0.045em; text-transform: uppercase; }
+  .fin-prix { margin-top: 18px; font: 800 150px/1 var(--police-titre), sans-serif; letter-spacing: -0.05em; color: var(--accent); text-shadow: 0 0 80px rgba(212, 255, 63, 0.4); }
+  .fin-argument { margin-top: 26px; padding: 12px 26px; border-radius: 999px; background: var(--accent); color: #0b0c09; font: 800 40px var(--police-titre), sans-serif; }
+  .fin-appel { margin-top: 70px; font: 800 52px var(--police-titre), sans-serif; }
+  .fin-reseau { margin-top: 8px; font: 500 38px var(--police-texte), sans-serif; color: var(--texte-doux); }
+  .voile-fin { position: absolute; inset: 0; background: rgba(11, 12, 9, 0.94); }
+</style>
+</head>
+<body>
+
+<script src="commun/son.js"></script>
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+const LOGO_SVG = '<svg viewBox="0 0 100 100"><g><path class="logo-n" transform="translate(6 0) skewX(-12) translate(10.6 0)" d="M30 76V24h13l15 27V24h13v52H58L43 49v27z"/></g><path class="logo-vitesse" d="M13 41h11M17 55h8"/></svg>';
+
+// Le code qui s'écrit à l'écran : [texte affiché (avec couleurs), nombre de caractères]
+const CODE = [
+  '<span class="c">// novimo : logo animé</span>',
+  '<span class="k">const</span> logo <span class="p">=</span> S.<span class="f">creer</span>(<span class="s">\'tuile\'</span>);',
+  'S.<span class="f">anim</span>(logo, [',
+  '  { scale: <span class="n">0</span>, rotate: <span class="s">\'-140deg\'</span> },',
+  '  { scale: <span class="n">1</span>, rotate: <span class="s">\'0deg\'</span> }',
+  '], <span class="n">0.2</span>, <span class="n">1</span>, <span class="s">\'rebond\'</span>);',
+  'S.<span class="f">lettres</span>(nom, <span class="s">\'novimo\'</span>)',
+  '  .<span class="f">forEach</span>(<span class="f">entrer</span>);',
+  'S.<span class="f">son</span>(<span class="s">\'boum\'</span>, <span class="n">0.2</span>);'
+];
+const longueur = (html) => html.replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, ' ').replace(/\\'/g, "'").length;
+
+/* =======================================================
+   🎬  L'ANIMATION
+   ======================================================= */
+function construire(scene, R, S) {
+  const T = { code: 0.4, lancer: 4.5, rendu: 4.9, zoom: 8.6, fin: 11.6 };
+
+  S.creer('div', 'piece', scene);
+  S.creer('div', 'lueur', scene);
+  const camera = S.creer('div', 'camera', scene);
+  // tenue à la main : un tout petit mouvement permanent
+  S.anim(camera, [
+    { transform: 'translate(0, 0) rotate(0deg)' }, { transform: 'translate(-5px, 4px) rotate(-0.25deg)' },
+    { transform: 'translate(4px, -3px) rotate(0.2deg)' }, { transform: 'translate(0, 0) rotate(0deg)' }
+  ], 0, 3.2, 'lineaire', { iterations: Infinity });
+
+  const moniteur = S.creer('div', 'moniteur', camera);
+  const vitre = S.creer('div', 'vitre', moniteur);
+  vitre.innerHTML = '<div class="barre-fenetre"><i></i><i></i><i></i><span>logo-novimo.html</span><b class="lancer">▶ Lancer</b></div>';
+  const contenu = S.creer('div', 'contenu-ecran', vitre);
+  const code = S.creer('div', 'code', contenu);
+  const apercu = S.creer('div', 'apercu', contenu);
+  apercu.innerHTML = '<div class="apercu-vide">Aperçu</div>';
+
+  // Le moniteur arrive, filmé de biais
+  const biais = 'perspective(1800px) rotateY(-9deg) rotateX(5deg) rotate(-1.5deg)';
+  S.anim(moniteur, [{ opacity: 0, transform: biais + ' translateY(120px) scale(0.92)' }, { opacity: 1, transform: biais }], 0, 0.7, 'douce');
+
+  /* ---------- 1. Le code s'écrit ---------- */
+  const total = CODE.reduce((s, l) => s + longueur(l), 0);
+  const dureeFrappe = T.lancer - T.code - 0.4;
+  let t = T.code;
+  CODE.forEach((html, i) => {
+    const n = longueur(html);
+    const ligne = S.creer('div', 'ligne', code);
+    ligne.innerHTML = '<span class="num">' + (i + 1) + '</span>';
+    const tape = S.creer('span', 'tape', ligne);
+    tape.innerHTML = html;
+    const d = dureeFrappe * n / total;
+    S.anim(tape, [{ width: '0ch' }, { width: (n + 0.5) + 'ch' }], t, d, 'steps(' + n + ', end)');
+    t += d;
+  });
+  const curseur = S.creer('span', 'curseur', code.lastElementChild);
+  S.anim(curseur, [{ opacity: 1 }, { opacity: 0 }], 0, 0.5, 'steps(1, end)', { iterations: Infinity, direction: 'alternate' });
+
+  // La légende TikTok
+  const legende = S.creer('div', 'legende', scene);
+  legende.innerHTML = '<span>' + R.legende + '</span>';
+  S.anim(legende, [{ opacity: 0, transform: 'scale(0.8)' }, { opacity: 1, transform: 'none' }], 0.3, 0.5, 'rebond');
+  S.anim(legende, [{ opacity: 1 }, { opacity: 0 }], T.zoom - 0.2, 0.3, 'sortie');
+
+  /* ---------- 2. On clique sur "Lancer" ---------- */
+  const lancer = vitre.querySelector('.lancer');
+  S.anim(lancer, [{ transform: 'scale(1)' }, { transform: 'scale(0.85)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }], T.lancer, 0.4, 'fluide');
+  const flash = S.creer('div', 'flash', apercu);
+  S.anim(flash, [{ opacity: 0 }, { opacity: 0.9, offset: 0.12 }, { opacity: 0 }], T.rendu - 0.05, 0.6, 'douce');
+  S.anim(apercu.querySelector('.apercu-vide'), [{ opacity: 1 }, { opacity: 0 }], T.rendu, 0.1, 'sortie');
+
+  /* ---------- 3. L'animation sort du code ---------- */
+  const tuile = S.creer('div', 'tuile', apercu);
+  tuile.innerHTML = LOGO_SVG;
+  const nom = S.creer('div', 'apercu-nom', apercu);
+  const lettres = S.lettres(nom, R.marque);
+  const slogan = S.creer('div', 'apercu-slogan', apercu, R.slogan);
+  S.anim(tuile, [{ opacity: 0, transform: 'scale(0.2) rotate(-140deg)' }, { opacity: 1, transform: 'none' }], T.rendu + 0.2, 1, 'rebond');
+  S.anim(tuile.querySelector('g'), [{ opacity: 0, transform: 'translateX(-30px)' }, { opacity: 1, transform: 'none' }], T.rendu + 0.6, 0.6, 'douce');
+  S.anim(tuile.querySelector('.logo-vitesse'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], T.rendu + 0.8, 0.5, 'douce');
+  lettres.forEach((l, i) => S.anim(l, [{ opacity: 0, transform: 'translateY(40px) rotate(-8deg)' }, { opacity: 1, transform: 'none' }], T.rendu + 0.9 + i * 0.07, 0.6, 'douce'));
+  S.anim(slogan, [{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }], T.rendu + 1.6, 0.6, 'douce');
+
+  /* ---------- 4. Zoom dans l'aperçu : l'animation prend tout l'écran ---------- */
+  S.anim(moniteur, [{ transform: biais }, { transform: 'translate(-260px, -64px) scale(2.75)' }], T.zoom, 1.1, 'fluide');
+  S.anim(tuile, [{ transform: 'none' }, { transform: 'scale(1.08)' }, { transform: 'none' }], T.zoom + 1.3, 0.6, 'fluide');
+
+  /* ---------- 5. L'offre ---------- */
+  const voile = S.creer('div', 'voile-fin', scene);
+  S.anim(voile, [{ opacity: 0 }, { opacity: 1 }], T.fin, 0.5, 'douce');
+  const fin = S.creer('div', 'fin', scene);
+  const offre = S.creer('div', 'fin-offre', fin, R.offre);
+  const prix = S.creer('div', 'fin-prix', fin, R.prix);
+  const argument = S.creer('div', 'fin-argument', fin, R.argument);
+  const appel = S.creer('div', 'fin-appel', fin, '👉 ' + R.appel);
+  const reseau = S.creer('div', 'fin-reseau', fin, R.reseau);
+  S.ajuster(offre, 840);
+  [offre, prix, argument, appel, reseau].forEach((el, i) =>
+    S.anim(el, [{ opacity: 0, transform: 'translateY(50px) scale(0.9)' }, { opacity: 1, transform: 'none' }], T.fin + 0.2 + i * 0.22, 0.6, i === 1 ? 'rebond' : 'douce'));
+  S.anim(argument, [{ transform: 'none' }, { transform: 'scale(1.06)' }, { transform: 'none' }], T.fin + 2.4, 0.7, 'fluide', { iterations: 2 });
+
+  /* ---------- 🔊 Bande-son ---------- */
+  S.son('musique', 0, { duree: 16.5, drop: T.rendu });              // la batterie démarre quand l'animation sort
+  S.son('clavier', T.code, { duree: dureeFrappe, n: Math.round(total / 3) });
+  S.son('pop', T.lancer + 0.05);
+  S.son('whoosh', T.rendu - 0.1);
+  S.son('boum', T.rendu + 0.2);
+  S.son('succes', T.rendu + 1.0);
+  S.son('montee', T.zoom - 0.6, { duree: 0.8 });
+  S.son('whoosh', T.zoom + 0.2);
+  S.son('pop', T.fin + 0.2);
+  S.son('boum', T.fin + 0.45);
+  S.son('caisse', T.fin + 0.9);
+  S.son('pop', T.fin + 1.1, { aigu: true });
+
+  S.tenir(16.5);
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>

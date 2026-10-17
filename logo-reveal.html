@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logo reveal</title>
+<link rel="stylesheet" href="commun/studio.css">
+
+<!-- =======================================================
+     🎛️  RÉGLAGES — c'est ici que tu modifies pour un client
+     ======================================================= -->
+<script>
+const REGLAGES = {
+  titrePage: 'Logo reveal — Fournil Lune',
+
+  marque: 'Fournil Lune',             // le nom qui apparaît lettre par lettre
+  slogan: 'Pain cuit avant l\'aube',  // la phrase sous le nom (\' = apostrophe)
+  symbole: 'lune-ble',                // 'lune-ble', 'ciseaux', 'etoile' ou 'aucun'
+
+  couleurs: {
+    fond:      '#0b1430',   // couleur du fond (bleu nuit)
+    fond2:     '#1c2f63',   // couleur de la lueur au centre
+    accent:    '#e6b85c',   // couleur du symbole et des détails (doré)
+    texte:     '#f6efe0',   // couleur du nom
+    texteDoux: '#b9bfd6'    // couleur du slogan
+  },
+
+  polices: {
+    titre: 'Fraunces',      // police du nom (n'importe quelle police de fonts.google.com)
+    texte: 'Inter'          // police du slogan
+  },
+
+  etoilesFond: 45,          // nombre de petites étoiles en fond (0 = aucune)
+  vitesse: 1                // 1 = normal, 0.8 = plus lent, 1.2 = plus rapide
+};
+</script>
+
+<style>
+  /* Lueur ronde derrière le logo */
+  .halo {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 1300px; height: 1300px;
+    margin: -650px 0 0 -650px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--fond2) 0%, transparent 62%);
+  }
+
+  /* Le bloc centré qui contient symbole + nom + slogan */
+  .bloc {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .symbole-boite { width: 330px; height: 330px; margin-bottom: 40px; }
+  #scene.vertical .symbole-boite { width: 420px; height: 420px; margin-bottom: 60px; }
+
+  .nom {
+    font-family: var(--police-titre), Georgia, serif;
+    font-weight: 400;
+    font-size: 132px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    width: max-content;
+    color: var(--texte);
+  }
+  #scene.vertical .nom { font-size: 150px; }
+
+  /* Fine ligne dorée entre le nom et le slogan */
+  .filet {
+    width: 140px; height: 3px;
+    margin: 34px 0 30px;
+    background: var(--accent);
+    border-radius: 3px;
+  }
+
+  .slogan {
+    font-size: 36px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    white-space: nowrap;
+    width: max-content;
+    color: var(--texte-doux);
+  }
+  #scene.vertical .slogan { font-size: 40px; }
+</style>
+</head>
+<body>
+
+<script src="commun/symboles.js"></script>
+<script src="commun/moteur.js"></script>
+<script>
+/* =======================================================
+   🎬  L'ANIMATION — la "chorégraphie", seconde par seconde
+   S.anim(élément, [départ, arrivée], début (s), durée (s), courbe)
+   ======================================================= */
+function construire(scene, R, S) {
+
+  // --- Construction des éléments ---
+  S.etoiles(scene, R.etoilesFond);
+  const halo = S.creer('div', 'halo', scene);
+  const bloc = S.creer('div', 'bloc', scene);
+  const symbole = S.symbole(R.symbole, bloc);
+  const nom = S.creer('h1', 'nom', bloc);
+  const lettres = S.lettres(nom, R.marque);
+  const filet = S.creer('div', 'filet', bloc);
+  const slogan = S.creer('p', 'slogan', bloc, R.slogan);
+
+  // Si le nom ou le slogan est trop long, on réduit automatiquement
+  S.ajuster(nom, 940);
+  S.ajuster(slogan, 920);
+
+  // --- 0,0 s : la lueur s'allume doucement ---
+  S.anim(halo, [{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'scale(1)' }], 0, 2.2, 'douce');
+
+  // --- 0,1 s : le symbole se dessine en tournant légèrement ---
+  S.anim(symbole, [
+    { opacity: 0, transform: 'scale(0.82) rotate(-10deg)' },
+    { opacity: 1, transform: 'scale(1) rotate(0deg)' }
+  ], 0, 2.0, 'douce');
+  S.dessiner(symbole, 0.1, 1.4);
+
+  // --- 1,3 s : le nom apparaît lettre par lettre (monte + net) ---
+  const debutNom = 1.3;
+  const ecart = 0.05; // temps entre deux lettres
+  lettres.forEach((l, i) => {
+    S.anim(l, [
+      { opacity: 0, transform: 'translateY(55px) rotate(6deg)', filter: 'blur(12px)' },
+      { opacity: 1, transform: 'translateY(0) rotate(0deg)', filter: 'blur(0px)' }
+    ], debutNom + i * ecart, 0.9, 'douce');
+  });
+  const finNom = debutNom + lettres.length * ecart + 0.35;
+
+  // --- Le filet doré s'étire depuis le centre ---
+  S.anim(filet, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], finNom - 0.1, 0.8, 'fluide');
+
+  // --- Le slogan arrive en se resserrant ---
+  S.anim(slogan, [
+    { opacity: 0, letterSpacing: '0.6em', transform: 'translateY(14px)' },
+    { opacity: 1, letterSpacing: '0.22em', transform: 'translateY(0)' }
+  ], finNom + 0.1, 1.2, 'douce');
+
+  // --- Petite "respiration" finale du symbole ---
+  S.anim(symbole, [
+    { transform: 'scale(1)' }, { transform: 'scale(1.04)' }, { transform: 'scale(1)' }
+  ], finNom + 0.4, 1.2, 'fluide');
+
+  // On garde l'image finale affichée un instant
+  S.tenir(finNom + 1.9);
+}
+
+Studio.demarrer(REGLAGES, construire);
+</script>
+</body>
+</html>
