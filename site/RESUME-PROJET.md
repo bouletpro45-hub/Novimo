@@ -20,16 +20,16 @@
 ## 3. Tarifs (affichés sur le site et recalculés côté serveur)
 | Offre | Prix |
 |---|---|
-| Logo animé | 300 € |
-| Petite pub | 150 € |
-| Pack | 400 € |
-| Spot 30 s | 750 € |
-| Spot 60 s | 1500 € |
-| Modèle court | 90 € |
-| Modèle long | 140 € |
-| Modèle spot | 450 € |
+| Logo animé | 297 € |
+| Petite pub | 147 € |
+| Pack | 389 € |
+| Spot 30 s | 743 € |
+| Spot 60 s | 1487 € |
+| Modèle court | 89 € |
+| Modèle long | 137 € |
+| Modèle spot | 447 € |
 
-Options : express +60 €, retouche +50 €, format paysage +40 €/animation. Acompte : 30 %.
+Options : express +59 €, retouche +47 €, format paysage +37 €/animation. Acompte : 30 %.
 
 ## 4. Technique
 - **Front-end** : HTML + CSS + JavaScript « vanilla » (aucun framework, aucun build). Les URL des fichiers CSS/JS portent `?v=8` pour casser le cache.

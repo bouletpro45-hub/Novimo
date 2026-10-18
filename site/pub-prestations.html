@@ -28,9 +28,9 @@ const REGLAGES = {
 
   // Plan 2 : les cartes de prix (même ordre que l'affichage)
   prestations: [
-    { nom: 'Logo animé', prix: '300 €' },
-    { nom: 'Petite pub', prix: '150 €' },
-    { nom: 'Spot 30 s', prix: '750 €' }
+    { nom: 'Logo animé', prix: '297 €' },
+    { nom: 'Petite pub', prix: '147 €' },
+    { nom: 'Spot 30 s', prix: '743 €' }
   ],
   resultat: 'Acompte : seulement 30 %',   // la pilule au bout de l'accolade
 
@@ -357,7 +357,7 @@ function construire(scene, R, S) {
   S.son('aspire', P.p4 - 0.4);
   const lueurBas = S.creer('div', 'lueur-bas', p4);
   const p4Texte = S.creer('div', 'p4-texte', p4);
-  p4Texte.innerHTML = '<div class="surtitre"><span class="point"></span>Prêt à vous lancer ?</div><div class="titre">Votre pub<br>dès <span class="accent">150 €.</span></div><p>Logo animé, pub ou spot :<br>on s’occupe de tout.</p>';
+  p4Texte.innerHTML = '<div class="surtitre"><span class="point"></span>Prêt à vous lancer ?</div><div class="titre">Votre pub<br>dès <span class="accent">147 €.</span></div><p>Logo animé, pub ou spot :<br>on s’occupe de tout.</p>';
   const bouton = S.creer('div', 'bouton', p4);
   bouton.innerHTML = '<span class="rond"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></svg></span>' + R.appel;
   const reflet = S.creer('span', 'reflet', bouton);

@@ -56,7 +56,8 @@ function esc(texte) {
 
 /* Écrit un prix joliment : 35 -> "35 €" */
 function euros(n) {
-  return n.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ' €';
+  const centimes = Number.isInteger(n) ? 0 : 2;  // 89,10 € et pas 89,1 €
+  return n.toLocaleString('fr-FR', { minimumFractionDigits: centimes, maximumFractionDigits: 2 }) + ' €';
 }
 
 /* =====================================================

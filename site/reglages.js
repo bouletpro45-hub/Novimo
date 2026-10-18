@@ -35,30 +35,30 @@ const REGLAGES_SITE = {
   ],
 
   tarifs: [
-    { id: 'logo',  groupe: 'reseaux', nom: 'Logo animé',     prix: 300, prixPro: 600,  description: 'Votre logo qui se dessine, environ quatre secondes. Idéal en début ou en fin de vidéo.' },
-    { id: 'pub',   groupe: 'reseaux', nom: 'Petite pub',     prix: 150, prixPro: 300,  description: 'Six à huit secondes : votre marque, votre offre, votre compte.' },
-    { id: 'pack',  groupe: 'reseaux', nom: 'Pack lancement', prix: 400, prixPro: 900,  description: 'Le logo animé et la petite pub, aux couleurs de votre marque.',
+    { id: 'logo',  groupe: 'reseaux', nom: 'Logo animé',     prix: 297, prixPro: 600,  description: 'Votre logo qui se dessine, environ quatre secondes. Idéal en début ou en fin de vidéo.' },
+    { id: 'pub',   groupe: 'reseaux', nom: 'Petite pub',     prix: 147, prixPro: 300,  description: 'Six à huit secondes : votre marque, votre offre, votre compte.' },
+    { id: 'pack',  groupe: 'reseaux', nom: 'Pack lancement', prix: 389, prixPro: 900,  description: 'Le logo animé et la petite pub, aux couleurs de votre marque.',
       contenu: ['logo', 'pub'] },  // contenu : les animations comprises dans le pack
 
     // Création de logo (pas une animation) : pas de prixPro, faute de source fiable pour la comparaison.
     // apercu : image affichée dans la carte de l'accueil (dans site/)
-    { id: 'systemeLogo', groupe: 'identite', nom: 'Système de logo', prix: 400, etiquette: 'Sur mesure · 5 versions', apercu: 'systeme-logo.webp',
+    { id: 'systemeLogo', groupe: 'identite', nom: 'Système de logo', prix: 397, etiquette: 'Sur mesure · 5 versions', apercu: 'systeme-logo.webp',
       description: 'On crée votre logo sur mesure, puis ses 5 versions : logo principal, logotype, symbole, icône d’appli et monochrome. Même identité, prête pour les réseaux, le site et l’impression.' },
 
     // prixPro du spot 60 s : "vidéo explicative de 60 secondes : dès 3 000 €" (même source).
     // prixPro du spot 30 s : la source ne donne pas de prix -> ESTIMATION = moitié du 60 s.
-    { id: 'spot30', groupe: 'longs', nom: 'Spot 30 secondes', prix: 750,  prixPro: 1500, etiquette: '16:9 · 30 s',
+    { id: 'spot30', groupe: 'longs', nom: 'Spot 30 secondes', prix: 743,  prixPro: 1500, etiquette: '16:9 · 30 s',
       description: 'Une vraie pub : votre marque, vos produits, votre offre et où vous trouver. Pour YouTube, un écran en vitrine ou une diffusion TV.' },
-    { id: 'spot60', groupe: 'longs', nom: 'Spot 60 secondes', prix: 1500, prixPro: 3000, etiquette: '16:9 · 60 s',
+    { id: 'spot60', groupe: 'longs', nom: 'Spot 60 secondes', prix: 1487, prixPro: 3000, etiquette: '16:9 · 60 s',
       description: 'Le temps de raconter votre histoire : votre savoir-faire, vos produits phares, vos horaires. Idéal pour YouTube et la TV locale.' },
 
     // Les modèles prêts (page Modèles) : moins chers car l'animation existe déjà.
     // Chaque modèle de site/modeles.js dit lequel de ces 3 prix s'applique.
-    { id: 'modele',     groupe: 'modeles', nom: 'Modèle court',  prix: 90,  etiquette: 'jusqu’à 10 s',
+    { id: 'modele',     groupe: 'modeles', nom: 'Modèle court',  prix: 89,  etiquette: 'jusqu’à 10 s',
       description: 'Un modèle prêt de moins de 10 secondes, à vos textes et à vos couleurs. Tous les formats inclus.' },
-    { id: 'modeleLong', groupe: 'modeles', nom: 'Modèle long',   prix: 140, etiquette: '10 à 20 s',
+    { id: 'modeleLong', groupe: 'modeles', nom: 'Modèle long',   prix: 137, etiquette: '10 à 20 s',
       description: 'Un modèle prêt de 10 à 20 secondes (vitrine, appli, menu…), personnalisé pour vous.' },
-    { id: 'modeleSpot', groupe: 'modeles', nom: 'Modèle spot',   prix: 450, etiquette: '16:9 · 30 s',
+    { id: 'modeleSpot', groupe: 'modeles', nom: 'Modèle spot',   prix: 447, etiquette: '16:9 · 30 s',
       description: 'Le spot de 30 secondes de la page Modèles, refait avec vos offres, vos étapes et votre appel à l’action.' }
   ],
 
@@ -67,9 +67,9 @@ const REGLAGES_SITE = {
      parAnimation: false -> prix fixe, une seule fois
      pasPour : animations auxquelles l'option ne s'applique pas */
   options: [
-    { id: 'express',  nom: 'Livraison express',   detail: 'Première version sous 24 heures (formats courts).', prix: 60, parAnimation: false, pasPour: ['spot30', 'spot60', 'systemeLogo'] },
-    { id: 'retouche', nom: 'Retouches en plus',   detail: 'Une troisième série de modifications.',             prix: 50, parAnimation: false },
-    { id: 'paysage',  nom: 'Format paysage 16:9', detail: 'Pour vos formats courts (déjà inclus dans les spots).', prix: 40, parAnimation: true, pasPour: ['spot30', 'spot60', 'systemeLogo'] }
+    { id: 'express',  nom: 'Livraison express',   detail: 'Première version sous 24 heures (formats courts).', prix: 59, parAnimation: false, pasPour: ['spot30', 'spot60', 'systemeLogo'] },
+    { id: 'retouche', nom: 'Retouches en plus',   detail: 'Une troisième série de modifications.',             prix: 47, parAnimation: false },
+    { id: 'paysage',  nom: 'Format paysage 16:9', detail: 'Pour vos formats courts (déjà inclus dans les spots).', prix: 37, parAnimation: true, pasPour: ['spot30', 'spot60', 'systemeLogo'] }
   ],
 
   /* ---------- Les onglets de la barre latérale ----------

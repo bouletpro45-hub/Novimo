@@ -31,20 +31,20 @@ const repondre = (corps: unknown, statut = 200) => new Response(JSON.stringify(c
 //    Si tu changes un prix dans reglages.js, change-le aussi ici puis redéploie.
 // ---------------------------------------------------------
 const TARIFS: Record<string, { nom: string; prix: number; contenu?: number }> = {
-  logo:       { nom: 'Logo animé',       prix: 300 },
-  pub:        { nom: 'Petite pub',       prix: 150 },
-  pack:       { nom: 'Pack lancement',   prix: 400, contenu: 2 },
-  systemeLogo: { nom: 'Système de logo', prix: 400 },
-  spot30:     { nom: 'Spot 30 secondes', prix: 750 },
-  spot60:     { nom: 'Spot 60 secondes', prix: 1500 },
-  modele:     { nom: 'Modèle court',     prix: 90 },
-  modeleLong: { nom: 'Modèle long',      prix: 140 },
-  modeleSpot: { nom: 'Modèle spot',      prix: 450 }
+  logo:       { nom: 'Logo animé',       prix: 297 },
+  pub:        { nom: 'Petite pub',       prix: 147 },
+  pack:       { nom: 'Pack lancement',   prix: 389, contenu: 2 },
+  systemeLogo: { nom: 'Système de logo', prix: 397 },
+  spot30:     { nom: 'Spot 30 secondes', prix: 743 },
+  spot60:     { nom: 'Spot 60 secondes', prix: 1487 },
+  modele:     { nom: 'Modèle court',     prix: 89 },
+  modeleLong: { nom: 'Modèle long',      prix: 137 },
+  modeleSpot: { nom: 'Modèle spot',      prix: 447 }
 };
 const OPTIONS: Record<string, { nom: string; prix: number; parAnimation: boolean; pasPour: string[] }> = {
-  express:  { nom: 'Livraison express',   prix: 60, parAnimation: false, pasPour: ['spot30', 'spot60', 'systemeLogo'] },
-  retouche: { nom: 'Retouches en plus',   prix: 50, parAnimation: false, pasPour: [] },
-  paysage:  { nom: 'Format paysage 16:9', prix: 40, parAnimation: true,  pasPour: ['spot30', 'spot60', 'systemeLogo'] }
+  express:  { nom: 'Livraison express',   prix: 59, parAnimation: false, pasPour: ['spot30', 'spot60', 'systemeLogo'] },
+  retouche: { nom: 'Retouches en plus',   prix: 47, parAnimation: false, pasPour: [] },
+  paysage:  { nom: 'Format paysage 16:9', prix: 37, parAnimation: true,  pasPour: ['spot30', 'spot60', 'systemeLogo'] }
 };
 const POURCENT_ACOMPTE = 30;
 
@@ -79,7 +79,7 @@ async function empreinte(texte: string) {
 // Rend un texte sans danger dans un e-mail HTML
 const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' } as Record<string, string>)[c]);
-const euros = (n: number) => Number(n).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' €';
+const euros = (n: number) => Number(n).toLocaleString('fr-FR', { minimumFractionDigits: Number.isInteger(Number(n)) ? 0 : 2, maximumFractionDigits: 2 }) + ' €';
 const texteCourt = (s: unknown, max: number) => String(s ?? '').trim().slice(0, max);
 
 // Lit un secret en tolérant une espace oubliée dans son nom ou sa valeur

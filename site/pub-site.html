@@ -509,7 +509,7 @@ function construire(scene, R, S) {
   const email = S.creer('div', 'email', monde);
   email.innerHTML = '<div class="email-tete"><p>De : <b>Novimo</b> &lt;bouletpro45@gmail.com&gt; · À : marie@chezmila.fr</p><h2>Votre devis Novimo ' + R.numeroDevis + '</h2></div>' +
     '<div class="email-corps"><h3>Merci pour votre demande, ' + R.prenom + ' !</h3><p>Voici votre devis pour <b>' + R.marqueClient + '</b>. Je reviens vers vous très vite.</p>' +
-    '<div class="email-table"><div><span>Logo animé</span><span>300 €</span></div><div><span>Petite pub</span><span>150 €</span></div><div><span>Acompte à la signature (30 %)</span><span>135 €</span></div><div><span>Total</span><span>450 €</span></div></div>' +
+    '<div class="email-table"><div><span>Logo animé</span><span>297 €</span></div><div><span>Petite pub</span><span>147 €</span></div><div><span>Acompte à la signature (30 %)</span><span>133,20 €</span></div><div><span>Total</span><span>444 €</span></div></div>' +
     '<div class="piece-jointe"><i>PDF</i><span>Devis-' + R.numeroDevis + '.pdf<small>84 Ko · Aperçu</small></span></div></div>';
   a(email, [{ opacity: 0, transform: 'perspective(1600px) rotateX(-70deg) translateY(200px) scale(0.8)' }, { opacity: 1, transform: 'none' }], tm + 1.5, 0.8, 'douce');
   S.son('flip', tm + 1.45);
@@ -595,7 +595,7 @@ function construire(scene, R, S) {
   const lettresFin = S.lettres(finNom, 'novimo');
   const slogan = S.creer('div', 'fin-slogan', fin, R.slogan);
   const ligne = S.creer('div', 'fin-ligne', fin);
-  ligne.innerHTML = '<span class="plein-accent">Devis gratuit en 1 minute</span><span>Dès 300 €</span><span>Moitié prix d’un freelance</span>';
+  ligne.innerHTML = '<span class="plein-accent">Devis gratuit en 1 minute</span><span>Dès 297 €</span><span>Moitié prix d’un freelance</span>';
   const site = S.creer('div', 'fin-site', fin, R.site);
   a(tuile, [{ opacity: 0, transform: 'scale(0.2) rotate(-160deg)' }, { opacity: 1, transform: 'none' }], tf + 0.1, 0.9, 'rebond');
   a(tuile.querySelector('g'), [{ opacity: 0, transform: 'translateX(-30px)' }, { opacity: 1, transform: 'none' }], tf + 0.45, 0.5, 'douce');
