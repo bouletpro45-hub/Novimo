@@ -126,8 +126,13 @@ async function envoyerEmail(destinataire: string, sujet: string, html: string, p
 }
 
 // Le tableau des prix d'un e-mail
-function tableauPrix(lignes: { texte: string; montant: number }[], total: number, acompte: number, anglais: boolean, dollars: boolean) {
-  const m = (n: number) => euros(n, anglais, dollars);
+// Taux pour montrer l'équivalent en euros d'un devis en dollars (même valeur que tauxDollar dans reglages.js)
+const TAUX_DOLLAR = 0.86;
+
+// avecEuros = true (ton e-mail, devis en dollars) : l'équivalent en euros à côté de chaque montant
+function tableauPrix(lignes: { texte: string; montant: number }[], total: number, acompte: number, anglais: boolean, dollars: boolean, avecEuros = false) {
+  const m = (n: number) => euros(n, anglais, dollars) +
+    (avecEuros && dollars ? ' <span style="color:#6e7068">(≈ ' + euros(Math.round(n * TAUX_DOLLAR * 100) / 100) + ')</span>' : '');
   const lignesHtml = lignes.map((l) => '<tr><td>' + esc(l.texte) + '</td><td align="right">' + m(l.montant) + '</td></tr>').join('');
   return '<table cellpadding="6" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">' + lignesHtml +
     '<tr><td><b>Total</b></td><td align="right"><b>' + m(total) + '</b></td></tr>' +
@@ -256,7 +261,7 @@ Deno.serve(async (req) => {
       '<div style="font-family:Arial,sans-serif;font-size:14px"><h2>Nouveau devis ' + esc(numero) + '</h2>' +
       (anglais ? '<p style="display:inline-block;padding:6px 12px;border-radius:999px;background:#d4ff3f;color:#0b0c09;font-weight:bold">🌍 Client étranger : il a fait son devis sur le site anglais (e-mail et PDF envoyés en anglais). Réponds-lui en anglais.' + (dollars ? ' Montants en dollars américains (USD).' : '') + '</p>' : '') +
       '<p><b>' + esc(commerce) + '</b> (' + esc(texteCourt(d.type, 60)) + ')<br>' + esc(texteCourt(d.prenom, 60)) + '<br>' + esc(email) + '<br>' + esc(telephone) + '</p>' +
-      tableauPrix(lignes, total, acompte, false, dollars) + '<p><b>Son idée :</b><br>' + esc(texteCourt(d.message, 800)).replace(/\n/g, '<br>') + '</p>' +
+      tableauPrix(lignes, total, acompte, false, dollars, true) + (dollars ? '<p style="color:#6e7068;font-size:12px">Équivalent en euros au taux de ' + TAUX_DOLLAR + ' € pour 1 $.</p>' : '') + '<p><b>Son idée :</b><br>' + esc(texteCourt(d.message, 800)).replace(/\n/g, '<br>') + '</p>' +
       '<p>Le PDF complet (en français) est en pièce jointe.</p></div>', pdfAdmin, 'Devis-' + numero + '.pdf');
 
     // Au client : sa copie, dans sa langue

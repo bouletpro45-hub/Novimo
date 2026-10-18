@@ -55,6 +55,9 @@ function creerPdfDevis(d) {
 
   /* ---------- Le client ---------- */
   let y = 56;
+  // Si le bloc suivant (hauteur h) dépasse le bas de la page, on passe à une nouvelle page
+  const BAS = 280;
+  const place = (h) => { if (y + h > BAS) { doc.addPage(); y = 22; } };
   doc.setTextColor(...GRIS); doc.setFontSize(9); doc.text(lg('POUR', 'FOR'), MARGE, y);
   // Ta copie d'un devis venu du site anglais
   if (d.clientEtranger && !anglais) {
@@ -78,6 +81,7 @@ function creerPdfDevis(d) {
   y += 9;
   doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...NOIR);
   (d.lignes || []).forEach((l) => {
+    place(13);
     y += 9;
     doc.text(t(l.texte), MARGE + 4, y);
     doc.text(t(eur(l.montant)), L - MARGE - 4, y, { align: 'right' });
@@ -85,6 +89,7 @@ function creerPdfDevis(d) {
   });
 
   /* ---------- Total, acompte, reste ---------- */
+  place(42);
   y += 14;
   doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
   doc.text('Total', MARGE + 4, y);
@@ -101,6 +106,7 @@ function creerPdfDevis(d) {
   doc.text(t(eur(Number(d.total) - Number(d.acompte))), L - MARGE - 4, y, { align: 'right' });
 
   /* ---------- Mentions ---------- */
+  place(32);
   y += 12;
   doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
   doc.text(t(lg(pourcent + ' % du prix total devront être versés à la signature du devis.',
@@ -114,24 +120,35 @@ function creerPdfDevis(d) {
 
   /* ---------- L'idée du client ---------- */
   if (d.message) {
+    place(20);
     y += 6;
     doc.setTextColor(...GRIS); doc.setFontSize(9); doc.text(t(lg('VOTRE IDÉE', 'YOUR IDEA')), MARGE, y);
     doc.setTextColor(...NOIR); doc.setFontSize(10);
-    const idee = doc.splitTextToSize(t(d.message), L - 2 * MARGE).slice(0, 14);
-    doc.text(idee, MARGE, y + 6);
-    y += 6 + idee.length * 4.8;
+    y += 1.2;
+    // ligne par ligne, pour continuer sur la page suivante si le texte est long
+    doc.splitTextToSize(t(d.message), L - 2 * MARGE).forEach((ligne) => {
+      place(4.8);
+      y += 4.8;
+      doc.text(ligne, MARGE, y);
+    });
   }
 
   /* ---------- Signature ---------- */
+  if (y + 42 > 285) { doc.addPage(); y = 22; }   // le cadre de signature (32 mm) doit finir au-dessus du pied de page
   const ySign = Math.max(y + 10, 238);
   doc.setDrawColor(...NOIR); doc.setLineWidth(0.3);
   doc.roundedRect(L - MARGE - 85, ySign, 85, 32, 3, 3, 'S');
   doc.setFontSize(9); doc.setTextColor(...GRIS);
   doc.text(t(lg('Bon pour accord, date et signature du client :', 'Approved: date and client signature')), L - MARGE - 81, ySign + 6);
 
-  /* ---------- Pied de page ---------- */
-  doc.setFontSize(8); doc.setTextColor(...GRIS);
-  doc.text(t('Novimo - ' + slogan + ' - ' + (d.contact || '')), L / 2, 290, { align: 'center' });
+  /* ---------- Pied de page (sur chaque page) ---------- */
+  const pages = doc.getNumberOfPages();
+  for (let p = 1; p <= pages; p++) {
+    doc.setPage(p);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...GRIS);
+    doc.text(t('Novimo - ' + slogan + ' - ' + (d.contact || '')), L / 2, 290, { align: 'center' });
+    if (pages > 1) doc.text(p + ' / ' + pages, L - MARGE, 290, { align: 'right' });
+  }
 
   return doc;
 }
