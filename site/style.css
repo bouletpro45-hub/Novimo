@@ -17,7 +17,6 @@
   --marge: clamp(16px, 2.4vw, 32px);       /* marge sur les côtés */
   --espace-section: clamp(96px, 13vw, 200px);
 
-  --t-geant: clamp(44px, 7.4vw, 124px);   /* titre de l'accueil */
   --t-titre: clamp(36px, 4.6vw, 76px);     /* titres de sections */
   --t-moyen: clamp(22px, 2vw, 30px);       /* sous-titres, prix */
   --t-texte: clamp(17px, 1.25vw, 20px);    /* texte courant */
@@ -71,21 +70,6 @@ section { padding: var(--espace-section) var(--marge) 0; }
 }
 .bouton:hover { transform: translateY(-2px); background: #e2ff7a; }
 .bouton:active { transform: scale(0.97); }
-.bouton-petit { padding: 11px 20px; font-size: 15px; }
-
-.lien-fleche {
-  font-weight: 600;
-  text-decoration: none;
-  border-bottom: 2px solid var(--accent);
-  padding-bottom: 2px;
-  transition: color 0.2s;
-}
-.lien-fleche::after { content: " ↓"; display: inline-block; transition: transform 0.25s var(--douce); }
-.lien-fleche:hover { color: var(--accent); }
-.lien-fleche:hover::after { transform: translateY(3px); }
-
-.bouton-sombre { background: var(--sur-accent); color: var(--accent); }
-.bouton-sombre:hover { background: #26281f; }
 
 /* =========================================================
    BARRE LATÉRALE (menu pliant / dépliant)
@@ -245,7 +229,6 @@ body { padding-left: var(--largeur-menu); transition: padding-left 0.45s var(--d
 .titre-accueil .mot-accueil { display: inline-block; }
 .accroche { max-width: 34ch; margin-top: 32px; font-size: var(--t-moyen); line-height: 1.35; }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 28px; margin-top: 44px; }
-.accueil-video { height: min(80vh, 780px); }
 
 /* ---------- 2. Essai en direct ---------- */
 .essai {
@@ -257,7 +240,6 @@ body { padding-left: var(--largeur-menu); transition: padding-left 0.45s var(--d
   padding-bottom: var(--espace-section);
   background: var(--fond-2);
 }
-.essai-video { position: sticky; top: 32px; }
 
 .formulaire { display: flex; flex-direction: column; gap: 28px; margin-top: 44px; max-width: 520px; }
 .champ { display: flex; flex-direction: column; gap: 8px; font-weight: 600; }
@@ -277,7 +259,6 @@ body { padding-left: var(--largeur-menu); transition: padding-left 0.45s var(--d
 .choix { border: 0; }
 .choix legend { font-weight: 600; margin-bottom: 12px; }
 
-.pastilles { display: flex; flex-wrap: wrap; gap: 12px; }
 .pastille {
   width: 52px; height: 52px;
   border-radius: 50%;
@@ -318,8 +299,6 @@ body { padding-left: var(--largeur-menu); transition: padding-left 0.45s var(--d
   align-items: end;
   margin-top: 64px;
 }
-.oeuvre figcaption { margin-top: 16px; max-width: 34ch; }
-.oeuvre figcaption strong { display: block; font-size: var(--t-moyen); letter-spacing: -0.02em; margin-bottom: 4px; }
 
 /* ---------- 4. Tarifs (bloc couleur accent) ---------- */
 .tarifs {
@@ -431,11 +410,8 @@ body { padding-left: var(--largeur-menu); transition: padding-left 0.45s var(--d
 /* ---------- Tablette ---------- */
 @media (max-width: 960px) {
   .accueil { grid-template-columns: 1fr; min-height: 0; }
-  .accueil-video { height: auto; width: min(100%, 420px); }
   /* Sur petit écran : titre, puis aperçu, puis réglages (pour voir le résultat en tapant) */
   .essai { display: flex; flex-direction: column; gap: 0; }
-  .essai-reglages { display: contents; }
-  .essai-video { position: relative; top: auto; order: 3; width: 100%; margin-top: 32px; }
   .essai h2 { order: 1; }
   .essai .texte-section { order: 2; }
   .formulaire { order: 4; }
@@ -449,9 +425,7 @@ body { padding-left: var(--largeur-menu); transition: padding-left 0.45s var(--d
 /* ---------- Téléphone ---------- */
 @media (max-width: 600px) {
   .accueil { padding-top: 24px; }
-  .accueil-video { width: 100%; }
   .galerie { grid-template-columns: 1fr; }
-  .oeuvre-grande { grid-row: auto; }
   .grille-tarifs li { grid-template-columns: 1fr auto; gap: 8px 16px; padding: 22px 20px; }
   .grille-tarifs li p { grid-column: 1 / -1; grid-row: 2; }
   .grille-tarifs .prix-bloc { grid-row: 1; grid-column: 2; }
@@ -916,9 +890,6 @@ body { padding-left: calc(var(--largeur-menu) + 12px); }
 }
 .essai .ecran { border-radius: var(--rayon); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45); }
 
-/* ---------- 3. RÉALISATIONS ---------- */
-.oeuvre .ecran { border-radius: var(--rayon); border: 1px solid var(--bord); }
-
 /* ---------- 4. TARIFS : fond sombre, cartes côte à côte ---------- */
 .tarifs { background: transparent; color: var(--encre); }
 .tarifs ::selection { background: var(--accent); color: var(--sur-accent); }
@@ -1170,17 +1141,7 @@ body { padding-left: calc(var(--largeur-menu) + 12px); }
   .marque-nom { font-size: 38px; }
 }
 
-/* Galerie de 3 : une vidéo verticale + deux carrées, toutes à la même hauteur */
-.galerie-3 { grid-template-columns: 0.5625fr 1fr 1fr; }
 .ecran { background: #060708; }
-@media (max-width: 960px) {
-  .galerie-3 { grid-template-columns: 1fr 1fr; }
-  .galerie-3 .oeuvre-grande { grid-row: span 2; }
-}
-@media (max-width: 600px) {
-  .galerie-3 { grid-template-columns: 1fr; }
-  .galerie-3 .oeuvre-grande { grid-row: auto; }
-}
 
 /* Correction : le "N" du logo doit être foncé sur le carré vert (il était vert sur vert) */
 .laterale-logo .logo-symbole { color: var(--sur-accent); }
@@ -1834,145 +1795,18 @@ body { padding-left: calc(var(--largeur-menu) + 12px); }
 .exemple-spot-texte.change > :not(.ordi-commandes) { opacity: 0; transform: translateY(8px); }
 @media (max-width: 960px) { .ordi-commandes { justify-content: center; } }
 
-/* =========================================================
-   ESSAI EN DIRECT (v3) — épuré : le nom tapé en très grand,
-   l'aperçu au centre, une seule petite barre d'outils
-   La lueur prend la couleur choisie (--e-accent, mise par accueil.js)
-   ========================================================= */
-.lecteur-seul { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-
-.essai-v3 {
-  --e-accent: var(--accent);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--espace-section, 120px) 24px 40px;
-  text-align: center;
-  isolation: isolate;
-}
-/* une lueur douce de la couleur choisie, derrière l'aperçu */
-.essai-v3::before {
-  content: "";
-  position: absolute;
-  left: 50%; top: 52%;
-  z-index: -1;
-  width: min(1100px, 120vw); height: 760px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--e-accent) 16%, transparent), transparent);
-  transition: background 0.8s;
-  pointer-events: none;
-}
-.essai-v3-form { width: min(100%, 980px); }
-.essai-v3-sur { display: inline-flex; align-items: center; gap: 10px; color: var(--encre-douce); font-size: 15px; letter-spacing: 0.02em; }
-.point-direct { width: 8px; height: 8px; border-radius: 50%; background: var(--e-accent); box-shadow: 0 0 0 0 var(--e-accent); animation: point-direct 2s infinite; }
-@keyframes point-direct { 70% { box-shadow: 0 0 0 10px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
-
-/* Le nom : c'est le titre de la section, on écrit dedans */
-.essai-v3-nom, .essai-v3-slogan { display: block; position: relative; }
-.essai-v3 input {
-  width: 100%;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  background: none;
-  text-align: center;
-  color: var(--encre);
-  caret-color: var(--e-accent);
-  font-family: inherit;
-}
-.essai-v3-nom input {
-  margin-top: 18px;
-  font-size: clamp(54px, 9vw, 132px);
-  font-weight: 800;
-  letter-spacing: -0.05em;
-  line-height: 1.05;
-}
-.essai-v3-nom::after {   /* un trait fin qui s'allume quand on écrit */
-  content: "";
-  position: absolute;
-  left: 50%; bottom: -6px;
-  width: min(420px, 60%); height: 2px;
-  transform: translateX(-50%) scaleX(0.25);
-  border-radius: 2px;
-  background: var(--e-accent);
-  opacity: 0.5;
-  transition: transform 0.5s var(--douce), opacity 0.3s;
-}
-.essai-v3-nom:focus-within::after { transform: translateX(-50%) scaleX(1); opacity: 1; }
-.essai-v3-slogan input {
-  margin-top: 22px;
-  font-size: clamp(18px, 2vw, 24px);
-  color: var(--encre-douce);
-  letter-spacing: 0.01em;
-}
-.essai-v3 input::placeholder { color: rgba(242, 240, 232, 0.55); }
-
-/* L'aperçu */
-.essai-v3-scene { position: relative; width: min(100%, 560px); margin-top: 64px; }
-.essai-v3-ecran {
-  border-radius: 28px;
-  box-shadow: 0 0 0 1px var(--bord), 0 40px 100px rgba(0, 0, 0, 0.55);
-}
-/* le reflet qui passe quand l'animation se refait */
+/* Le reflet qui passe sur l'aperçu quand l'animation se refait (studio de l'accueil) */
 .essai-v3-balayage {
   position: absolute; inset: 0;
   pointer-events: none;
   background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--e-accent) 35%, transparent) 50%, transparent 70%);
   transform: translateX(-120%);
 }
-.essai-v3-ecran.recharge .essai-v3-balayage { animation: essai-balayage 0.9s var(--fluide, ease-in-out); }
 @keyframes essai-balayage { to { transform: translateX(120%); } }
 
-/* La barre d'outils, posée à cheval sur le bas de l'aperçu */
-.essai-v3-outils {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: -30px;
-  padding: 9px 12px;
-  border-radius: 999px;
-  background: rgba(21, 22, 15, 0.82);
-  border: 1px solid var(--bord);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
-  -webkit-backdrop-filter: blur(14px);
-          backdrop-filter: blur(14px);
-}
-.essai-v3-outils .pastilles { gap: 6px; flex-wrap: nowrap; }
-.essai-v3-outils .pastille { flex: none; width: 30px; height: 30px; padding: 0; border-width: 2px; }
-.essai-v3-outils .pastille[aria-pressed="true"] { border-color: var(--encre); transform: scale(1.1); }
-.essai-v3-sep { width: 1px; height: 24px; background: var(--bord); }
-.essai-v3-symboles { display: flex; gap: 2px; }
-.essai-v3-symboles button, .essai-v3-rejouer {
-  display: grid; place-items: center;
-  width: 38px; height: 38px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: none;
-  color: var(--encre-douce);
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s, transform 0.2s var(--douce);
-}
-.essai-v3-symboles svg, .essai-v3-rejouer svg { width: 19px; height: 19px; }
-.essai-v3-symboles button:hover, .essai-v3-rejouer:hover { color: var(--encre); background: rgba(242, 240, 232, 0.06); }
-.essai-v3-symboles button[aria-pressed="true"] { background: var(--e-accent); color: #0b0c09; }
-.essai-v3-rejouer:active svg { transform: rotate(-200deg); transition: transform 0.4s var(--douce); }
-
-/* L'appel à l'action */
-.essai-v3-action { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 44px; }
-.essai-v3-action p { color: var(--encre-douce); font-size: 14px; }
-
-@media (max-width: 600px) {
-  .essai-v3 { padding-top: 90px; }
-  .essai-v3-scene { margin-top: 44px; }
-  .essai-v3-outils { gap: 8px; padding: 7px 8px; margin-top: -24px; }
-  .essai-v3-outils .pastille { width: 24px; height: 24px; }
-  .essai-v3-symboles button, .essai-v3-rejouer { width: 32px; height: 32px; }
-  .essai-v3-symboles svg, .essai-v3-rejouer svg { width: 16px; height: 16px; }
-}
+/* Le point qui clignote à côté de « En direct » */
+.point-direct { width: 8px; height: 8px; border-radius: 50%; background: var(--e-accent); box-shadow: 0 0 0 0 var(--e-accent); animation: point-direct 2s infinite; }
+@keyframes point-direct { 70% { box-shadow: 0 0 0 10px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
 
 /* =========================================================
    BOUTON "SE CONNECTER / S'INSCRIRE" EN HAUT À DROITE

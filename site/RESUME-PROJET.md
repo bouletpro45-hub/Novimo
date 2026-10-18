@@ -40,7 +40,7 @@ Options : express +59 €, retouche +47 €, format paysage +37 €/animation. A
   - Edge Function **`envoyer-devis`** : recalcule les prix côté serveur (on ne fait jamais confiance au prix envoyé par le navigateur), anti-spam (champ piège `site_web`, temps de remplissage minimum, IP hachée), consentement obligatoire, validation des champs, envoi de l'e-mail via **Brevo**.
   - Edge Function **`messagerie`** : messages **chiffrés AES-256-GCM** (clé dérivée par HKDF d'un secret serveur), réservée aux utilisateurs connectés.
   - La clé `service_role` n'est **jamais** dans le front-end ; les secrets sont uniquement dans Supabase.
-- **Hébergement prévu** : Netlify (`netlify.toml` prêt) ; `.htaccess` fourni aussi pour un hébergeur Apache. Les deux forcent le HTTPS et ajoutent des en-têtes de sécurité.
+- **Hébergement** : Vercel (`vercel.json` pour les en-têtes de sécurité) ; `.htaccess` fourni aussi pour un hébergeur Apache. Les deux forcent le HTTPS et ajoutent des en-têtes de sécurité.
 
 ## 5. Arborescence (dossier `motion-design/`)
 ```
@@ -69,7 +69,7 @@ motion-design/
 ├── outils/rendu_mp4.py       export d'une animation HTML en MP4
 ├── videos/                   les pubs exportées
 ├── supabase/                 schema.sql, migrations SQL, functions/
-├── 404.html, sitemap.xml, robots.txt, favicon.ico, netlify.toml, .htaccess
+├── 404.html, sitemap.xml, robots.txt, favicon.ico, vercel.json, .htaccess
 └── GUIDE.md                  guide complet (mise en ligne, messagerie, export MP4)
 ```
 

@@ -334,7 +334,7 @@ Change un chiffre, enregistre, actualise : c'est la meilleure façon d'apprendre
 2. **Fonction serveur** : redéploie `supabase/functions/envoyer-devis/index.ts` (Edge Functions > envoyer-devis > Code > coller > Deploy). Elle recalcule maintenant les prix elle-même : si tu changes un prix dans `site/reglages.js`, change-le aussi en haut de ce fichier.
 3. **Ton domaine** : remplace `https://www.novimo.fr` partout (pages `site/*.html`, `sitemap.xml`, `robots.txt`) par ta vraie adresse.
 4. **Pages légales** : remplace les `[crochets]` dans `site/confidentialite.html` et `site/cgu.html` (nom, statut, SIRET, adresse, hébergeur, médiateur).
-5. **Hébergement** : sur Netlify, publie le dossier `motion-design` entier ; `netlify.toml` force le HTTPS, ajoute les protections et la page 404. (Sur un hébergeur Apache, c'est `.htaccess` qui s'en charge.)
+5. **Hébergement** : sur Vercel (dossier racine = `site`), `vercel.json` ajoute les en-têtes de sécurité ; Vercel force le HTTPS et sert `404.html` tout seul. (Sur un hébergeur Apache, c'est `.htaccess` qui s'en charge.)
 6. **Supabase > Authentication > URL Configuration** : ajoute ton domaine dans *Site URL* et *Redirect URLs*.
 
 ---
