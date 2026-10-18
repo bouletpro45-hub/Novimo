@@ -279,5 +279,12 @@ window.addEventListener('DOMContentLoaded', () => {
       vitre.insertAdjacentHTML('beforeend', '<div class="tel-pied" aria-hidden="true"><img src="logo.svg" alt=""><b>novimo</b><span>' + t('Sponsorisé', 'Sponsored') + '</span></div>');
     }
     vitre.insertAdjacentHTML('beforeend', '<span class="tel-barre-accueil" aria-hidden="true"></span>');
+    // Téléphone 3D de l'accueil : des tranches empilées font l'épaisseur, plus le dos avec les caméras
+    if (tel.classList.contains('telephone-3d')) {
+      let couches = '';
+      for (let i = 0; i <= 12; i++) couches += '<span class="tel-couche" style="--z:' + (i * 2 - 12) + 'px"></span>';
+      tel.insertAdjacentHTML('afterbegin', '<div class="tel-volume" aria-hidden="true">' + couches +
+        '<div class="tel-dos"><span class="tel-cameras"><i></i><i></i><i></i><b></b></span><img src="logo.svg" alt=""></div></div>');
+    }
   });
 })();

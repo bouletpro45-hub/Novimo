@@ -861,6 +861,61 @@ body { padding-left: calc(var(--largeur-menu) + 12px); }
 }
 .notif-gauche  { left: 0;  top: 28%; --angle: -7deg; }
 .notif-droite  { right: 0; top: 58%; --angle: 6deg; animation-delay: -3s; }
+/* ---------- Le téléphone de l'accueil, en 3D, qui tourne sur lui-même ---------- */
+.scene-telephone { perspective: 1600px; }
+.telephone-3d {
+  transform-style: preserve-3d;
+  box-shadow: none;
+  animation: tel-tourne 14s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.telephone-3d .tel-ecran { transform: translateZ(13px); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.tel-volume { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; }
+/* chaque tranche = le contour en titane ; empilées tous les 2 px, elles font l'épaisseur */
+.tel-couche {
+  position: absolute; inset: 0;
+  border-radius: 58px;
+  background: linear-gradient(145deg, #5a5c55 0%, #1e1f1b 22%, #121310 55%, #2e2f2a 85%, #6a6c64 100%);
+  transform: translateZ(var(--z));
+}
+.tel-dos {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  border-radius: 58px;
+  background: radial-gradient(120% 80% at 30% 10%, #34362f, #16170f 60%, #0c0d09);
+  box-shadow: inset 0 0 0 5px #2a2b26, inset 0 0 0 6px rgba(255, 255, 255, 0.08);
+  transform: translateZ(-13px) rotateY(180deg);
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+.tel-dos img { width: 22%; opacity: 0.9; }
+/* le bloc photo, en haut à gauche vu de dos */
+.tel-cameras {
+  position: absolute; top: 4.5%; left: 7%;
+  width: 42%; aspect-ratio: 1;
+  border-radius: 26%;
+  background: linear-gradient(145deg, #2b2c27, #121310);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 6px 14px rgba(0, 0, 0, 0.5);
+}
+.tel-cameras i {
+  position: absolute; width: 40%; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #3b4a5c 0 12%, #07080a 30% 58%, #1c1d1a 60% 70%, #3a3b36 72%);
+  box-shadow: 0 0 0 2px #0a0a08;
+}
+.tel-cameras i:nth-child(1) { top: 7%; left: 7%; }
+.tel-cameras i:nth-child(2) { bottom: 7%; left: 7%; }
+.tel-cameras i:nth-child(3) { top: 30%; right: 7%; }
+.tel-cameras b { position: absolute; top: 9%; right: 14%; width: 12%; aspect-ratio: 1; border-radius: 50%; background: #e9e4c8; opacity: 0.7; }
+/* se balance doucement de face, puis fait un tour complet en montrant son dos */
+@keyframes tel-tourne {
+  0%       { transform: rotateY(-22deg) rotateX(6deg) translateY(0); }
+  25%      { transform: rotateY(16deg) rotateX(3deg) translateY(-10px); }
+  50%, 58% { transform: rotateY(-22deg) rotateX(6deg) translateY(0); }
+  88%      { transform: rotateY(338deg) rotateX(6deg) translateY(-14px); }
+  100%     { transform: rotateY(338deg) rotateX(6deg) translateY(0); }   /* 338° = -22° : la boucle repart sans à-coup */
+}
+@media (prefers-reduced-motion: reduce) {
+  .telephone-3d { animation: none; transform: rotateY(-14deg) rotateX(4deg); }
+}
+
 @keyframes flotter {
   0%, 100% { transform: rotate(var(--angle)) translateY(0); }
   50%      { transform: rotate(var(--angle)) translateY(-12px); }
