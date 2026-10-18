@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animated video templates to customise — Novimo</title>
+<!-- SEO -->
+<meta name="description" content="83 ready-made animated videos to customise from $97: promos, new arrivals, events, logos… in 9:16, 1:1 and 16:9. Change text and colours live.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.novimo.fr/site/modeles-en.html">
+<meta name="theme-color" content="#0b0c09">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Novimo">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="Animated video templates to customise — Novimo">
+<meta property="og:description" content="83 ready-made animated videos to customise from $97: promos, new arrivals, events, logos… in 9:16, 1:1 and 16:9. Change text and colours live.">
+<meta property="og:url" content="https://www.novimo.fr/site/modeles-en.html">
+<meta property="og:image" content="https://www.novimo.fr/site/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Novimo: your brand, in motion. Animated logos, ads and video spots.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Animated video templates to customise — Novimo">
+<meta name="twitter:description" content="83 ready-made animated videos to customise from $97: promos, new arrivals, events, logos… in 9:16, 1:1 and 16:9. Change text and colours live.">
+<meta name="twitter:image" content="https://www.novimo.fr/site/og-image.jpg">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<!-- /SEO -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
+<link rel="stylesheet" href="style.css?v=15">
+<link rel="alternate" hreflang="fr" href="https://www.novimo.fr/site/modeles.html">
+<link rel="alternate" hreflang="en" href="https://www.novimo.fr/site/modeles-en.html">
+<link rel="alternate" hreflang="x-default" href="https://www.novimo.fr/site/modeles.html">
+<script src="langue.js?v=15"></script>
+</head>
+<body data-page="modeles">
+<a class="aller-contenu" href="#contenu">Skip to content</a>
+
+<main id="contenu" class="modeles">
+  <header class="modeles-tete">
+    <p class="bulle" data-entree>Ready-made templates</p>
+    <h1 class="modeles-titre" data-entree>Ready-made videos, <span class="accent">made yours</span></h1>
+    <p class="texte-section" data-entree>Pick a template, change the text and colours: you see the result straight away. We take care of the rest (your logo, the final quality) and you get your files within 48 h.</p>
+  </header>
+
+  <!-- Les filtres -->
+  <div class="filtres" id="filtres" role="search" aria-label="Filter templates">
+    <div class="filtres-ligne">
+      <div class="segment" id="filtre-format" role="group" aria-label="Format">
+        <button type="button" data-format="" aria-pressed="true">All</button>
+        <button type="button" data-format="vertical" aria-pressed="false"><i class="ratio r-vertical" aria-hidden="true"></i>9:16</button>
+        <button type="button" data-format="carre" aria-pressed="false"><i class="ratio r-carre" aria-hidden="true"></i>1:1</button>
+        <button type="button" data-format="paysage" aria-pressed="false"><i class="ratio r-paysage" aria-hidden="true"></i>16:9</button>
+      </div>
+      <label class="filtre-select"><span>Length</span>
+        <select id="filtre-duree">
+          <option value="">All</option>
+          <option value="0-8">8 s or less</option>
+          <option value="9-15">9 to 15 s</option>
+          <option value="16-999">Over 15 s</option>
+        </select>
+      </label>
+      <label class="filtre-select"><span>Price</span>
+        <select id="filtre-prix">
+          <option value="">All</option>
+          <option value="0-100">Under $100</option>
+          <option value="100-200">$100 to $200</option>
+          <option value="200-99999">Over $200</option>
+        </select>
+      </label>
+      <label class="filtre-select"><span>Sort</span>
+        <select id="filtre-tri">
+          <option value="populaires">Most popular</option>
+          <option value="prix-asc">Price: low to high</option>
+          <option value="prix-desc">Price: high to low</option>
+          <option value="duree-asc">Shortest first</option>
+          <option value="duree-desc">Longest first</option>
+        </select>
+      </label>
+    </div>
+    <div class="filtres-ligne">
+      <div class="puces-filtre" id="filtre-style" role="group" aria-label="Style"></div>
+    </div>
+    <div class="filtres-ligne">
+      <div class="puces-filtre" id="filtre-categorie" role="group" aria-label="Use"></div>
+      <p class="compte-modeles" id="compte-modeles" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <ul class="grille-modeles" id="grille-modeles"></ul>
+  <p class="aucun-modele" id="aucun-modele" hidden>No template matches. <button type="button" id="tout-afficher">Show all</button></p>
+</main>
+
+<!-- L'éditeur : on personnalise le modèle choisi -->
+<dialog class="editeur" id="editeur" aria-labelledby="ed-nom">
+  <div class="editeur-scene">
+    <div class="editeur-ecran" id="ed-ecran"><iframe id="ed-apercu" title="Preview of the customised template"></iframe></div>
+    <div class="editeur-sous-ecran">
+      <div class="segment" id="ed-formats" role="group" aria-label="Preview format"></div>
+      <button type="button" class="bouton-fantome" id="ed-rejouer">Replay</button>
+    </div>
+  </div>
+  <div class="editeur-panneau">
+    <button type="button" class="editeur-fermer" id="ed-fermer" aria-label="Close">✕</button>
+    <p class="editeur-cat" id="ed-cat"></p>
+    <h2 id="ed-nom"></h2>
+    <p class="editeur-infos" id="ed-infos"></p>
+    <form id="ed-form" class="editeur-form">
+      <div id="ed-champs"></div>
+      <fieldset class="ed-bloc" id="ed-bloc-couleurs"><legend>Colours</legend><div class="ed-palettes" id="ed-palettes"></div></fieldset>
+      <fieldset class="ed-bloc" id="ed-bloc-police"><legend>Title font</legend><div class="ed-polices" id="ed-polices"></div></fieldset>
+      <fieldset class="ed-bloc" id="ed-bloc-symbole"><legend>Symbol</legend><div class="ed-polices" id="ed-symboles"></div></fieldset>
+    </form>
+    <p class="editeur-note" id="ed-note" hidden></p>
+    <div class="editeur-actions">
+      <a class="bouton bouton-icone" id="ed-commander" href="devis-en.html"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span id="ed-commander-texte">Order this template</span></a>
+      <p>All the template’s formats included · 2 rounds of revisions</p>
+    </div>
+  </div>
+</dialog>
+
+<footer class="pied">
+  <p class="pied-nom" aria-hidden="true">Novimo</p>
+  <div class="pied-ligne">
+    <span>Motion design for brands, businesses and creators.</span>
+    <nav class="pied-legal" aria-label="Legal information">
+      <a href="cgu-en.html#mentions">Legal notice</a>
+      <a href="confidentialite-en.html">Privacy (GDPR)</a>
+      <a href="cgu-en.html">Terms and conditions</a>
+      <a href="#" data-cookies>Manage cookies</a>
+    </nav>
+    <nav class="pied-reseaux" aria-label="Novimo on social media">
+      <a data-reseau="instagram" href="https://www.instagram.com/novimo_md/" target="_blank" rel="noopener me" aria-label="Novimo on Instagram (@novimo_md)"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+      <a data-reseau="tiktok" href="https://www.tiktok.com/@novimo.com" target="_blank" rel="noopener me" aria-label="Novimo on TikTok (@novimo.com)"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M16.6 3c.4 2.2 1.8 3.7 4 3.9v3.2c-1.5 0-2.9-.4-4-1.2v6.4a5.7 5.7 0 1 1-5.7-5.7c.3 0 .6 0 .9.1v3.3a2.5 2.5 0 1 0 1.7 2.3V3h3.1z"/></svg></a>
+    </nav>
+    <span>© <span class="annee">2026</span> Novimo</span>
+  </div>
+</footer>
+
+<script src="config.js?v=15"></script>
+<script src="reglages.js?v=15"></script>
+<script src="commun.js?v=15"></script>
+<script src="confiance.js?v=15"></script>
+<script src="modeles.js?v=15"></script>
+<script src="modeles-en.js?v=15"></script>
+<script src="modeles-page.js?v=15"></script>
+</body>
+</html>

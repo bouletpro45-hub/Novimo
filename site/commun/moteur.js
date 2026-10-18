@@ -262,11 +262,21 @@
     }, (etat.fin + 1.8) * 1000);
   }
 
-  /* Remplace les réglages par ceux donnés dans l'adresse (si présents) */
+  /* Remplace les réglages par ceux donnés dans l'adresse (si présents)
+     ?langue=en : les textes du bloc "en" du modèle remplacent d'abord les textes français */
   function lireParametres(R) {
+    if (PARAMS.get('langue') === 'en' && R.en) fusionner(R, R.en);
     PARAMS.forEach((valeur, cle) => {
       if (typeof R[cle] === 'string') R[cle] = valeur;
       else if (R.couleurs && typeof R.couleurs[cle] === 'string') R.couleurs[cle] = valeur;
+    });
+  }
+  // Copie "source" dans "cible" (les sous-objets sont fusionnés, les listes remplacées)
+  function fusionner(cible, source) {
+    const objet = (x) => x && typeof x === 'object' && !Array.isArray(x);
+    Object.entries(source).forEach(([cle, v]) => {
+      if (objet(v) && objet(cible[cle])) fusionner(cible[cle], v);
+      else cible[cle] = v;
     });
   }
 

@@ -22,15 +22,37 @@ const REGLAGES = {
 
   // La carte : nom, petit détail, prix en euros (nombre entier), "dès" si c'est un prix de départ
   carte: [
-    { nom: 'Logo animé',     detail: '4 secondes, carré + vertical', prix: 300,  des: false },
-    { nom: 'Petite pub',     detail: '8 secondes pour les Reels',    prix: 150,  des: false },
-    { nom: 'Pack lancement', detail: 'Logo animé + petite pub',      prix: 400,  des: false },
-    { nom: 'Spot 30 s',      detail: 'YouTube, TV, vitrine',         prix: 750,  des: true },
-    { nom: 'Spot 60 s',      detail: 'La version longue',            prix: 1500, des: true }
+    { nom: 'Logo animé',     detail: '4 secondes, carré + vertical', prix: 297,  des: false },
+    { nom: 'Petite pub',     detail: '8 secondes pour les Reels',    prix: 147,  des: false },
+    { nom: 'Pack lancement', detail: 'Logo animé + petite pub',      prix: 389,  des: false },
+    { nom: 'Spot 30 s',      detail: 'YouTube, TV, vitrine',         prix: 743,  des: true },
+    { nom: 'Spot 60 s',      detail: 'La version longue',            prix: 1487, des: true }
   ],
 
   // Le bandeau qui défile en bas
   bandeau: ['Devis gratuit en une minute', 'Aperçu en 48 h', 'Carré, vertical, 16:9', '@novimo_md'],
+
+  motDes: 'dès',                  // le petit mot devant un prix de départ
+  devise: '€',                    // le symbole de la monnaie
+  euroAvant: false,               // true = « $337 » (anglais), false = « 297 € »
+
+  // 🇬🇧 Version anglaise (utilisée sur le site anglais, avec ?langue=en dans l'adresse)
+  en: {
+    surTitre: 'The menu',
+    phrase: 'Motion design for brands and businesses.',
+    pastille: 'Half the price of a freelancer',
+    carte: [
+      { nom: 'Animated logo', detail: '4 seconds, square + vertical', prix: 337,  des: false },
+      { nom: 'Short ad',      detail: '8 seconds for Reels',          prix: 167,  des: false },
+      { nom: 'Launch pack',   detail: 'Animated logo + short ad',     prix: 447,  des: false },
+      { nom: '30 s spot',     detail: 'YouTube, TV, shop window',     prix: 857,  des: true },
+      { nom: '60 s spot',     detail: 'The long version',             prix: 1697, des: true }
+    ],
+    bandeau: ['Free quote in one minute', 'Preview in 48 h', 'Square, vertical, 16:9', '@novimo_md'],
+    motDes: 'from',
+    devise: '$',
+    euroAvant: true
+  },
 
   couleurs: {
     fond:      '#f3f1ea',
@@ -131,7 +153,7 @@ function construire(scene, R, S) {
     S.creer('span', 'ligne-detail', nomP, p.detail);
     const points = S.creer('span', 'pointilles', ligne);
     const prix = S.creer('div', 'ligne-prix', ligne);
-    prix.innerHTML = (p.des ? '<small>dès</small>' : '') + '<span class="nombre"></span>&nbsp;€';
+    prix.innerHTML = (p.des ? '<small>' + R.motDes + '</small>' : '') + (R.euroAvant ? R.devise + '<span class="nombre"></span>' : '<span class="nombre"></span>&nbsp;' + R.devise);
 
     const t = 1.3 + i * 0.32;
     entrer(nomP, t, 30);

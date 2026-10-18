@@ -2555,3 +2555,94 @@ input::placeholder, textarea::placeholder { color: rgba(242, 240, 232, 0.55); op
   .grille-tarifs li.avec-apercu > * { grid-column: 1; grid-row: auto; }
   .tarif-apercu { max-width: 320px; }
 }
+
+/* =========================================================
+   LANGUE : sélecteur (première visite) et bouton « FR · EN »
+   ========================================================= */
+.coin-haut { position: fixed; top: 20px; right: 24px; z-index: 40; display: flex; align-items: center; gap: 10px; }
+.coin-haut .compte-haut-ordi { position: static; }
+.bouton-langue {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px 10px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--bord);
+  background: rgba(21, 22, 15, 0.75);
+  -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+  color: var(--encre-douce);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.2s, background-color 0.2s, transform 0.2s var(--douce);
+}
+.bouton-langue svg { width: 17px; height: 17px; color: var(--accent); flex: none; }
+.bouton-langue b { font-weight: 600; }
+.bouton-langue b.actuelle { color: var(--encre); font-weight: 800; }
+.bouton-langue:hover { border-color: var(--lueur); background: rgba(212, 255, 63, 0.08); transform: translateY(-1px); }
+.langue-laterale, .langue-mobile { display: none; }
+@media (max-width: 960px) {
+  .coin-haut { display: none; }
+  .langue-mobile { display: inline-flex; margin-left: auto; padding: 9px 11px; }
+  .langue-mobile + .compte-haut-mobile { margin-left: 8px; }
+  .langue-laterale { display: inline-flex; align-self: flex-start; margin: 12px 14px 0; }
+}
+@media (max-width: 420px) {
+  .langue-mobile { display: none; }
+  .langue-mobile + .compte-haut-mobile { margin-left: auto; }
+}
+
+.choix-langue {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  inset: 0;
+  padding: 38px 34px 34px;
+  border: 1px solid var(--bord);
+  border-radius: 28px;
+  background: #111209;
+  color: var(--encre);
+  text-align: center;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6), 0 0 80px rgba(212, 255, 63, 0.08);
+}
+.choix-langue[open] { animation: fenetre-entre 0.5s var(--douce); }
+.choix-langue::backdrop { background: rgba(5, 6, 4, 0.82); backdrop-filter: blur(8px); }
+.choix-langue .fenetre-icone { display: inline-block; }
+.choix-langue h2 { max-width: none; margin-top: 20px; font-size: clamp(26px, 4vw, 34px); line-height: 1.05; letter-spacing: -0.03em; text-transform: none; }
+.choix-langue h2 span { display: block; margin-top: 8px; font-size: 0.55em; font-weight: 500; letter-spacing: 0; color: var(--encre-douce); }
+.choix-langue-boutons { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
+.choix-langue-boutons button {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 22px 16px 20px;
+  border: 1px solid var(--bord);
+  border-radius: 20px;
+  background: var(--fond-2);
+  color: var(--encre);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s, transform 0.25s var(--douce);
+}
+.choix-langue-boutons b {
+  display: grid;
+  place-items: center;
+  width: 54px; height: 54px;
+  margin-bottom: 6px;
+  border-radius: 16px;
+  background: var(--accent);
+  color: var(--sur-accent);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.choix-langue-boutons span { font-size: 21px; font-weight: 800; letter-spacing: -0.02em; }
+.choix-langue-boutons small { color: var(--encre-douce); font-size: 14px; }
+.choix-langue-boutons button:hover, .choix-langue-boutons button:focus-visible { border-color: var(--accent); background: rgba(212, 255, 63, 0.07); transform: translateY(-3px); }
+@media (max-width: 420px) {
+  .choix-langue { padding: 30px 20px 22px; }
+  .choix-langue-boutons { grid-template-columns: 1fr; }
+}

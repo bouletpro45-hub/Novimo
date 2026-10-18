@@ -12,20 +12,29 @@ const $m = (id) => document.getElementById(id);
 
 // Les catégories proposées au client (les mêmes clés que dans la fonction serveur)
 const CATEGORIES_MSG = [
-  { id: 'projet',      nom: 'Nouveau projet ou devis',      detail: 'Logo, pub, spot : parlez-nous de votre idée.' },
-  { id: 'modele',      nom: 'Personnaliser un modèle',      detail: 'Une question sur un modèle prêt.' },
-  { id: 'suivi',       nom: 'Suivi de ma commande',         detail: 'Où en est ma vidéo, les délais.' },
-  { id: 'retouches',   nom: 'Retouches sur ma vidéo',       detail: 'Ce que vous voulez changer.' },
-  { id: 'paiement',    nom: 'Paiement ou facture',          detail: 'Acompte, solde, facture.' },
-  { id: 'partenariat', nom: 'Partenariat ou collaboration', detail: 'Créateurs, agences, marques.' },
-  { id: 'autre',       nom: 'Autre question',               detail: 'Tout le reste.' }
+  { id: 'projet',      nom: 'Nouveau projet ou devis',      detail: 'Logo, pub, spot : parlez-nous de votre idée.',
+    en: { nom: 'New project or quote', detail: 'Logo, ad, spot: tell us about your idea.' } },
+  { id: 'modele',      nom: 'Personnaliser un modèle',      detail: 'Une question sur un modèle prêt.',
+    en: { nom: 'Customise a template', detail: 'A question about a ready-made template.' } },
+  { id: 'suivi',       nom: 'Suivi de ma commande',         detail: 'Où en est ma vidéo, les délais.',
+    en: { nom: 'My order status', detail: 'Where my video is at, timings.' } },
+  { id: 'retouches',   nom: 'Retouches sur ma vidéo',       detail: 'Ce que vous voulez changer.',
+    en: { nom: 'Changes to my video', detail: 'What you would like to change.' } },
+  { id: 'paiement',    nom: 'Paiement ou facture',          detail: 'Acompte, solde, facture.',
+    en: { nom: 'Payment or invoice', detail: 'Deposit, balance, invoice.' } },
+  { id: 'partenariat', nom: 'Partenariat ou collaboration', detail: 'Créateurs, agences, marques.',
+    en: { nom: 'Partnership or collaboration', detail: 'Creators, agencies, brands.' } },
+  { id: 'autre',       nom: 'Autre question',               detail: 'Tout le reste.',
+    en: { nom: 'Other question', detail: 'Everything else.' } }
 ];
 const STATUTS_MSG = {
-  demande:  { texte: 'En attente', classe: 'statut-en-cours' },
-  acceptee: { texte: 'Acceptée',   classe: 'statut-signe' },
-  refusee:  { texte: 'Refusée',    classe: 'statut-annule' },
-  fermee:   { texte: 'Archivée',   classe: 'statut-annule' }
+  demande:  { texte: t('En attente', 'Pending'),  classe: 'statut-en-cours' },
+  acceptee: { texte: t('Acceptée', 'Accepted'),   classe: 'statut-signe' },
+  refusee:  { texte: t('Refusée', 'Declined'),    classe: 'statut-annule' },
+  fermee:   { texte: t('Archivée', 'Archived'),   classe: 'statut-annule' }
 };
+// Le nom de la catégorie d'une conversation (le serveur le donne en français)
+const nomCategorie = (c) => { const cat = CATEGORIES_MSG.find((x) => x.id === c.categorie); return cat ? tr(cat, 'nom') : c.categorieNom; };
 
 let ADMIN = false;
 let CONVERSATIONS = [];
@@ -36,8 +45,8 @@ let dernierFil = '';         // pour ne redessiner les messages que s'ils ont ch
 const quand = (iso) => {
   const d = new Date(iso);
   const aujourdhui = new Date().toDateString() === d.toDateString();
-  return aujourdhui ? d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-    : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  return aujourdhui ? d.toLocaleTimeString(t('fr-FR', 'en-GB'), { hour: '2-digit', minute: '2-digit' })
+    : d.toLocaleDateString(t('fr-FR', 'en-GB'), { day: 'numeric', month: 'short' });
 };
 function vue(id) { ['vue-demo', 'vue-connexion', 'vue-messagerie'].forEach((v) => { $m(v).hidden = v !== id; }); }
 function panneau(id) {
@@ -51,7 +60,7 @@ function panneau(id) {
 function ligneConversation(c) {
   const s = STATUTS_MSG[c.statut] || STATUTS_MSG.demande;
   return '<button type="button" class="msg-ligne' + (c.id === ouverte ? ' active' : '') + (c.nonLu ? ' non-lu' : '') + '" data-id="' + esc(c.id) + '">' +
-    '<span class="msg-ligne-haut"><b>' + esc(ADMIN ? (c.nom || c.email) : c.categorieNom) + '</b><time>' + quand(c.maj_le) + '</time></span>' +
+    '<span class="msg-ligne-haut"><b>' + esc(ADMIN ? (c.nom || c.email) : nomCategorie(c)) + '</b><time>' + quand(c.maj_le) + '</time></span>' +
     '<span class="msg-ligne-sujet">' + esc(c.sujet) + '</span>' +
     (ADMIN ? '' : '<span class="statut ' + s.classe + '">' + s.texte + '</span>') +
     '</button>';
@@ -77,7 +86,7 @@ function afficherListe() {
     if (!liste.length) html = '<p class="msg-aucune">' + ({ acceptee: 'Aucune conversation acceptée.', demande: 'Aucune demande en attente. 🎉', archive: 'Rien dans les archives.' })[onglet] + '</p>';
   } else {
     html = CONVERSATIONS.length ? CONVERSATIONS.map(ligneConversation).join('')
-      : '<p class="msg-aucune">Pas encore de conversation. Cliquez sur « Nouvelle demande » pour nous écrire.</p>';
+      : '<p class="msg-aucune">' + t('Pas encore de conversation. Cliquez sur « Nouvelle demande » pour nous écrire.', 'No conversations yet. Click “New request” to write to us.') + '</p>';
   }
   boite.innerHTML = html;
 }
@@ -106,16 +115,16 @@ $m('msg-onglets').addEventListener('click', (e) => {
    ===================================================== */
 async function ouvrir(id, silencieux) {
   ouverte = id;
-  if (!silencieux) { panneau('msg-fil'); $m('fil-messages').innerHTML = '<li class="msg-chargement">Chargement…</li>'; dernierFil = ''; afficherListe(); }
+  if (!silencieux) { panneau('msg-fil'); $m('fil-messages').innerHTML = '<li class="msg-chargement">' + t('Chargement…', 'Loading…') + '</li>'; dernierFil = ''; afficherListe(); }
   let r;
   try { r = await NovimoAPI.messagerie('fil', { conversation: id }); }
   catch (err) { if (!silencieux) $m('fil-messages').innerHTML = '<li class="msg-chargement">' + esc(err.message) + '</li>'; return; }
   if (ouverte !== id) return;   // on a changé de conversation entre-temps
   const c = r.conversation;
   const s = STATUTS_MSG[c.statut] || STATUTS_MSG.demande;
-  $m('fil-categorie').textContent = c.categorieNom;
+  $m('fil-categorie').textContent = nomCategorie(c);
   $m('fil-sujet').textContent = c.sujet;
-  $m('fil-qui').textContent = ADMIN ? (c.nom ? c.nom + ' · ' : '') + c.email : 'Avec Novimo';
+  $m('fil-qui').textContent = ADMIN ? (c.nom ? c.nom + ' · ' : '') + c.email : t('Avec Novimo', 'With Novimo');
   $m('fil-statut').className = 'statut ' + s.classe;
   $m('fil-statut').textContent = s.texte;
 
@@ -128,8 +137,8 @@ async function ouvrir(id, silencieux) {
   const peutEcrire = !ferme && (ADMIN || c.statut === 'acceptee');
   $m('fil-ecrire').hidden = !peutEcrire;
   $m('fil-attente').hidden = peutEcrire;
-  $m('fil-attente').textContent = ferme ? 'Cette conversation est fermée. Pour une nouvelle question, créez une nouvelle demande.'
-    : 'Votre demande est bien reçue ⏳ Dès qu’elle est acceptée, vous pourrez discuter ici (on vous prévient aussi par e-mail).';
+  $m('fil-attente').textContent = ferme ? t('Cette conversation est fermée. Pour une nouvelle question, créez une nouvelle demande.', 'This conversation is closed. For a new question, create a new request.')
+    : t('Votre demande est bien reçue ⏳ Dès qu’elle est acceptée, vous pourrez discuter ici (on vous prévient aussi par e-mail).', 'Your request has been received ⏳ As soon as it is accepted, you can chat here (we will also let you know by email).');
 
   // Les bulles (redessinées seulement si quelque chose a changé)
   const empreinte = r.messages.map((m) => m.id).join(',');
@@ -139,7 +148,7 @@ async function ouvrir(id, silencieux) {
     $m('fil-messages').innerHTML = r.messages.map((m) =>
       '<li class="msg-bulle' + (m.auteur === moi ? ' moi' : '') + '">' +
         '<p>' + esc(m.texte).replace(/\n/g, '<br>') + '</p>' +
-        '<time datetime="' + esc(m.cree_le) + '">' + (m.auteur === 'admin' ? 'Novimo' : (ADMIN ? 'Client' : 'Vous')) + ' · ' + quand(m.cree_le) + '</time>' +
+        '<time datetime="' + esc(m.cree_le) + '">' + (m.auteur === 'admin' ? 'Novimo' : (ADMIN ? 'Client' : t('Vous', 'You'))) + ' · ' + quand(m.cree_le) + '</time>' +
       '</li>').join('');
     $m('fil-messages').scrollTop = $m('fil-messages').scrollHeight;
   }
@@ -200,7 +209,7 @@ document.querySelectorAll('[data-retour]').forEach((b) => b.addEventListener('cl
    ===================================================== */
 $m('msg-categories').innerHTML = CATEGORIES_MSG.map((c) =>
   '<label class="msg-categorie"><input type="radio" name="categorie" value="' + c.id + '">' +
-  '<span><b>' + c.nom + '</b><small>' + c.detail + '</small></span></label>').join('');
+  '<span><b>' + tr(c, 'nom') + '</b><small>' + tr(c, 'detail') + '</small></span></label>').join('');
 
 // Arrivée depuis un autre lien (ex. messages.html?categorie=modele&sujet=…)
 const paramsMsg = new URLSearchParams(location.search);
@@ -228,15 +237,15 @@ $m('msg-formulaire').addEventListener('submit', async (e) => {
   const sujet = $m('msg-sujet').value.trim();
   const message = $m('msg-message').value.trim();
   const ok = [
-    erreurChamp('err-categorie', categorie ? '' : 'Choisissez la catégorie qui correspond le mieux à votre demande.'),
-    erreurChamp('err-sujet', sujet.length >= 3 ? '' : 'Indiquez un sujet (3 caractères minimum).', $m('msg-sujet')),
-    erreurChamp('err-message', message.length >= 10 ? '' : 'Votre message est trop court (10 caractères minimum).', $m('msg-message'))
+    erreurChamp('err-categorie', categorie ? '' : t('Choisissez la catégorie qui correspond le mieux à votre demande.', 'Choose the category that best matches your request.')),
+    erreurChamp('err-sujet', sujet.length >= 3 ? '' : t('Indiquez un sujet (3 caractères minimum).', 'Enter a subject (at least 3 characters).'), $m('msg-sujet')),
+    erreurChamp('err-message', message.length >= 10 ? '' : t('Votre message est trop court (10 caractères minimum).', 'Your message is too short (at least 10 characters).'), $m('msg-message'))
   ].every(Boolean);
   if (!ok) { $m('msg-form-statut').textContent = ''; return; }
 
   const bouton = $m('msg-envoyer-demande');
   bouton.disabled = true;
-  $m('msg-form-statut').textContent = 'Envoi…';
+  $m('msg-form-statut').textContent = t('Envoi…', 'Sending…');
   try {
     const r = await NovimoAPI.messagerie('nouvelle', { categorie, sujet, message });
     $m('msg-formulaire').reset();
@@ -260,7 +269,7 @@ $m('msg-formulaire').addEventListener('submit', async (e) => {
     vue('vue-connexion');
     // après la connexion, la page Compte nous ramène ici
     $m('msg-creer-compte').addEventListener('click', () => {
-      try { sessionStorage.setItem('novimo-retour', 'messages.html' + location.search); } catch (e) { /* rien */ }
+      try { sessionStorage.setItem('novimo-retour', lien('messages.html') + location.search); } catch (e) { /* rien */ }
     });
     return;
   }
@@ -277,7 +286,7 @@ $m('msg-formulaire').addEventListener('submit', async (e) => {
     $m('msg-vide-texte').textContent = 'Choisissez une conversation à gauche.';
   } else {
     $m('msg-nouveau').hidden = false;
-    $m('msg-vide-texte').textContent = 'Choisissez une conversation, ou créez une nouvelle demande.';
+    $m('msg-vide-texte').textContent = t('Choisissez une conversation, ou créez une nouvelle demande.', 'Choose a conversation, or create a new request.');
     if (!CONVERSATIONS.length || paramsMsg.get('categorie')) ouvrirFormulaire();
   }
   if (paramsMsg.get('conversation')) ouvrir(paramsMsg.get('conversation'));

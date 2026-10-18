@@ -44,7 +44,8 @@ function memoire(cle, valeur) {
 function lienMail(objet, message) {
   return 'mailto:' + R.email +
     '?subject=' + encodeURIComponent(objet) +
-    '&body=' + encodeURIComponent(message || 'Bonjour,\n\nJe suis intéressé(e) par une animation pour mon entreprise.\n\nNom de l\'entreprise :\nSecteur d\'activité :\nCe que je veux mettre en avant :\n\nMerci !');
+    '&body=' + encodeURIComponent(message || t('Bonjour,\n\nJe suis intéressé(e) par une animation pour mon entreprise.\n\nNom de l\'entreprise :\nSecteur d\'activité :\nCe que je veux mettre en avant :\n\nMerci !',
+    'Hello,\n\nI am interested in an animation for my business.\n\nBusiness name:\nIndustry:\nWhat I want to highlight:\n\nThank you!'));
 }
 
 /* Rend un texte "inoffensif" avant de l'afficher (protège contre le code caché
@@ -54,11 +55,16 @@ function esc(texte) {
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 }
 
-/* Écrit un prix joliment : 35 -> "35 €" */
-function euros(n) {
+/* Écrit un prix joliment : 35 -> "35 €" (site anglais, en dollars : "$35") */
+// devise : 'EUR' ou 'USD' (par défaut, celle de la page : euros en français, dollars en anglais)
+function euros(n, devise) {
   const centimes = Number.isInteger(n) ? 0 : 2;  // 89,10 € et pas 89,1 €
-  return n.toLocaleString('fr-FR', { minimumFractionDigits: centimes, maximumFractionDigits: 2 }) + ' €';
+  const format = { minimumFractionDigits: centimes, maximumFractionDigits: 2 };
+  const symbole = (devise || DEVISE) === 'USD' ? '$' : '€';
+  return EN ? symbole + n.toLocaleString('en-US', format) : n.toLocaleString('fr-FR', format) + ' ' + symbole;
 }
+// La devise d'un devis enregistré ('USD' pour un devis du site anglais)
+const deviseDevis = (d) => (d.devise === 'USD' || /^\[USD\]/.test(d.type_commerce || '')) ? 'USD' : 'EUR';
 
 /* =====================================================
    1. BARRE LATÉRALE
@@ -77,35 +83,39 @@ function logoNovimo() {
   const page = document.body.dataset.page || 'accueil';
 
   const liens = (R.onglets || []).map((o) =>
-    '<a class="onglet" href="' + o.lien + '" data-cible="' + (o.lien.split('#')[1] || '') + '" title="' + o.nom + '">' +
-      icone(o.icone) + '<span class="onglet-nom">' + o.nom + '</span></a>'
+    '<a class="onglet" href="' + lien(o.lien) + '" data-cible="' + (o.lien.split('#')[1] || '') + '" title="' + tr(o, 'nom') + '">' +
+      icone(o.icone) + '<span class="onglet-nom">' + tr(o, 'nom') + '</span></a>'
   ).join('');
 
   const barre = document.createElement('aside');
   barre.className = 'laterale';
   barre.id = 'laterale';
-  barre.setAttribute('aria-label', 'Menu principal');
+  barre.setAttribute('aria-label', t('Menu principal', 'Main menu'));
   barre.innerHTML =
-    '<a class="laterale-logo" href="index.html#haut" aria-label="Novimo, accueil">' + logoNovimo() + '</a>' +
-    '<button class="fermer-menu" type="button" aria-label="Fermer le menu">' + icone('fermer') + '</button>' +
+    '<a class="laterale-logo" href="' + lien('index.html#haut') + '" aria-label="' + t('Novimo, accueil', 'Novimo, home') + '">' + logoNovimo() + '</a>' +
+    '<button class="fermer-menu" type="button" aria-label="' + t('Fermer le menu', 'Close menu') + '">' + icone('fermer') + '</button>' +
     '<nav class="laterale-liens">' + liens + '</nav>' +
-    '<a class="bouton laterale-action" href="devis.html" title="Demander mon devis gratuit">' + icone('devis') + '<span class="onglet-nom">Devis gratuit</span></a>' +
-    '<button class="replier" type="button" aria-expanded="true">' + icone('chevron') + '<span class="onglet-nom">Replier le menu</span></button>';
+    '<a class="bouton laterale-action" href="' + lien('devis.html') + '" title="' + t('Demander mon devis gratuit', 'Get my free quote') + '">' + icone('devis') + '<span class="onglet-nom">' + t('Devis gratuit', 'Free quote') + '</span></a>' +
+    (Langue.bilingue ? Langue.bouton('langue-laterale') : '') +
+    '<button class="replier" type="button" aria-expanded="true">' + icone('chevron') + '<span class="onglet-nom">' + t('Replier le menu', 'Collapse menu') + '</span></button>';
 
   const haut = document.createElement('header');
   haut.className = 'barre-mobile';
   haut.innerHTML =
-    '<a class="laterale-logo" href="index.html#haut" aria-label="Novimo, accueil">' + logoNovimo() + '</a>' +
-    '<button class="ouvrir-menu" type="button" aria-label="Ouvrir le menu" aria-controls="laterale" aria-expanded="false">' + icone('menu') + '</button>';
+    '<a class="laterale-logo" href="' + lien('index.html#haut') + '" aria-label="' + t('Novimo, accueil', 'Novimo, home') + '">' + logoNovimo() + '</a>' +
+    (Langue.bilingue ? Langue.bouton('langue-mobile') : '') +
+    '<button class="ouvrir-menu" type="button" aria-label="' + t('Ouvrir le menu', 'Open menu') + '" aria-controls="laterale" aria-expanded="false">' + icone('menu') + '</button>';
 
   // Bouton "Se connecter / S'inscrire" en haut à droite ("Mon compte" si déjà connecté)
   const dejaConnecte = Object.keys(localStorage).some((k) => /^sb-.*-auth-token$/.test(k));
-  const texteCompte = dejaConnecte ? 'Mon compte' : 'Se connecter';
-  const lienCompte = (classe) => '<a class="' + classe + '" href="compte.html" title="' + (dejaConnecte ? 'Mon compte' : 'Se connecter ou créer un compte') + '">' +
-    icone('personne') + '<span>' + texteCompte + '</span>' + (dejaConnecte ? '' : '<span class="compte-ou">/ S’inscrire</span>') + '</a>';
+  const texteCompte = dejaConnecte ? t('Mon compte', 'My account') : t('Se connecter', 'Sign in');
+  const lienCompte = (classe, texte) => '<a class="' + classe + '" href="' + lien('compte.html') + '" title="' + (dejaConnecte ? t('Mon compte', 'My account') : t('Se connecter ou créer un compte', 'Sign in or create an account')) + '">' +
+    icone('personne') + '<span>' + (texte || texteCompte) + '</span>' + (dejaConnecte ? '' : '<span class="compte-ou">' + t('/ S’inscrire', '/ Sign up') + '</span>') + '</a>';
   haut.querySelector('.ouvrir-menu').insertAdjacentHTML('beforebegin',
-    lienCompte('compte-haut compte-haut-mobile').replace('<span>Se connecter</span>', '<span>Connexion</span>'));
-  if (page !== 'compte') document.body.insertAdjacentHTML('afterbegin', lienCompte('compte-haut compte-haut-ordi'));
+    lienCompte('compte-haut compte-haut-mobile', dejaConnecte ? '' : t('Connexion', 'Sign in')));
+  // En haut à droite (ordinateur) : le bouton de langue, puis le compte
+  const coinHaut = (Langue.bilingue ? Langue.bouton('langue-ordi') : '') + (page !== 'compte' ? lienCompte('compte-haut compte-haut-ordi') : '');
+  if (coinHaut) document.body.insertAdjacentHTML('afterbegin', '<div class="coin-haut">' + coinHaut + '</div>');
 
   const voile = document.createElement('div');
   voile.className = 'voile';
@@ -131,8 +141,8 @@ function logoNovimo() {
     if (!oui && html.classList.contains('menu-replie')) animerLogo();
     html.classList.toggle('menu-replie', oui);
     boutonReplier.setAttribute('aria-expanded', String(!oui));
-    boutonReplier.querySelector('.onglet-nom').textContent = oui ? 'Déplier le menu' : 'Replier le menu';
-    boutonReplier.title = oui ? 'Déplier le menu' : 'Replier le menu';
+    boutonReplier.querySelector('.onglet-nom').textContent = oui ? t('Déplier le menu', 'Expand menu') : t('Replier le menu', 'Collapse menu');
+    boutonReplier.title = boutonReplier.querySelector('.onglet-nom').textContent;
     memoire('menu-replie', oui ? '1' : '0');
   }
   replier(memoire('menu-replie') === '1');
@@ -157,7 +167,7 @@ function logoNovimo() {
     onglets.forEach((o) => o.classList.toggle('actif', o.dataset.cible === cible));
   }
   if (page !== 'accueil') {
-    onglets.forEach((o) => o.classList.toggle('actif', o.getAttribute('href') === page + '.html'));
+    onglets.forEach((o) => o.classList.toggle('actif', o.getAttribute('href') === lien(page + '.html')));
   } else {
     // Sur l'accueil : l'onglet suit la section affichée à l'écran
     const sections = onglets.map((o) => document.getElementById(o.dataset.cible)).filter(Boolean);
@@ -177,8 +187,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (!(await NovimoAPI.utilisateur())) return;
     const r = await NovimoAPI.messagerie('compteur');
     if (!r.nonLus) return;
-    document.querySelectorAll('.onglet[href="messages.html"]').forEach((o) => {
-      o.insertAdjacentHTML('beforeend', '<span class="pastille-menu" aria-label="' + r.nonLus + ' non lu(s)">' + r.nonLus + '</span>');
+    document.querySelectorAll('.onglet[href="' + lien('messages.html') + '"]').forEach((o) => {
+      o.insertAdjacentHTML('beforeend', '<span class="pastille-menu" aria-label="' + r.nonLus + t(' non lu(s)', ' unread') + '">' + r.nonLus + '</span>');
     });
   } catch (e) { /* messagerie pas encore installée : pas de pastille */ }
 });
@@ -199,21 +209,21 @@ document.querySelectorAll('.annee').forEach((el) => { el.textContent = new Date(
 const listeTarifs = document.getElementById('liste-tarifs');
 if (listeTarifs && R.tarifs) {
   // Économie d'un pack par rapport aux animations achetées séparément
-  const economiePack = (t) => (t.contenu || []).reduce((s, id) => {
+  const economiePack = (p) => (p.contenu || []).reduce((s, id) => {
     const a = R.tarifs.find((x) => x.id === id);
-    return s + (a ? a.prix : 0);
-  }, 0) - t.prix;
+    return s + (a ? prixLocal(a) : 0);
+  }, 0) - prixLocal(p);
 
   // Une carte de tarif
-  const carte = (t) =>
-    '<li data-entree' + (t.contenu ? ' class="pack"' : t.apercu ? ' class="avec-apercu"' : '') + '>' +
-      (t.contenu && economiePack(t) > 0 ? '<span class="bulle bulle-pack">' + euros(economiePack(t)) + ' d\'économie</span>' : '') +
-      (t.etiquette ? '<span class="bulle bulle-format">' + t.etiquette + '</span>' : '') +
-      '<h3>' + t.nom + '</h3><p>' + t.description + '</p>' +
-      '<div class="prix-bloc"><span class="prix">' + euros(t.prix) + '</span>' +
-      (t.prixPro ? '<span class="prix-pro">Freelance : dès ' + euros(t.prixPro) + '</span>' : '') +
+  const carte = (a) =>
+    '<li data-entree' + (a.contenu ? ' class="pack"' : a.apercu ? ' class="avec-apercu"' : '') + '>' +
+      (a.contenu && economiePack(a) > 0 ? '<span class="bulle bulle-pack">' + t(euros(economiePack(a)) + ' d\'économie', 'Save ' + euros(economiePack(a))) + '</span>' : '') +
+      (a.etiquette ? '<span class="bulle bulle-format">' + tr(a, 'etiquette') + '</span>' : '') +
+      '<h3>' + tr(a, 'nom') + '</h3><p>' + tr(a, 'description') + '</p>' +
+      '<div class="prix-bloc"><span class="prix">' + euros(prixLocal(a)) + '</span>' +
+      (a.prixPro ? '<span class="prix-pro">' + t('Freelance : dès ', 'Freelancer: from ') + euros(prixLocal(a, 'prixPro')) + '</span>' : '') +
       '</div>' +
-      (t.apercu ? '<img class="tarif-apercu" src="' + t.apercu + '" width="560" height="747" loading="lazy" alt="Exemple de système de logo Novimo : logo principal, logotype, symbole, icône d’appli et monochrome">' : '') +
+      (a.apercu ? '<img class="tarif-apercu" src="' + a.apercu + '" width="560" height="747" loading="lazy" alt="' + t('Exemple de système de logo Novimo : logo principal, logotype, symbole, icône d’appli et monochrome', 'Example of a Novimo logo system: main logo, wordmark, symbol, app icon and monochrome') + '">' : '') +
       '</li>';
 
   // Les cartes sont rangées par groupe (Réseaux sociaux, YouTube et TV...)
@@ -222,14 +232,14 @@ if (listeTarifs && R.tarifs) {
     const cartes = R.tarifs.filter((t) => !g.id || t.groupe === g.id);
     if (!cartes.length) return '';
     return '<div class="groupe-tarifs">' +
-      (g.nom ? '<div class="groupe-tete" data-entree><h3 class="groupe-titre">' + g.nom + '</h3><p>' + g.detail + '</p></div>' : '') +
+      (g.nom ? '<div class="groupe-tete" data-entree><h3 class="groupe-titre">' + tr(g, 'nom') + '</h3><p>' + tr(g, 'detail') + '</p></div>' : '') +
       '<ul class="grille-tarifs">' + cartes.map(carte).join('') + '</ul></div>';
   }).join('');
 }
 
 // La source de la comparaison de prix
 document.querySelectorAll('[data-source]').forEach((el) => {
-  if (R.comparaison) el.textContent = R.comparaison.source;
+  if (R.comparaison) el.textContent = tr(R.comparaison, 'source');
 });
 
 /* =====================================================
@@ -266,7 +276,7 @@ window.addEventListener('DOMContentLoaded', () => {
     vitre.appendChild(ecran);
     if (!tel.classList.contains('telephone-paysage')) {
       vitre.insertAdjacentHTML('afterbegin', '<div class="tel-etat" aria-hidden="true"><span>9:41</span><span class="tel-icones">' + icones + '</span></div>');
-      vitre.insertAdjacentHTML('beforeend', '<div class="tel-pied" aria-hidden="true"><img src="logo.svg" alt=""><b>novimo</b><span>Sponsorisé</span></div>');
+      vitre.insertAdjacentHTML('beforeend', '<div class="tel-pied" aria-hidden="true"><img src="logo.svg" alt=""><b>novimo</b><span>' + t('Sponsorisé', 'Sponsored') + '</span></div>');
     }
     vitre.insertAdjacentHTML('beforeend', '<span class="tel-barre-accueil" aria-hidden="true"></span>');
   });

@@ -15,10 +15,10 @@ const NovimoAPI = (function () {
   const client = actif ? window.supabase.createClient(C.supabaseUrl, C.supabaseCleAnon) : null;
 
   // L'adresse de la page Compte (pour revenir après la connexion)
-  const pageCompte = () => location.origin + location.pathname.replace(/[^/]*$/, 'compte.html');
+  const pageCompte = () => location.origin + location.pathname.replace(/[^/]*$/, lien('compte.html'));
 
   function verifierActif() {
-    if (!actif) throw new Error('Le service en ligne n\'est pas encore configuré (config.js).');
+    if (!actif) throw new Error(t('Le service en ligne n\'est pas encore configuré (config.js).', 'The online service is not set up yet.'));
   }
 
   return {
@@ -55,13 +55,14 @@ const NovimoAPI = (function () {
     /* ---------- Devis ---------- */
     // Envoie le devis à la fonction serveur "envoyer-devis" :
     // elle l'enregistre et envoie le PDF par e-mail (à toi + au client)
-    async envoyerDevis(donnees, pdfBase64) {
+    // pdfAdmin : ta copie en français, quand le client est sur le site anglais
+    async envoyerDevis(donnees, pdfBase64, pdfAdmin) {
       verifierActif();
       const { data, error } = await client.functions.invoke('envoyer-devis', {
-        body: Object.assign({}, donnees, { pdf: pdfBase64 })
+        body: Object.assign({}, donnees, { pdf: pdfBase64 }, pdfAdmin ? { pdfAdmin } : {})
       });
       if (error) throw error;
-      if (!data || !data.ok) throw new Error((data && data.erreur) || 'L\'envoi a échoué.');
+      if (!data || !data.ok) throw new Error((data && data.erreur) || t('L\'envoi a échoué.', 'Sending failed.'));
       return data;
     },
 
@@ -110,7 +111,7 @@ const NovimoAPI = (function () {
         try { const corps = await error.context.json(); if (corps && corps.erreur) texte = corps.erreur; } catch (e) { /* rien */ }
         throw new Error(texte);
       }
-      if (!data || !data.ok) throw new Error((data && data.erreur) || 'La messagerie ne répond pas.');
+      if (!data || !data.ok) throw new Error((data && data.erreur) || t('La messagerie ne répond pas.', 'Messaging is not responding.'));
       return data;
     },
 

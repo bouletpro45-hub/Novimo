@@ -91,8 +91,10 @@ function paiements() {
   const ev = [];
   DEVIS.forEach((d) => {
     if (d.statut === 'annule') return;
-    if (d.acompte_recu_le) ev.push({ t: +new Date(d.acompte_recu_le), v: Number(d.acompte) });
-    if (d.solde_recu_le) ev.push({ t: +new Date(d.solde_recu_le), v: Number(d.total) - Number(d.acompte) });
+    // Devis en dollars (site anglais) : converti en euros pour les gains (taux dans reglages.js)
+    const taux = deviseDevis(d) === 'USD' ? (R.tauxDollar || 0.86) : 1;
+    if (d.acompte_recu_le) ev.push({ t: +new Date(d.acompte_recu_le), v: Number(d.acompte) * taux });
+    if (d.solde_recu_le) ev.push({ t: +new Date(d.solde_recu_le), v: (Number(d.total) - Number(d.acompte)) * taux });
   });
   return ev;
 }
@@ -357,8 +359,8 @@ function afficherListe() {
     const mail = document.createElement('small'); mail.textContent = d.email;
     client.append(nom, mail);
     cellule((d.lignes || []).map((l) => l.texte).join(', '));
-    cellule(euros(Number(d.total)), 'nombre-cellule');
-    cellule(euros(Number(d.acompte)), 'nombre-cellule');
+    cellule(euros(Number(d.total), deviseDevis(d)), 'nombre-cellule');
+    cellule(euros(Number(d.acompte), deviseDevis(d)), 'nombre-cellule');
 
     // Changer le statut
     const cs = tr.insertCell();
@@ -387,7 +389,8 @@ function afficherListe() {
     b.addEventListener('click', () => creerPdfDevis({
       numero: d.numero, date: d.cree_le, commerce: d.commerce, type: d.type_commerce, prenom: d.prenom,
       email: d.email, tel: d.telephone, message: d.message, lignes: d.lignes, total: d.total,
-      acompte: d.acompte, acomptePourcent: POURCENT, contact: R.email
+      acompte: d.acompte, acomptePourcent: POURCENT, contact: R.email,
+      devise: deviseDevis(d), clientEtranger: deviseDevis(d) === 'USD'
     }).save('Devis-' + d.numero + '.pdf'));
     cp.appendChild(b);
   });

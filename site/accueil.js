@@ -8,13 +8,14 @@
 
 // Les palettes proposées (fond, lueur, accent, texte, texte doux)
 const PALETTES = [
-  { nom: 'Nuit et or',       fond: '#0b1430', fond2: '#1c2f63', accent: '#e6b85c', texte: '#f6efe0', texteDoux: '#b9bfd6' },
-  { nom: 'Noir et citron',   fond: '#0f100d', fond2: '#262a1a', accent: '#d4ff3f', texte: '#f2f0e8', texteDoux: '#b4b2a8' },
-  { nom: 'Bordeaux et rose', fond: '#3a0d1a', fond2: '#62182d', accent: '#ffb3c1', texte: '#fff1f3', texteDoux: '#e6b9c3' },
-  { nom: 'Forêt et menthe',  fond: '#0d2a22', fond2: '#174536', accent: '#7ff0c4', texte: '#effaf5', texteDoux: '#a9cfc0' },
-  { nom: 'Crème et rouge',   fond: '#f4ede1', fond2: '#ffffff', accent: '#d7322a', texte: '#1d1a17', texteDoux: '#6e655c' }
+  { nom: t('Nuit et or', 'Night and gold'),         fond: '#0b1430', fond2: '#1c2f63', accent: '#e6b85c', texte: '#f6efe0', texteDoux: '#b9bfd6' },
+  { nom: t('Noir et citron', 'Black and lime'),     fond: '#0f100d', fond2: '#262a1a', accent: '#d4ff3f', texte: '#f2f0e8', texteDoux: '#b4b2a8' },
+  { nom: t('Bordeaux et rose', 'Burgundy and pink'), fond: '#3a0d1a', fond2: '#62182d', accent: '#ffb3c1', texte: '#fff1f3', texteDoux: '#e6b9c3' },
+  { nom: t('Forêt et menthe', 'Forest and mint'),   fond: '#0d2a22', fond2: '#174536', accent: '#7ff0c4', texte: '#effaf5', texteDoux: '#a9cfc0' },
+  { nom: t('Crème et rouge', 'Cream and red'),      fond: '#f4ede1', fond2: '#ffffff', accent: '#d7322a', texte: '#1d1a17', texteDoux: '#6e655c' }
 ];
-const NOMS_SYMBOLES = { 'ciseaux': 'Ciseaux', 'lune-ble': 'Lune et blé', 'etoile': 'Étoile', 'aucun': 'Sans symbole' };
+const NOMS_SYMBOLES = EN ? { 'ciseaux': 'Scissors', 'lune-ble': 'Moon and wheat', 'etoile': 'Star', 'aucun': 'No symbol' }
+  : { 'ciseaux': 'Ciseaux', 'lune-ble': 'Lune et blé', 'etoile': 'Étoile', 'aucun': 'Sans symbole' };
 
 const champNom = document.getElementById('champ-nom');
 const champSlogan = document.getElementById('champ-slogan');
@@ -75,7 +76,7 @@ function allerEtape(n) {
   document.getElementById('studio-barre').style.transform = 'scaleX(' + (etape / 3) + ')';
   retour.hidden = etape === 0 || etape === 3;
   suivant.hidden = etape === 3;
-  document.getElementById('studio-suivant-texte').textContent = etape === 2 ? 'Voir mon logo' : 'Suivant';
+  document.getElementById('studio-suivant-texte').textContent = etape === 2 ? t('Voir mon logo', 'See my logo') : t('Suivant', 'Next');
   if (etape === 3 && apercu.contentWindow) apercu.contentWindow.postMessage('novimo-rejouer', '*');
 }
 suivant.addEventListener('click', () => allerEtape(etape + 1));
@@ -86,7 +87,7 @@ allerEtape(0);
 // Recharge l'animation avec les nouveaux réglages,
 // et prépare le lien vers le devis (déjà rempli avec ces choix)
 function mettreAJour() {
-  const nom = champNom.value.trim() || 'Votre marque';
+  const nom = champNom.value.trim() || t('Votre marque', 'Your brand');
   const slogan = champSlogan.value.trim();
   const params = new URLSearchParams({
     integre: '1',
@@ -96,6 +97,7 @@ function mettreAJour() {
     fond: palette.fond, fond2: palette.fond2, accent: palette.accent,
     texte: palette.texte, texteDoux: palette.texteDoux
   });
+  if (EN) params.set('langue', 'en');
   apercu.src = 'logo-reveal.html?' + params.toString();
   // un reflet passe sur l'aperçu pendant qu'il se refait
   const ecran = apercu.parentElement;
@@ -103,11 +105,11 @@ function mettreAJour() {
   void ecran.offsetWidth;
   ecran.classList.add('recharge');
 
-  boutonEssai.href = 'devis.html?' + new URLSearchParams({
+  boutonEssai.href = lien('devis.html') + '?' + new URLSearchParams({
     logo: '1',
     commerce: nom,
-    message: 'Logo animé essayé sur le site :\n- Slogan : ' + slogan +
-      '\n- Couleurs : ' + palette.nom + '\n- Symbole : ' + NOMS_SYMBOLES[symbole]
+    message: t('Logo animé essayé sur le site :\n- Slogan : ', 'Animated logo tried on the website:\n- Tagline: ') + slogan +
+      t('\n- Couleurs : ', '\n- Colours: ') + palette.nom + t('\n- Symbole : ', '\n- Symbol: ') + NOMS_SYMBOLES[symbole]
   }).toString();
 }
 
@@ -160,7 +162,7 @@ setTimeout(() => titre.classList.add('visible'), 80);
     const b = document.createElement('button');
     b.type = 'button';
     b.setAttribute('role', 'tab');
-    b.setAttribute('aria-label', 'Vidéo ' + (i + 1));
+    b.setAttribute('aria-label', t('Vidéo ', 'Video ') + (i + 1));
     b.addEventListener('click', () => aller(i));
     zonePoints.appendChild(b);
     return b;
@@ -272,7 +274,29 @@ setTimeout(() => titre.classList.add('visible'), 80);
       clavier.appendChild(rangee);
     });
   }
-  const EXEMPLES = [
+  const EXEMPLES = EN ? [
+    {
+      bulle: '30-second spot · 16:9',
+      titre: 'For YouTube, <span class="accent">TV</span> and your shop window',
+      texte: 'A real ad in six scenes: your name, the hook, your offers, your selling point, how to order and the call to action. Here, the Novimo spot.',
+      src: 'spot-30s.html?integre=1&format=paysage&langue=en',
+      nom: 'Novimo 30-second spot'
+    },
+    {
+      bulle: 'Shop-window screen · 16:9',
+      titre: 'Your menu, <span class="accent">on the big screen</span>',
+      texte: 'Your products and prices appearing one by one, with a scrolling banner: for the TV in your shop or your window.',
+      src: 'menu-vitrine.html?integre=1&format=paysage&langue=en',
+      nom: '16:9 shop-window menu animation'
+    },
+    {
+      bulle: 'Every format · 16:9',
+      titre: 'One studio, <span class="accent">all your screens</span>',
+      texte: 'The same animation delivered square for Instagram, vertical for TikTok and Reels, and 16:9 for YouTube and TV.',
+      src: 'formats-ecrans.html?integre=1&format=paysage&langue=en',
+      nom: 'Square, vertical and 16:9 formats animation'
+    }
+  ] : [
     {
       bulle: 'Spot 30 secondes · 16:9',
       titre: 'Pour YouTube, <span class="accent">la TV</span> et votre vitrine',

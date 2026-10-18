@@ -8,14 +8,18 @@
    ========================================================= */
 
 const RATIOS = { vertical: '9:16', carre: '1:1', paysage: '16:9' };
-const NOMS_SYMBOLES_MODELES = { etoile: 'Étoile', ciseaux: 'Ciseaux', 'lune-ble': 'Lune et blé', aucun: 'Aucun' };
+const NOMS_SYMBOLES_MODELES = EN ? { etoile: 'Star', ciseaux: 'Scissors', 'lune-ble': 'Moon and wheat', aucun: 'None' }
+  : { etoile: 'Étoile', ciseaux: 'Ciseaux', 'lune-ble': 'Lune et blé', aucun: 'Aucun' };
+// Sur le site anglais : les noms traduits (modeles-en.js). Les filtres gardent les valeurs françaises.
+const libelle = (texte) => (EN && typeof LIBELLES_EN !== 'undefined' && LIBELLES_EN[texte]) || texte;
 const tarifDe = (m) => (R.tarifs || []).find((t) => t.id === m.tarif) || { prix: 0, nom: '' };
-const prixDe = (m) => tarifDe(m).prix;
+const prixDe = (m) => prixLocal(tarifDe(m));   // euros, ou dollars sur le site anglais
 const $m = (id) => document.getElementById(id);
 
 /* L'adresse de l'animation avec les réglages du client */
 function adresseModele(m, format, reglages) {
   const p = new URLSearchParams({ integre: '1', format });
+  if (EN) p.set('langue', 'en');
   Object.entries(m.fixe || {}).forEach(([k, v]) => p.set(k, v));
   Object.entries(reglages.textes || {}).forEach(([k, v]) => p.set(k, v));
   const pal = PALETTES_MODELES[reglages.palette];
@@ -24,13 +28,13 @@ function adresseModele(m, format, reglages) {
   if (reglages.symbole) p.set('symbole', reglages.symbole);
   return m.fichier + '?' + p.toString();
 }
-const reglagesDepart = (m) => ({ textes: Object.assign({}, m.textes), palette: m.palette, police: '', symbole: (m.textes || {}).symbole || '' });
+const reglagesDepart = (m) => ({ textes: Object.assign({}, tr(m, 'textes')), palette: m.palette, police: '', symbole: (m.textes || {}).symbole || '' });
 
 /* ---------- 1. Les filtres ---------- */
 const filtre = { format: '', categorie: '', style: '', duree: '', prix: '', tri: 'populaires' };
 
-$m('filtre-categorie').innerHTML = ['Tous'].concat(CATEGORIES_MODELES).map((c, i) =>
-  '<button type="button" data-categorie="' + (i ? esc(c) : '') + '" aria-pressed="' + (i ? 'false' : 'true') + '">' + esc(c) + '</button>').join('');
+$m('filtre-categorie').innerHTML = [t('Tous', 'All')].concat(CATEGORIES_MODELES).map((c, i) =>
+  '<button type="button" data-categorie="' + (i ? esc(c) : '') + '" aria-pressed="' + (i ? 'false' : 'true') + '">' + esc(libelle(c)) + '</button>').join('');
 
 function choisirBouton(zone, bouton) {
   zone.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', b === bouton ? 'true' : 'false'));
@@ -39,8 +43,8 @@ $m('filtre-format').addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return;
   choisirBouton($m('filtre-format'), b); filtre.format = b.dataset.format; afficherGrille();
 });
-$m('filtre-style').innerHTML = ['Tous les styles'].concat(STYLES_MODELES).map((c, i) =>
-  '<button type="button" data-style="' + (i ? esc(c) : '') + '" aria-pressed="' + (i ? 'false' : 'true') + '">' + esc(c) + '</button>').join('');
+$m('filtre-style').innerHTML = [t('Tous les styles', 'All styles')].concat(STYLES_MODELES).map((c, i) =>
+  '<button type="button" data-style="' + (i ? esc(c) : '') + '" aria-pressed="' + (i ? 'false' : 'true') + '">' + esc(libelle(c)) + '</button>').join('');
 $m('filtre-style').addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return;
   choisirBouton($m('filtre-style'), b); filtre.style = b.dataset.style; afficherGrille();
@@ -103,17 +107,17 @@ function afficherGrille() {
   const liste = modelesFiltres();
   const grille = $m('grille-modeles');
   grille.querySelectorAll('.carte-modele-ecran').forEach((z) => observateur.unobserve(z));
-  $m('compte-modeles').textContent = liste.length + ' modèle' + (liste.length > 1 ? 's' : '');
+  $m('compte-modeles').textContent = liste.length + t(' modèle', ' template') + (liste.length > 1 ? 's' : '');
   $m('aucun-modele').hidden = liste.length > 0;
   grille.innerHTML = liste.map((m) => {
     const format = filtre.format || m.formats[0];
     return '<li class="carte-modele" data-id="' + m.id + '">' +
-      '<button type="button" class="carte-modele-vue" data-ouvrir="' + m.id + '" aria-label="Personnaliser ' + esc(m.nom) + '">' +
-        '<span class="carte-modele-ecran ecran-' + format + '" data-src="' + esc(adresseModele(m, format, reglagesDepart(m))) + '" data-titre="Aperçu : ' + esc(m.nom) + '"></span>' +
-        '<span class="carte-modele-survol">Personnaliser</span>' +
+      '<button type="button" class="carte-modele-vue" data-ouvrir="' + m.id + '" aria-label="' + t('Personnaliser ', 'Customise ') + esc(tr(m, 'nom')) + '">' +
+        '<span class="carte-modele-ecran ecran-' + format + '" data-src="' + esc(adresseModele(m, format, reglagesDepart(m))) + '" data-titre="' + t('Aperçu : ', 'Preview: ') + esc(tr(m, 'nom')) + '"></span>' +
+        '<span class="carte-modele-survol">' + t('Personnaliser', 'Customise') + '</span>' +
       '</button>' +
       '<div class="carte-modele-texte">' +
-        '<div><h3>' + esc(m.nom) + '</h3><p>' + esc(m.style) + ' · ' + esc(m.categorie) + ' · ' + m.duree + ' s</p></div>' +
+        '<div><h3>' + esc(tr(m, 'nom')) + '</h3><p>' + esc(libelle(m.style)) + ' · ' + esc(libelle(m.categorie)) + ' · ' + m.duree + ' s</p></div>' +
         '<span class="carte-modele-prix">' + euros(prixDe(m)) + '</span>' +
       '</div>' +
       '<div class="carte-modele-formats">' + m.formats.map((f) => '<span>' + RATIOS[f] + '</span>').join('') + '</div>' +
@@ -138,9 +142,9 @@ function ouvrirEditeur(id) {
   reglages = reglagesDepart(modele);
   formatEd = (filtre.format && modele.formats.includes(filtre.format)) ? filtre.format : modele.formats[0];
 
-  $m('ed-cat').textContent = modele.style + ' · ' + modele.categorie;
-  $m('ed-nom').textContent = modele.nom;
-  $m('ed-infos').textContent = modele.duree + ' secondes · ' + modele.formats.map((f) => RATIOS[f]).join(', ') + ' · ' + euros(prixDe(modele));
+  $m('ed-cat').textContent = libelle(modele.style) + ' · ' + libelle(modele.categorie);
+  $m('ed-nom').textContent = tr(modele, 'nom');
+  $m('ed-infos').textContent = modele.duree + t(' secondes · ', ' seconds · ') + modele.formats.map((f) => RATIOS[f]).join(', ') + ' · ' + euros(prixDe(modele));
 
   // les formats
   $m('ed-formats').innerHTML = modele.formats.map((f) =>
@@ -148,14 +152,14 @@ function ouvrirEditeur(id) {
 
   // les champs de texte
   $m('ed-champs').innerHTML = (modele.champs || []).map(([cle, nom]) =>
-    '<label class="studio-champ"><span>' + esc(nom) + '</span>' +
+    '<label class="studio-champ"><span>' + esc(libelle(nom)) + '</span>' +
     '<input type="text" data-cle="' + cle + '" maxlength="' + (cle === 'ligne1' && modele.fixe && modele.fixe.style === 'citation' ? 120 : 80) + '" value="' + esc(reglages.textes[cle] || '') + '" autocomplete="off"></label>').join('');
 
   // couleurs (pas pour les modèles "style appli" qui ont leurs propres couleurs)
   $m('ed-bloc-couleurs').hidden = !modele.palette;
   $m('ed-palettes').innerHTML = Object.entries(PALETTES_MODELES).map(([cle, p]) =>
     '<button type="button" class="carte-ambiance" data-palette="' + cle + '" aria-pressed="' + (cle === reglages.palette) + '">' +
-    '<span class="ambiance-vue" style="background:' + p.fond + '"><i style="background:' + p.accent + '"></i><b style="color:' + p.texte + '">Aa</b></span>' + p.nom + '</button>').join('');
+    '<span class="ambiance-vue" style="background:' + p.fond + '"><i style="background:' + p.accent + '"></i><b style="color:' + p.texte + '">Aa</b></span>' + tr(p, 'nom') + '</button>').join('');
 
   // police (seulement pour les modèles de pret.html)
   $m('ed-bloc-police').hidden = !['pret.html', 'directions.html'].includes(modele.fichier);
@@ -169,8 +173,8 @@ function ouvrirEditeur(id) {
     '<button type="button" data-symbole="' + cle + '" aria-pressed="' + (cle === reglages.symbole) + '">' + nom + '</button>').join('');
 
   $m('ed-note').hidden = !modele.note;
-  $m('ed-note').textContent = modele.note || '';
-  $m('ed-commander-texte').textContent = 'Commander · ' + euros(prixDe(modele));
+  $m('ed-note').textContent = tr(modele, 'note') || modele.note || '';
+  $m('ed-commander-texte').textContent = t('Commander · ', 'Order · ') + euros(prixDe(modele));
 
   mettreAJourEditeur(true);
   $m('editeur').showModal();
@@ -233,19 +237,19 @@ $m('editeur').addEventListener('close', () => { $m('ed-apercu').removeAttribute(
 
 /* ---------- 4. Commander : le devis, déjà rempli ---------- */
 function lienDevis() {
-  const t = reglages.textes;
+  const textes = reglages.textes;
   const pal = PALETTES_MODELES[reglages.palette];
   const lignes = [
-    'Modèle choisi : ' + modele.nom + ' (réf. ' + modele.id + ', style ' + modele.style + ')',
-    'Formats : ' + modele.formats.map((f) => RATIOS[f]).join(', ') + ' (aperçu regardé en ' + RATIOS[formatEd] + ')',
-    pal ? 'Couleurs : ' + pal.nom : '',
-    reglages.police ? 'Police des titres : ' + reglages.police : '',
-    reglages.symbole ? 'Symbole : ' + NOMS_SYMBOLES_MODELES[reglages.symbole] : ''
-  ].concat((modele.champs || []).map(([cle, nom]) => '- ' + nom + ' : ' + (t[cle] || '')));
-  const p = new URLSearchParams({ commerce: t.marque && t.marque !== 'Votre marque' ? t.marque : '' });
+    t('Modèle choisi : ', 'Chosen template: ') + tr(modele, 'nom') + t(' (réf. ', ' (ref. ') + modele.id + ', style ' + libelle(modele.style) + ')',
+    t('Formats : ', 'Formats: ') + modele.formats.map((f) => RATIOS[f]).join(', ') + t(' (aperçu regardé en ', ' (previewed in ') + RATIOS[formatEd] + ')',
+    pal ? t('Couleurs : ', 'Colours: ') + tr(pal, 'nom') : '',
+    reglages.police ? t('Police des titres : ', 'Title font: ') + reglages.police : '',
+    reglages.symbole ? t('Symbole : ', 'Symbol: ') + NOMS_SYMBOLES_MODELES[reglages.symbole] : ''
+  ].concat((modele.champs || []).map(([cle, nom]) => '- ' + libelle(nom) + t(' : ', ': ') + (textes[cle] || '')));
+  const p = new URLSearchParams({ commerce: textes.marque && !['Votre marque', 'Your brand'].includes(textes.marque) ? textes.marque : '' });
   p.set(modele.tarif, '1');
-  p.set('message', lignes.filter(Boolean).join('\n') + '\n\nAperçu : ' + new URL(adresseModele(modele, formatEd, reglages), location.href).href);
-  return 'devis.html?' + p.toString();
+  p.set('message', lignes.filter(Boolean).join('\n') + t('\n\nAperçu : ', '\n\nPreview: ') + new URL(adresseModele(modele, formatEd, reglages), location.href).href);
+  return lien('devis.html') + '?' + p.toString();
 }
 
 /* Ouvrir directement un modèle avec modeles.html#soldes */

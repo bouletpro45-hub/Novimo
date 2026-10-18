@@ -41,7 +41,9 @@ create table if not exists public.devis (
                    check (statut in ('en_cours', 'signe', 'cloture', 'annule')),
   cree_le          timestamptz not null default now(),
   acompte_recu_le  timestamptz,                          -- date de l'acompte (compte dans les gains)
-  solde_recu_le    timestamptz                           -- date du solde (compte dans les gains)
+  solde_recu_le    timestamptz,                          -- date du solde (compte dans les gains)
+  devise           text not null default 'EUR'               -- 'EUR' ou 'USD' (devis du site anglais)
+                   check (devise in ('EUR', 'USD'))
 );
 create index if not exists devis_email_idx on public.devis (lower(email));
 create index if not exists devis_user_idx  on public.devis (user_id);

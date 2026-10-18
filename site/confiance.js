@@ -35,14 +35,20 @@ const Consentement = (function () {
     b.id = 'banniere-cookies';
     b.className = 'banniere-cookies';
     b.setAttribute('role', 'dialog');
-    b.setAttribute('aria-label', 'Cookies et mesure d’audience');
-    b.innerHTML =
-      '<p><strong>Un petit cookie de mesure ?</strong> Il nous dit seulement combien de personnes visitent le site et quelles pages leur plaisent. ' +
-      'Aucune publicité, aucune revente. <a href="confidentialite.html#cookies">En savoir plus</a></p>' +
-      '<div class="banniere-boutons">' +
-        '<button type="button" class="bouton-fantome" data-choix="non">Refuser</button>' +
-        '<button type="button" class="bouton" data-choix="oui">Accepter</button>' +
-      '</div>';
+    b.setAttribute('aria-label', t('Cookies et mesure d’audience', 'Cookies and audience measurement'));
+    b.innerHTML = EN
+      ? '<p><strong>A small analytics cookie?</strong> It only tells us how many people visit the site and which pages they like. ' +
+        'No ads, no data selling. <a href="' + lien('confidentialite.html') + '#cookies">Learn more</a></p>' +
+        '<div class="banniere-boutons">' +
+          '<button type="button" class="bouton-fantome" data-choix="non">Decline</button>' +
+          '<button type="button" class="bouton" data-choix="oui">Accept</button>' +
+        '</div>'
+      : '<p><strong>Un petit cookie de mesure ?</strong> Il nous dit seulement combien de personnes visitent le site et quelles pages leur plaisent. ' +
+        'Aucune publicité, aucune revente. <a href="confidentialite.html#cookies">En savoir plus</a></p>' +
+        '<div class="banniere-boutons">' +
+          '<button type="button" class="bouton-fantome" data-choix="non">Refuser</button>' +
+          '<button type="button" class="bouton" data-choix="oui">Accepter</button>' +
+        '</div>';
     document.body.appendChild(b);
     b.addEventListener('click', (e) => {
       const bouton = e.target.closest('[data-choix]');

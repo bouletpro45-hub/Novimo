@@ -26,14 +26,14 @@ const REGLAGES = {
   // Scène 3 : les offres (prix en euros, nombres entiers)
   titreOffres: 'Trois formats, un seul studio',
   offres: [
-    { icone: 'etoile',  nom: 'Logo animé', detail: '4 secondes',      prix: 300, avant: '' },
-    { icone: 'eclair',  nom: 'Petite pub', detail: '8 secondes',      prix: 150, avant: '' },
-    { icone: 'ecran',   nom: 'Spot vidéo', detail: '30 ou 60 secondes', prix: 750, avant: 'dès ' }
+    { icone: 'etoile',  nom: 'Logo animé', detail: '4 secondes',      prix: 297, avant: '' },
+    { icone: 'eclair',  nom: 'Petite pub', detail: '8 secondes',      prix: 147, avant: '' },
+    { icone: 'ecran',   nom: 'Spot vidéo', detail: '30 ou 60 secondes', prix: 743, avant: 'dès ' }
   ],
 
   // Scène 4 : la comparaison
   titreComparaison: 'Moitié prix d\'un freelance',
-  comparaison: { labelPro: 'Freelance, dès', prixPro: 600, labelNous: 'Novimo', prixNous: 300, objet: 'Logo animé' },
+  comparaison: { labelPro: 'Freelance, dès', prixPro: 600, labelNous: 'Novimo', prixNous: 297, objet: 'Logo animé' },
   sourceComparaison: 'Source : baromètre Malt, repris par Le Freelance',
 
   // Scène 5 : les étapes
@@ -47,6 +47,35 @@ const REGLAGES = {
   // Scène 6 : l'appel à l'action
   appel: 'Demandez votre devis',
   reseau: '@novimo_md',
+
+  devise: '€',                    // le symbole de la monnaie
+  euroAvant: false,               // true = « $337 » (anglais), false = « 297 € »
+
+  // 🇬🇧 Version anglaise (utilisée sur le site anglais, avec ?langue=en dans l'adresse)
+  en: {
+    slogan: 'Your brand, in motion.',
+    accroche1: 'Your customers|scroll.',
+    accroche2: 'Stop|their thumb.',
+    carteFil: 'Your ad here',
+    titreOffres: 'Three formats, one studio',
+    offres: [
+      { icone: 'etoile',  nom: 'Animated logo', detail: '4 seconds',        prix: 337, avant: '' },
+      { icone: 'eclair',  nom: 'Short ad',      detail: '8 seconds',        prix: 167, avant: '' },
+      { icone: 'ecran',   nom: 'Video spot',    detail: '30 or 60 seconds', prix: 857, avant: 'from ' }
+    ],
+    titreComparaison: 'Half the freelance price',
+    comparaison: { labelPro: 'Freelancer, from', prixPro: 690, labelNous: 'Novimo', prixNous: 337, objet: 'Animated logo' },
+    sourceComparaison: 'Source: Malt survey, reported by Le Freelance',
+    titreEtapes: 'Easy as pie',
+    etapes: [
+      { icone: 'lettre',  texte: 'You write to us' },
+      { icone: 'horloge', texte: 'Preview in 48 h' },
+      { icone: 'check',   texte: 'You post' }
+    ],
+    appel: 'Get your quote',
+    devise: '$',
+    euroAvant: true
+  },
 
   couleurs: {
     fond:      '#0b0c09',
@@ -249,7 +278,7 @@ function construire(scene, R, S) {
   R.offres.forEach((o, i) => {
     const carte = S.creer('div', 'offre', grille);
     carte.innerHTML = '<div class="offre-icone">' + icone(o.icone) + '</div><h3>' + o.nom + '</h3><p>' + o.detail + '</p>' +
-      '<div class="offre-prix">' + (o.avant ? '<small>' + o.avant + '</small>' : '') + '<span class="nombre"></span>&nbsp;€</div>';
+      '<div class="offre-prix">' + (o.avant ? '<small>' + o.avant + '</small>' : '') + (R.euroAvant ? R.devise + '<span class="nombre"></span>' : '<span class="nombre"></span>&nbsp;' + R.devise) + '</div>';
     const t = T.offres + 0.5 + i * 0.25;
     S.anim(carte, [{ opacity: 0, transform: 'translateY(160px) rotate(' + (i - 1) * 4 + 'deg)' }, { opacity: 1, transform: 'none' }], t, 0.9, 'rebond');
     S.anim(carte.querySelector('.nombre'), [{ '--n': 0 }, { '--n': o.prix }], t + 0.4, 1.4, 'douce');
@@ -267,7 +296,7 @@ function construire(scene, R, S) {
     const ligne = S.creer('div', 'barre-ligne', barres);
     S.creer('span', '', ligne, label);
     const barre = S.creer('div', 'barre ' + classe, ligne);
-    barre.innerHTML = '<span class="nombre"></span>&nbsp;€';
+    barre.innerHTML = R.euroAvant ? R.devise + '<span class="nombre"></span>' : '<span class="nombre"></span>&nbsp;' + R.devise;
     const t = T.comp + 0.6 + i * 0.5;
     entrer(ligne, t, 20);
     S.anim(barre, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], t + 0.2, 1.2, 'douce');
